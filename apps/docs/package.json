@@ -1,6 +1,6 @@
 {
 	"$schema": "https://json.schemastore.org/package.json",
-	"name": "@blockchain-voting-system/docs",
+	"name": "@embedded-blockchain-surveillance-system/docs",
 	"packageManager": "pnpm@10.10.0",
 	"private": true,
 	"version": "0.0.0",

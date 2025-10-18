@@ -1,24 +1,24 @@
 import { defineConfig } from "@wagmi/cli";
 import type { Abi } from "viem";
-import CandidateRegistry from "@blockchain-voting-system/contracts/CandidateRegistry.sol/CandidateRegistry.json" with {
+import CandidateRegistry from "@embedded-blockchain-surveillance-system/contracts/CandidateRegistry.sol/CandidateRegistry.json" with {
 	type: "json",
 };
-import Election from "@blockchain-voting-system/contracts/Election.sol/Election.json" with {
+import Election from "@embedded-blockchain-surveillance-system/contracts/Election.sol/Election.json" with {
 	type: "json",
 };
-import Party from "@blockchain-voting-system/contracts/Party.sol/Party.json" with {
+import Party from "@embedded-blockchain-surveillance-system/contracts/Party.sol/Party.json" with {
 	type: "json",
 };
-import VoterRegistry from "@blockchain-voting-system/contracts/VoterRegistry.sol/VoterRegistry.json" with {
+import VoterRegistry from "@embedded-blockchain-surveillance-system/contracts/VoterRegistry.sol/VoterRegistry.json" with {
 	type: "json",
 };
-import VotingSystem from "@blockchain-voting-system/contracts/VotingSystem.sol/VotingSystem.json" with {
+import VotingSystem from "@embedded-blockchain-surveillance-system/contracts/VotingSystem.sol/VotingSystem.json" with {
 	type: "json",
 };
-import ElectionRegistry from "@blockchain-voting-system/contracts/ElectionRegistry.sol/ElectionRegistry.json" with {
+import ElectionRegistry from "@embedded-blockchain-surveillance-system/contracts/ElectionRegistry.sol/ElectionRegistry.json" with {
 	type: "json",
 };
-import PartyRegistry from "@blockchain-voting-system/contracts/PartyRegistry.sol/PartyRegistry.json" with {
+import PartyRegistry from "@embedded-blockchain-surveillance-system/contracts/PartyRegistry.sol/PartyRegistry.json" with {
 	type: "json",
 };
 

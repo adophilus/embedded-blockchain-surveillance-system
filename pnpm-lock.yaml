@@ -63,7 +63,7 @@ importers:
 
   apps/contracts:
     dependencies:
-      '@blockchain-voting-system/contracts':
+      '@embedded-blockchain-surveillance-system/contracts':
         specifier: workspace:^
         version: 'link:'
       '@wagmi/cli':
@@ -291,7 +291,7 @@ importers:
 
   packages/core:
     dependencies:
-      '@blockchain-voting-system/contracts':
+      '@embedded-blockchain-surveillance-system/contracts':
         specifier: workspace:^
         version: link:../../apps/contracts
       '@helia/dag-cbor':

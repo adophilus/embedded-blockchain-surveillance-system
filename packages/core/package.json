@@ -1,6 +1,6 @@
 {
 	"$schema": "https://json.schemastore.org/package.json",
-	"name": "@blockchain-voting-system/core",
+	"name": "@embedded-blockchain-surveillance-system/core",
 	"exports": {
 		".": "./src/index.ts",
 		"./*": "./src/*.ts"
@@ -11,7 +11,7 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@blockchain-voting-system/contracts": "workspace:^",
+		"@embedded-blockchain-surveillance-system/contracts": "workspace:^",
 		"@helia/dag-cbor": "^4.1.0",
 		"@t3-oss/env-core": "^0.12.0",
 		"assertate": "^2.4.0",

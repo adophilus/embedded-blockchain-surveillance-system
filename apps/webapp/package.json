@@ -1,5 +1,5 @@
 {
-  "name": "@blockchain-voting-system/webapp",
+  "name": "@embedded-blockchain-surveillance-system/webapp",
   "private": true,
   "type": "module",
   "scripts": {
@@ -52,8 +52,8 @@
     "@tanstack/react-store": "^0.7.0",
     "@tanstack/router-plugin": "^1.121.2",
     "@tanstack/store": "^0.7.0",
-    "@vs/api": "workspace:^",
-    "@vs/backend": "workspace:^",
+    "@embedded-blockchain-surveillance-system/api": "workspace:^",
+    "@embedded-blockchain-surveillance-system/backend": "workspace:^",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

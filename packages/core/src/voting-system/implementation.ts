@@ -42,7 +42,7 @@ import {
 	electionAbi,
 	electionRegistryAbi,
 	partyRegistryAbi,
-} from "@blockchain-voting-system/contracts/types";
+} from "@embedded-blockchain-surveillance-system/contracts/types";
 
 class BlockchainVotingSystem implements VotingSystem {
 	constructor(

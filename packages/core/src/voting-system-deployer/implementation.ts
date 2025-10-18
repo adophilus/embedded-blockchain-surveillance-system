@@ -5,11 +5,11 @@ import type {
 	DeployContractError,
 	DeploySystemError,
 } from "./interface";
-import VotingSystemMetadata from "@blockchain-voting-system/contracts/VotingSystem.sol/VotingSystem.json";
-import VoterRegistryMetadata from "@blockchain-voting-system/contracts/VoterRegistry.sol/VoterRegistry.json";
-import CandidateRegistryMetadata from "@blockchain-voting-system/contracts/CandidateRegistry.sol/CandidateRegistry.json";
-import ElectionRegistryMetadata from "@blockchain-voting-system/contracts/ElectionRegistry.sol/ElectionRegistry.json";
-import PartyRegistryMetadata from "@blockchain-voting-system/contracts/PartyRegistry.sol/PartyRegistry.json";
+import VotingSystemMetadata from "@embedded-blockchain-surveillance-system/contracts/VotingSystem.sol/VotingSystem.json";
+import VoterRegistryMetadata from "@embedded-blockchain-surveillance-system/contracts/VoterRegistry.sol/VoterRegistry.json";
+import CandidateRegistryMetadata from "@embedded-blockchain-surveillance-system/contracts/CandidateRegistry.sol/CandidateRegistry.json";
+import ElectionRegistryMetadata from "@embedded-blockchain-surveillance-system/contracts/ElectionRegistry.sol/ElectionRegistry.json";
+import PartyRegistryMetadata from "@embedded-blockchain-surveillance-system/contracts/PartyRegistry.sol/PartyRegistry.json";
 import type { Wallet } from "../wallet";
 
 const VotingSystemABI = VotingSystemMetadata.abi as Abi;

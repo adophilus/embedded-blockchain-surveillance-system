@@ -8,7 +8,7 @@ import {
 	votingSystemAbi,
 	electionRegistryAbi,
 	electionAbi,
-} from "@blockchain-voting-system/contracts/types";
+} from "@embedded-blockchain-surveillance-system/contracts/types";
 
 describe("BlockchainVotingSystem Integration Tests", () => {
 	let deployer: BlockchainVotingSystemDeployer;

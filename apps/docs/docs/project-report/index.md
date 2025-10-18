@@ -4,7 +4,7 @@ layout: doc
 
 # Project Report Materials
 
-This section contains materials specifically prepared for project reporting requirements, including detailed documentation of the materials used and methods employed in the implementation of the Blockchain Voting System.
+This section contains materials specifically prepared for project reporting requirements, including detailed documentation of the materials used and methods employed in the implementation of the Embedded Blockchain Surveillance System.
 
 ## Table of Contents
 

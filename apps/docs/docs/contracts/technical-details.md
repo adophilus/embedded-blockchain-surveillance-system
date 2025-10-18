@@ -1,124 +1,121 @@
 # Smart Contracts Technical Details
 
-This section provides detailed information about the smart contracts developed for the Blockchain Voting System. The contracts are written in Solidity and deployed on a compatible blockchain network.
+This section provides detailed information about the smart contracts developed for the Embedded Blockchain Surveillance System. The contracts are written in Solidity and deployed on a compatible blockchain network.
 
 ## Contract Architecture: Modular Design
 
-The smart contract suite employs a modular design approach, where core entities of the voting system are encapsulated within their own dedicated Solidity contracts. This "hybrid" structure enhances clarity, maintainability, and reusability by separating concerns.
+The smart contract suite employs a modular design approach, where core entities of the surveillance system are encapsulated within their own dedicated Solidity contracts. This "hybrid" structure enhances clarity, maintainability, and reusability by separating concerns.
 
 Specifically, the following core entities each have their own contract, located in `apps/contracts/src/core/`:
 
-*   **`Candidate.sol`**: Manages candidate-specific data and logic.
-*   **`Election.sol`**: Handles election parameters, state, and voting mechanisms.
-*   **`Party.sol`**: Defines political parties and their associated information.
-*   **`Voter.sol`**: Manages voter registration, verification, and eligibility.
+*   **`SurveillanceEvent.sol`**: Manages surveillance event-specific data and logic.
+*   **`SurveillanceSession.sol`**: Handles surveillance session parameters, state, and event recording.
+*   **`IoTDevice.sol`**: Defines surveillance IoT devices and their associated information.
+*   **`CriminalProfile.sol`**: Manages criminal profiles and their eligibility for detection.
 
-This separation allows for independent development, testing, and potential upgrades of each component, while the main `VotingSystem.sol` contract orchestrates interactions between these core modules.
+This separation allows for independent development, testing, and potential upgrades of each component, while the main `SurveillanceSystem.sol` contract orchestrates interactions between these core modules.
 
-### `Voter.sol`
+### `SurveillanceEvent.sol`
 
-This file defines the `Voter` struct, which is a fundamental data structure used to manage voter status within the election system. It is not a contract itself, but rather a blueprint for voter objects.
-
-**Key Fields:**
-
-*   `registered` (bool): Indicates whether a voter has been officially registered for an election.
-*   `voted` (bool): Tracks whether a registered voter has already cast their vote in a particular election.
-
-### `Candidate.sol`
-
-This file defines the `Candidate` struct, representing a candidate participating in an election. Similar to `Voter.sol`, this is a data structure definition, not a deployable contract.
+This file defines the `SurveillanceEvent` struct, which is a fundamental data structure used to manage surveillance event records within the surveillance system. It is not a contract itself, but rather a blueprint for event objects.
 
 **Key Fields:**
 
-*   `id` (uint): A unique identifier for the candidate within their party.
-*   `name` (string): The full name of the candidate.
-*   `position` (string): The position the candidate is running for (e.g., "President", "Secretary").
-*   `cid` (string): An IPFS Content Identifier (CID) pointing to additional candidate information, such as an image or detailed profile.
+*   `timestamp` (uint): Unix timestamp when the surveillance event was recorded.
+*   `detected` (bool): Tracks whether a criminal was detected during this surveillance event.
 
-### `Party.sol`
+### `CriminalProfile.sol`
 
-The `Party` contract manages political parties, their details, and the candidates associated with them. Each `Party` contract is deployed independently and is responsible for its own set of candidates.
+This file defines the `CriminalProfile` struct, representing a criminal profile in the database. Similar to `SurveillanceEvent.sol`, this is a data structure definition, not a deployable contract.
+
+**Key Fields:**
+
+*   `id` (uint): A unique identifier for the criminal profile.
+*   `name` (string): The full name of the criminal.
+*   `aliases` (string): Known aliases of the suspect.
+*   `cid` (string): An IPFS Content Identifier (CID) pointing to mugshot and additional criminal information.
+
+### `IoTDevice.sol`
+
+The `IoTDevice` contract manages surveillance IoT devices, their details, and the events associated with them. Each `IoTDevice` contract is deployed independently and is responsible for its own set of surveillance events.
 
 **State Variables:**
 
-*   `name` (string): The name of the political party.
-*   `slogan` (string): The party's slogan.
-*   `cid` (string): An IPFS Content Identifier (CID) for the party's logo or other related media.
-*   `admin` (address): The address of the administrator who deployed this party contract and has privileges to register candidates.
-*   `candidateCount` (uint): A counter for the total number of candidates registered under this party.
-*   `candidates` (mapping(uint => Candidate)): A mapping from a candidate ID to their `Candidate` struct.
-*   `candidateExists` (mapping(string => bool)): A private mapping to prevent duplicate candidate names.
+*   `deviceId` (string): The unique identifier for the IoT device.
+*   `location` (string): The location where the device is installed.
+*   `cid` (string): An IPFS Content Identifier (CID) for the device's configuration or metadata.
+*   `admin` (address): The address of the administrator who deployed this device contract and has privileges to register surveillance events.
+*   `eventCount` (uint): A counter for the total number of events recorded by this device.
+*   `events` (mapping(uint => SurveillanceEvent)): A mapping from an event ID to its `SurveillanceEvent` struct.
+*   `active` (bool): A flag indicating whether the device is currently active for surveillance.
 
 **Events:**
 
-*   `CandidateRegistered(uint indexed candidateId, string name)`: Emitted when a new candidate is successfully registered.
+*   `EventRecorded(uint indexed eventId, uint timestamp, bool detected)`: Emitted when a new surveillance event is successfully recorded.
 
 **Functions:**
 
-*   `constructor(string memory _name, string memory _slogan, string memory _cid)`: Initializes the party with a name, slogan, CID, and sets the deployer as the admin.
-*   `registerCandidate(string memory _name, string memory _position, string memory _cid) external onlyAdmin returns (uint)`: Allows the admin to register a new candidate for the party. Requires a unique candidate name.
-*   `getCandidate(uint _candidateId) external view returns (uint id, string memory name, string memory position, string memory cid)`: Retrieves the details of a specific candidate by their ID.
-*   `getAllCandidates() external view returns (uint[] memory ids, string[] memory names, string memory positions, string memory cids)`: Returns arrays containing the details of all registered candidates for the party.
+*   `constructor(string memory _deviceId, string memory _location, string memory _cid)`: Initializes the device with a unique ID, location, CID, and sets the deployer as the admin.
+*   `recordEvent(uint _timestamp, bool _detected) external onlyAdmin returns (uint)`: Allows the admin to record a new surveillance event for the device. Returns the event ID.
+*   `getEvent(uint _eventId) external view returns (uint timestamp, bool detected)`: Retrieves the details of a specific event by its ID.
+*   `getAllEvents() external view returns (uint[] memory timestamps, bool[] memory detections)`: Returns arrays containing the details of all recorded events for the device.
 
-### `Election.sol`
+### `SurveillanceSession.sol`
 
-The `Election` contract manages the lifecycle of a single election, including its start and end times, participating parties, voter registration, and vote casting. It relies on the `Voter` struct and interacts with `Party` contracts.
+The `SurveillanceSession` contract manages the lifecycle of a single surveillance session, including its start and end times, associated IoT devices, video stream storage, and criminal detection results. It relies on the `SurveillanceEvent` struct and interacts with `IoTDevice` contracts.
 
 **State Variables:**
 
-*   `admin` (address): The address of the election administrator, typically the deployer of this contract.
-*   `startTime` (uint): The Unix timestamp when the election officially begins.
-*   `endTime` (uint): The Unix timestamp when the election officially ends.
-*   `electionStarted` (bool): A flag indicating whether the election has started.
-*   `electionEnded` (bool): A flag indicating whether the election has ended.
-*   `cid` (string): An IPFS Content Identifier (CID) for election-related media or information.
-*   `participatingParties` (mapping(address => bool)): A mapping to track which `Party` contracts are participating in this election.
-*   `partyCandidateVoteCounts` (mapping(address => mapping(uint => uint))): Stores the vote counts for each candidate within each participating party. `partyAddress => candidateId => voteCount`.
-*   `voters` (mapping(address => Voter)): Manages the registration and voting status of individual voters using the `Voter` struct.
+*   `admin` (address): The address of the surveillance session administrator, typically the deployer of this contract.
+*   `startTime` (uint): The Unix timestamp when the surveillance session officially begins.
+*   `endTime` (uint): The Unix timestamp when the surveillance session officially ends.
+*   `sessionStarted` (bool): A flag indicating whether the surveillance session has started.
+*   `sessionEnded` (bool): A flag indicating whether the surveillance session has ended.
+*   `cid` (string): An IPFS Content Identifier (CID) for the stored video stream or surveillance-related media.
+*   `associatedDevices` (mapping(address => bool)): A mapping to track which `IoTDevice` contracts are participating in this surveillance session.
+*   `deviceEventCounts` (mapping(address => uint)): Stores the event counts for each associated IoT device. `deviceAddress => eventCount`.
+*   `events` (mapping(uint => SurveillanceEvent)): Manages the surveillance events using the `SurveillanceEvent` struct.
 
 **Events:**
 
-*   `ElectionStarted(uint startTime, uint endTime)`: Emitted when the election officially begins.
-*   `PartyAdded(address indexed party)`: Emitted when a party is successfully added to the election.
-*   `VoterRegistered(address indexed voter)`: Emitted when a voter is successfully registered.
-*   `VoteCast(address indexed voter, address indexed party, uint candidateId)`: Emitted when a voter successfully casts a vote.
-*   `ElectionEnded()`: Emitted when the election officially ends.
+*   `SessionStarted(uint startTime, uint endTime)`: Emitted when the surveillance session officially begins.
+*   `DeviceAdded(address indexed device)`: Emitted when an IoT device is successfully added to the session.
+*   `EventRecorded(uint indexed eventId, address indexed device, uint timestamp)`: Emitted when a surveillance event is successfully recorded.
+*   `SessionEnded()`: Emitted when the surveillance session officially ends.
 
 **Modifiers:**
 
 *   `onlyAdmin()`: Restricts function access to the `admin` address.
-*   `onlyDuringElection()`: Ensures a function can only be called during the active election period.
-*   `onlyRegisteredVoter()`: Ensures a function can only be called by a registered voter.
-*   `hasNotVoted()`: Ensures a function can only be called by a registered voter who has not yet voted.
-*   `onlyAfterElection()`: Ensures a function can only be called after the election has ended.
+*   `onlyDuringSession()`: Ensures a function can only be called during the active surveillance session period.
+*   `onlyAssociatedDevice()`: Ensures a function can only be called by an associated IoT device.
+*   `onlyAfterSession()`: Ensures a function can only be called after the surveillance session has ended.
 
 **Functions:**
 
-*   `constructor(address _admin, string memory _cid)`: Initializes the election with an administrator and an IPFS CID.
-*   `startElection(uint _startTime, uint _endTime) external onlyAdmin`: Sets the start and end times for the election and marks it as started.
-*   `endElection() external onlyAdmin onlyAfterElection`: Marks the election as ended.
-*   `addParty(address _party) external onlyAdmin`: Adds a `Party` contract to the list of participating parties.
-*   `registerVoter(address _voter) external onlyAdmin`: Registers a voter for the election.
-*   `vote(address _party, uint _candidateId) external onlyRegisteredVoter hasNotVoted onlyDuringElection`: Allows a registered and unvoted voter to cast a vote for a specific candidate in a party.
-*   `getVoteCount(address _party, uint _candidateId) external view returns (uint)`: Returns the current vote count for a given candidate in a party.
-*   `getElectionResults() external view onlyAfterElection returns (address[] memory parties, uint[][] memory candidateIds, uint[][] memory voteCounts)`: (Currently a simplified implementation) Returns the results of the election after it has ended.
+*   `constructor(address _admin, string memory _cid)`: Initializes the session with an administrator and an IPFS CID.
+*   `startSession(uint _startTime, uint _endTime) external onlyAdmin`: Sets the start and end times for the session and marks it as started.
+*   `endSession() external onlyAdmin onlyAfterSession`: Marks the surveillance session as ended.
+*   `addDevice(address _device) external onlyAdmin`: Adds an `IoTDevice` contract to the list of associated devices.
+*   `recordEvent(uint _timestamp, bool _detected) external onlyAssociatedDevice onlyDuringSession returns (uint)`: Allows an associated IoT device to record a surveillance event.
+*   `getEventCount(uint _eventId) external view returns (uint)`: Returns the details of a given surveillance event.
+*   `getSessionResults() external view onlyAfterSession returns (address[] memory devices, uint[] memory eventCounts, bool[] memory detectionStatus)`: Returns the results of the surveillance session after it has ended.
 
-### `VotingSystem.sol`
+### `SurveillanceSystem.sol`
 
-The `VotingSystem` contract serves as the central hub for creating and managing elections and political parties within the blockchain voting system. It acts as a factory for `Election` and `Party` contracts.
+The `SurveillanceSystem` contract serves as the central hub for creating and managing surveillance sessions and criminal profiles within the blockchain surveillance system. It acts as a factory for `SurveillanceSession` and `IoTDevice` contracts.
 
 **State Variables:**
 
-*   `admin` (address): The address of the administrator who deployed this contract and has the authority to create new elections and parties.
-*   `electionCount` (uint): A counter for the total number of elections created through this system.
-*   `partyCount` (uint): A counter for the total number of parties created through this system.
-*   `elections` (mapping(uint => Election)): A mapping from an election ID to its corresponding `Election` contract address.
-*   `parties` (mapping(uint => Party)): A mapping from a party ID to its corresponding `Party` contract address.
+*   `admin` (address): The address of the administrator who deployed this contract and has the authority to create new surveillance sessions and criminal profiles.
+*   `sessionCount` (uint): A counter for the total number of surveillance sessions created through this system.
+*   `deviceCount` (uint): A counter for the total number of IoT devices registered through this system.
+*   `sessions` (mapping(uint => SurveillanceSession)): A mapping from a session ID to its corresponding `SurveillanceSession` contract address.
+*   `devices` (mapping(uint => IoTDevice)): A mapping from a device ID to its corresponding `IoTDevice` contract address.
 
 **Events:**
 
-*   `ElectionCreated(uint indexed electionId, address electionAddress)`: Emitted when a new election contract is successfully created.
-*   `PartyCreated(uint indexed partyId, address partyAddress)`: Emitted when a new party contract is successfully created.
+*   `SessionCreated(uint indexed sessionId, address sessionAddress)`: Emitted when a new surveillance session contract is successfully created.
+*   `DeviceRegistered(uint indexed deviceId, address deviceAddress)`: Emitted when a new IoT device contract is successfully registered.
 
 **Modifiers:**
 
@@ -127,51 +124,7 @@ The `VotingSystem` contract serves as the central hub for creating and managing 
 **Functions:**
 
 *   `constructor()`: Sets the deployer of this contract as the `admin`.
-*   `createElection(string memory _cid) external onlyAdmin returns (uint)`: Creates a new `Election` contract, assigns it a unique ID, and returns the ID. The `_cid` parameter is an IPFS CID for election-related media.
-*   `createParty(string memory _name, string memory _slogan, string memory _cid) external onlyAdmin returns (uint)`: Creates a new `Party` contract, assigns it a unique ID, and returns the ID. The `_name`, `_slogan`, and `_cid` parameters are for the party's details.
-*   `getElection(uint _electionId) external view returns (address)`: Retrieves the address of an `Election` contract given its ID.
-*   `getParty(uint _partyId) external view returns (address)`: Retrieves the address of a `Party` contract given its ID.
-
-
-### `Election.sol`
-
-The `Election` contract manages the lifecycle of a single election, including its start and end times, participating parties, voter registration, and vote casting. It relies on the `Voter` struct and interacts with `Party` contracts.
-
-**State Variables:**
-
-*   `admin` (address): The address of the election administrator, typically the deployer of this contract.
-*   `startTime` (uint): The Unix timestamp when the election officially begins.
-*   `endTime` (uint): The Unix timestamp when the election officially ends.
-*   `electionStarted` (bool): A flag indicating whether the election has started.
-*   `electionEnded` (bool): A flag indicating whether the election has ended.
-*   `cid` (string): An IPFS Content Identifier (CID) for election-related media or information.
-*   `participatingParties` (mapping(address => bool)): A mapping to track which `Party` contracts are participating in this election.
-*   `partyCandidateVoteCounts` (mapping(address => mapping(uint => uint))): Stores the vote counts for each candidate within each participating party. `partyAddress => candidateId => voteCount`.
-*   `voters` (mapping(address => Voter)): Manages the registration and voting status of individual voters using the `Voter` struct.
-
-**Events:**
-
-*   `ElectionStarted(uint startTime, uint endTime)`: Emitted when the election officially begins.
-*   `PartyAdded(address indexed party)`: Emitted when a party is successfully added to the election.
-*   `VoterRegistered(address indexed voter)`: Emitted when a voter is successfully registered.
-*   `VoteCast(address indexed voter, address indexed party, uint candidateId)`: Emitted when a voter successfully casts a vote.
-*   `ElectionEnded()`: Emitted when the election officially ends.
-
-**Modifiers:**
-
-*   `onlyAdmin()`: Restricts function access to the `admin` address.
-*   `onlyDuringElection()`: Ensures a function can only be called during the active election period.
-*   `onlyRegisteredVoter()`: Ensures a function can only be called by a registered voter.
-*   `hasNotVoted()`: Ensures a function can only be called by a registered voter who has not yet voted.
-*   `onlyAfterElection()`: Ensures a function can only be called after the election has ended.
-
-**Functions:**
-
-*   `constructor(address _admin, string memory _cid)`: Initializes the election with an administrator and an IPFS CID.
-*   `startElection(uint _startTime, uint _endTime) external onlyAdmin`: Sets the start and end times for the election and marks it as started.
-*   `endElection() external onlyAdmin onlyAfterElection`: Marks the election as ended.
-*   `addParty(address _party) external onlyAdmin`: Adds a `Party` contract to the list of participating parties.
-*   `registerVoter(address _voter) external onlyAdmin`: Registers a voter for the election.
-*   `vote(address _party, uint _candidateId) external onlyRegisteredVoter hasNotVoted onlyDuringElection`: Allows a registered and unvoted voter to cast a vote for a specific candidate in a party.
-*   `getVoteCount(address _party, uint _candidateId) external view returns (uint)`: Returns the current vote count for a given candidate in a party.
-*   `getElectionResults() external view onlyAfterElection returns (address[] memory parties, uint[][] memory candidateIds, uint[][] memory voteCounts)`: (Currently a simplified implementation) Returns the results of the election after it has ended.
+*   `createSession(string memory _cid) external onlyAdmin returns (uint)`: Creates a new `SurveillanceSession` contract, assigns it a unique ID, and returns the ID. The `_cid` parameter is an IPFS CID for surveillance-related media.
+*   `registerDevice(string memory _deviceId, string memory _location, string memory _cid) external onlyAdmin returns (uint)`: Creates a new `IoTDevice` contract, assigns it a unique ID, and returns the ID. The `_deviceId`, `_location`, and `_cid` parameters are for the device's details.
+*   `getSession(uint _sessionId) external view returns (address)`: Retrieves the address of a `SurveillanceSession` contract given its ID.
+*   `getDevice(uint _deviceId) external view returns (address)`: Retrieves the address of an `IoTDevice` contract given its ID.

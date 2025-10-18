@@ -1,14 +1,14 @@
 # Technical Overview
 
-This document provides a comprehensive overview of the technical implementation of the Blockchain Voting System, specifically addressing the materials used, methods employed, and rationale behind key design decisions for project reporting requirements.
+This document provides a comprehensive overview of the technical implementation of the Embedded Blockchain Surveillance System, specifically addressing the materials used, methods employed, and rationale behind key design decisions for project reporting requirements.
 
 ## Project Report Materials and Methods
 
-For the purposes of project documentation and reporting, this section explicitly outlines the materials and methods used in the implementation of the Blockchain Voting System.
+For the purposes of project documentation and reporting, this section explicitly outlines the materials and methods used in the implementation of the Embedded Blockchain Surveillance System.
 
 ## System Overview
 
-The Blockchain Voting System is a decentralized application built on Ethereum-compatible blockchain networks. It provides a secure, transparent, and immutable platform for conducting elections while leveraging blockchain technology for integrity and trust.
+The Embedded Blockchain Surveillance System is a decentralized application built on Ethereum-compatible blockchain networks. It provides a secure, transparent, and immutable platform for surveillance operations while leveraging blockchain technology for data integrity and trust. The system integrates IoT devices (ESP32-CAM) with motion sensors to detect motion, record video streams, and store evidence on IPFS with blockchain-verified timestamps.
 
 ## Materials and Technologies Used
 
@@ -23,30 +23,40 @@ The Blockchain Voting System is a decentralized application built on Ethereum-co
   - Gas optimization analysis
 
 ### Frontend Development
-- **Next.js** - React-based framework for building the web application interface
+- **React** - Component-based JavaScript library for building the web application interface
 - **Viem** - TypeScript interface for interacting with Ethereum-compatible blockchains
-- **Wagmi** - React hooks for Ethereum applications
-- **Tailwind CSS** - Utility-first CSS framework for responsive UI design
+- **Helia** - IPFS client for managing video stream access
+- **TypeScript** - Type-safe development for enhanced code quality
+
+### Backend Development
+- **Hono** - Web framework for building cloud server applications
+- **Helia** - IPFS client for storing video streams
+- **faceapi.js** - AI-powered face detection library for criminal identification
+
+### IoT Integration
+- **ESP32-CAM** - Microcontroller with camera for surveillance hardware
+- **Motion sensors** - PIR sensors for detecting movement
+- **Regular interval image capture** - Video streams implemented as images taken at intervals (e.g., once every 10 seconds)
 
 ### Documentation
 - **VitePress** - Static site generator for documentation
 - **D2 Diagrams** - Visualization tool for system architecture diagrams
 
 ### Infrastructure
-- **IPFS** - Decentralized storage for election-related media and candidate information
+- **IPFS** - Decentralized storage for surveillance video streams and related data
 - **Hardhat/Foundry** - Local blockchain development networks for testing
 
 ## Implementation Methods
 
 ### Modular Contract Architecture
 
-The system employs a **registry pattern** to manage different entity types, addressing contract size limitations and improving maintainability:
+The system employs a **registry pattern** to manage different surveillance entities, addressing contract size limitations and improving maintainability:
 
 #### Core Registries
-1. **VoterRegistry** - Manages voter registration and verification
-2. **CandidateRegistry** - Handles candidate information and profiles
-3. **ElectionRegistry** - Orchestrates election creation and lifecycle management
-4. **PartyRegistry** - Manages political parties and their associated candidates
+1. **SurveillanceEventRegistry** - Manages surveillance event recording and detection status
+2. **CriminalProfileRegistry** - Handles criminal profile information and mugshots
+3. **SurveillanceSessionRegistry** - Orchestrates surveillance session creation and lifecycle management
+4. **IoTDeviceRegistry** - Manages IoT devices and their associated surveillance events
 
 Each registry follows the same architectural pattern:
 - Inherits from OpenZeppelin's `AccessControl` for secure role management
@@ -55,7 +65,7 @@ Each registry follows the same architectural pattern:
 - Emits events for transparency and off-chain indexing
 
 #### Central Coordination Contract
-The **VotingSystem** contract serves as the primary interface:
+The **SurveillanceSystem** contract serves as the primary interface:
 - Coordinates interactions between all registries
 - Implements system-wide administrative functions
 - Delegates entity-specific operations to appropriate registries
@@ -65,6 +75,7 @@ The **VotingSystem** contract serves as the primary interface:
 
 Role-based access control is implemented using OpenZeppelin's `AccessControl`:
 - **ADMIN_ROLE** - Granted to system administrators for privileged operations
+- **OFFICIAL_ROLE** - Granted to authorized officials for viewing surveillance data
 - Hierarchical permission model ensures appropriate access levels
 - Default admin roles automatically assigned to contract deployers
 - Secure role delegation between interconnected contracts
@@ -72,14 +83,14 @@ Role-based access control is implemented using OpenZeppelin's `AccessControl`:
 ### Data Storage and Retrieval
 
 #### On-Chain Storage
-- Structured mappings for efficient entity lookup
+- Structured mappings for efficient event lookup
 - Event emission for all state-changing operations
 - Gas-optimized data structures for cost-effective operations
 
 #### Off-Chain Storage (IPFS)
-- Candidate and party media stored on IPFS using Content Identifiers (CIDs)
-- Election-related documents and information decentralized
-- Immutable storage ensuring data integrity
+- Video streams and surveillance media stored on IPFS using Content Identifiers (CIDs)
+- Timestamp and detection status stored on-chain to ensure immutability
+- Immutable storage ensuring evidence integrity
 
 ### Testing and Quality Assurance
 
@@ -98,7 +109,7 @@ The registry pattern was chosen to address several key challenges:
 
 1. **Contract Size Limitations**: Ethereum has a 24KB contract size limit. By distributing functionality across multiple specialized contracts, we avoid hitting this ceiling while maintaining rich feature sets.
 
-2. **Scalability**: Independent registries allow for horizontal scaling and future expansion without requiring system-wide modifications.
+2. **Scalability**: Independent registries allow for horizontal scaling as more IoT devices and surveillance sessions are added.
 
 3. **Maintainability**: Modular design enables isolated updates and debugging without affecting unrelated system components.
 
@@ -117,43 +128,53 @@ OpenZeppelin's AccessControl was selected over custom implementations because:
 
 Decentralized storage was integrated to:
 
-1. **Reduce On-Chain Storage Costs**: Large media files are expensive to store directly on-chain
-2. **Enable Rich Content**: Support detailed candidate profiles, party logos, and election information
+1. **Reduce On-Chain Storage Costs**: Video streams are expensive to store directly on-chain
+2. **Enable Rich Surveillance Content**: Support detailed video evidence and criminal mugshots
 3. **Maintain Immutability**: Ensure stored content cannot be tampered with
-4. **Provide Global Accessibility**: Decentralized storage ensures content availability
+4. **Provide Global Accessibility**: Decentralized storage ensures evidence availability
+
+### AI Processing Implementation
+
+Face detection using faceapi.js was chosen as the "AI processing" component to:
+1. **Enable Automated Criminal Detection**: Automatically identify suspects in surveillance footage
+2. **Reduce Manual Monitoring**: Alert officials only when criminals are detected
+3. **Improve Response Times**: Immediate notifications when suspicious activity is identified
+4. **Maintain Privacy Standards**: Processing occurs on the backend server, not on devices
 
 ## Deployment Architecture
 
-The system follows a multi-contract deployment pattern:
+The system follows a multi-component deployment pattern:
 
-1. **Independent Registry Deployment**: Each registry deployed separately with appropriate admin roles
-2. **Central Contract Initialization**: VotingSystem configured with registry addresses post-deployment
-3. **Cross-Contract Permission Setup**: Administrative roles granted between contracts as needed
-4. **Post-Deployment Configuration**: System parameters adjusted through admin functions
+1. **IoT Device Setup**: ESP32-CAM devices configured with motion sensors and image capture capabilities
+2. **Cloud Server Deployment**: Backend server running Hono framework with IPFS integration and AI processing
+3. **Smart Contract Deployment**: Individual registries deployed with appropriate admin roles
+4. **Frontend Deployment**: React application for officials to monitor surveillance sessions
+5. **Cross-Component Configuration**: Proper API endpoints and contract addresses configured
 
 This deployment strategy ensures:
-- Proper initialization sequence avoiding circular dependencies
-- Secure role distribution across the system
-- Flexible configuration options for different deployment environments
+- Proper initialization sequence across all system components
+- Secure role distribution and API key management
+- Flexible configuration options for different surveillance environments
 
 ## Future Considerations
 
-### Enhanced Identity Management
+### Enhanced AI Capabilities
 
-Planned improvements include token-based identity systems using:
-- **ERC-721 NFTs** for candidate identities, providing unique, transferable credentials
-- **ERC-1155 Multi-Token Standard** for voter credentials, supporting diverse voter categories
+Planned improvements include more advanced AI processing using:
+- **Machine learning models** for improved face recognition accuracy
+- **Real-time processing capabilities** for immediate detection and response
+- **Behavioral analysis** to identify suspicious activities beyond face matching
 
-### Governance Mechanisms
+### Enhanced IoT Integration
 
-Consideration for decentralized governance patterns to:
-- Enable community-driven system upgrades
-- Distribute administrative responsibilities
-- Implement transparent decision-making processes
+Consideration for more sophisticated IoT devices to:
+- Enable 24/7 monitoring with advanced sensors
+- Implement edge computing for on-device processing
+- Support multiple camera angles and perspectives
 
 ## Conclusion
 
-The Blockchain Voting System represents a thoughtful application of modern blockchain development practices. By leveraging established patterns, industry-standard libraries, and careful architectural planning, the system provides a robust foundation for secure, transparent elections while remaining extensible for future enhancements.
+The Embedded Blockchain Surveillance System represents a thoughtful application of modern blockchain and IoT development practices. By leveraging established patterns, industry-standard libraries, and careful architectural planning, the system provides a robust foundation for secure, transparent surveillance operations while remaining extensible for future enhancements.
 
 ### Summary for Project Reporting
 
@@ -161,8 +182,11 @@ The Blockchain Voting System represents a thoughtful application of modern block
 - Solidity v0.8.24+ for smart contract development
 - OpenZeppelin Contracts v5.x for secure contract patterns
 - Foundry development toolkit for compilation and testing
-- Next.js for the web application frontend
-- IPFS for decentralized storage
+- React and TypeScript for the web application frontend
+- Hono framework for the backend server
+- Helia for IPFS integration
+- faceapi.js for AI-powered face detection
+- ESP32-CAM for IoT surveillance devices
 - VitePress for documentation generation
 
 **Methods Employed:**
@@ -171,3 +195,4 @@ The Blockchain Voting System represents a thoughtful application of modern block
 - Event-driven architecture for transparency and off-chain indexing
 - Gas optimization techniques for cost-effective operations
 - Comprehensive testing strategy including unit and integration tests
+- IoT-device to blockchain workflow for surveillance automation

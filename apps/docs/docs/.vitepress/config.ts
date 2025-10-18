@@ -5,8 +5,8 @@ import { Layout, Theme, FileType } from "vitepress-plugin-d2/dist/config";
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-	title: "Blockchain Voting System",
-	description: "Documentation for the Blockchain Voting System",
+	title: "Embedded Blockchain Surveillance System",
+	description: "Documentation for the Embedded Blockchain Surveillance System",
 	themeConfig: {
 		// https://vitepress.dev/reference/default-theme-config
 		nav: [

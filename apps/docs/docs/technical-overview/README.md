@@ -1,6 +1,6 @@
 # Technical Overview
 
-This directory contains detailed technical documentation for the Blockchain Voting System.
+This directory contains detailed technical documentation for the Embedded Blockchain Surveillance System.
 
 ## Contents
 

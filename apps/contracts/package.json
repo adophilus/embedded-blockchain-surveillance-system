@@ -1,0 +1,30 @@
+{
+	"$schema": "https://json.schemastore.org/package.json",
+	"name": "@blockchain-voting-system/contracts",
+	"version": "1.0.0",
+	"description": "Smart contracts for the blockchain voting system",
+	"exports": {
+		"./types": "./build/types.ts",
+		"./*": "./out/*"
+	},
+	"scripts": {
+		"build": "forge build && wagmi generate",
+		"deploy": "./script/deploy.sh",
+		"test": "forge test",
+		"dev": "anvil"
+	},
+	"keywords": [
+		"blockchain",
+		"voting",
+		"ethereum",
+		"solidity"
+	],
+	"author": "Blockchain Voting System Team",
+	"license": "MIT",
+	"dependencies": {
+		"@blockchain-voting-system/contracts": "workspace:^",
+		"@wagmi/cli": "^2.6.0",
+		"@wagmi/core": "^2.21.2",
+		"viem": "^2.36.0"
+	}
+}

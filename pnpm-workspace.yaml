@@ -1,6 +1,4 @@
 packages:
-  - ./apps/contracts
-  - ./apps/docs
-  - ./apps/ipfs
-  - ./packages/core
+  - ./apps/*
+  - ./packages/*
 nodeLinker: hoisted

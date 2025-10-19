@@ -15,6 +15,8 @@
 		"./*": "./src/*.ts"
 	},
 	"dependencies": {
+		"@embedded-blockchain-surveillance-system/api": "workspace:^",
+		"@embedded-blockchain-surveillance-system/server": "workspace:^",
 		"@hono/otel": "^0.4.0",
 		"@n8n/di": "^0.2.0",
 		"@opentelemetry/api": "^1.9.0",
@@ -25,8 +27,6 @@
 		"@opentelemetry/sdk-logs": "^0.203.0",
 		"@opentelemetry/sdk-node": "^0.203.0",
 		"@types/bcryptjs": "^3.0.0",
-		"@embedded-blockchain-surveillance-system/api": "workspace:^",
-		"@embedded-blockchain-surveillance-system/server": "workspace:^",
 		"bcryptjs": "^3.0.2",
 		"better-sqlite3": "^12.2.0",
 		"date-fns": "^4.1.0",
@@ -61,6 +61,7 @@
 		"kysely-ctl": "^0.13.1",
 		"kysely-migration-cli": "^0.4.2",
 		"tsx": "^4.20.2",
-		"typescript": "^5.8.3"
+		"typescript": "^5.8.3",
+		"vite-tsconfig-paths": "^5.1.4"
 	}
 }

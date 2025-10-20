@@ -52,7 +52,17 @@ export default defineConfig({
 			},
 			{
 				text: "Project Report Materials",
-				items: [{ text: "Materials and Methods", link: "/project-report/materials-and-methods" }],
+				items: [
+					{ 
+						text: "Materials",
+						items: [
+							{ text: "Overview", link: "/project-report/materials-overview" },
+							{ text: "Software", link: "/project-report/materials-software" },
+							{ text: "Hardware", link: "/project-report/materials-hardware" },
+						]
+					},
+					{ text: "Methods", link: "/project-report/methods" },
+				],
 			},
 			{
 				text: "Further Improvements",

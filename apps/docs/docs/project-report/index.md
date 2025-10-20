@@ -8,4 +8,8 @@ This section contains materials specifically prepared for project reporting requ
 
 ## Table of Contents
 
-- [Materials and Methods](/project-report/materials-and-methods) - Detailed account of materials and methods used in implementation
+- [Materials](/project-report/materials) - Organized materials documentation
+  - [Overview](/project-report/materials-overview) - High-level system components overview
+  - [Software](/project-report/materials-software) - Software components and tools
+  - [Hardware](/project-report/materials-hardware) - Hardware components and specifications
+- [Methods](/project-report/methods) - Detailed account of methods employed in implementation

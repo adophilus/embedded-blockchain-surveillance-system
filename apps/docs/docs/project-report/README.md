@@ -4,4 +4,8 @@ This directory contains materials specifically prepared for project reporting re
 
 ## Contents
 
-- [Materials and Methods](./materials-and-methods.md) - Detailed account of materials and methods used in implementation
+- [Materials](./materials.md) - Organized materials documentation
+  - [Overview](./materials-overview.md) - High-level system components overview
+  - [Software](./materials-software.md) - Software components and tools
+  - [Hardware](./materials-hardware.md) - Hardware components and specifications
+- [Methods](./methods.md) - Detailed account of methods employed in implementation

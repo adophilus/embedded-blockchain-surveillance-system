@@ -16,6 +16,10 @@ export default defineConfig({
 			{ text: "API Reference", link: "/api" },
 		],
 
+		socialLinks: [
+			{ icon: 'github', link: 'https://github.com/adophilus/embedded-blockchain-surveillance-system' }
+		],
+
 		sidebar: [
 			{
 				text: "General Guide",

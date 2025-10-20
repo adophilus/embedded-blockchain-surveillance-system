@@ -2,7 +2,7 @@ import "@typespec/http";
 
 using Http;
 
-@service(#{ title: "API Documentation" })
+@service(#{ title: "Embedded Blockchain Surveillance System API" })
 namespace ApiDocs;
 
 @doc("API")
@@ -10,17 +10,11 @@ namespace Api {
   @example("f47ac10b-58cc-4372-a567-0e02b2c3d479")
   scalar Id extends string;
 
-  @example("Mary Slessor")
+  @example("John Doe")
   scalar FullName extends string;
 
-  @example("HE6G1U")
-  scalar ReferralCode extends string;
-
-  @example("2000-01-01")
-  scalar DateOfBirth extends string;
-
-  @example("+2348123456789")
-  scalar PhoneNumber extends string;
+  @example("OFFICIAL001")
+  scalar OfficerId extends string;
 
   @example("2021-09-01T12:00:00Z")
   scalar DateTime extends string;
@@ -28,18 +22,8 @@ namespace Api {
   @example("745731af4484f323968969eda289aeee")
   scalar Token extends string;
 
-  @example("Seafood")
-  scalar FoodCategory extends string;
-
-  @example("Nigeria")
-  scalar CuisineRegion extends string;
-
   @example("12345")
   scalar Otp extends string;
-
-  @example(4800.50)
-  @minValue(0)
-  scalar Price extends numeric;
 
   model VideoFile extends File {
     contentType: "video/mp4" | "video/webm" | "video/ogg";
@@ -55,19 +39,22 @@ namespace Api {
 
   enum Role {
     ADMIN,
-    USER,
-    VOTER,
+    OFFICIAL,
+    SYSTEM,
   }
 
   model MediaDescription {
-    @example("sqlite")
-    source: "sqlite";
+    @example("ipfs")
+    source: "ipfs";
 
-    @example("h93suhw7mzyujf9tbugy")
+    @example("QmXoypizjW3WknFiJnKLwL7Qh18qJnZ7qQFp2kFmCtmDZ9")
     id: string;
+
+    @example("https://ipfs.io/ipfs/QmXoypizjW3WknFiJnKLwL7Qh18qJnZ7qQFp2kFmCtmDZ9")
+    url: string;
   }
 
-  @example("mary.slessor@mail.com")
+  @example("officer.johnson@police.gov")
   scalar Email extends string;
 
   @example("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30")
@@ -115,32 +102,32 @@ namespace Api {
     code: "ERR_${T}_ALREADY_IN_USE";
   }
 
-  @example("Student Council Election 2024")
-  scalar ElectionTitle extends string;
+  @example("City Center Security Session 2024")
+  scalar SessionTitle extends string;
 
-  @example("Annual student council election for 2024")
-  scalar ElectionDescription extends string;
+  @example("24-hour surveillance of downtown area for crime prevention")
+  scalar SessionDescription extends string;
 
   @example("2024-12-01T09:00:00Z")
-  scalar ElectionStartDate extends string;
+  scalar SessionStartDate extends string;
 
   @example("2024-12-15T17:00:00Z")
-  scalar ElectionEndDate extends string;
-
-  @example("President")
-  scalar PositionTitle extends string;
-
-  @example("Lead the student council and represent student interests")
-  scalar PositionDescription extends string;
+  scalar SessionEndDate extends string;
 
   @example("John Smith")
-  scalar CandidateName extends string;
+  scalar CriminalName extends string;
 
-  @example("Third-year Computer Science student with leadership experience")
-  scalar CandidateBio extends string;
+  @example("Armed robbery, assault")
+  scalar CriminalOffense extends string;
 
-  @example("VOTER123")
-  scalar VoterCode extends string;
+  @example("DANGER001")
+  scalar CriminalIdCode extends string;
+
+  @example("CAM-001")
+  scalar DeviceIdCode extends string;
+
+  @example("Downtown Entrance")
+  scalar DeviceLocation extends string;
 
   @tag("Authentication")
   @route("/auth")
@@ -154,6 +141,7 @@ namespace Api {
             full_name: FullName;
             email: Api.Email;
             password: Password;
+            role: Role;
           }
         }
 
@@ -166,6 +154,7 @@ namespace Api {
                   id: Id;
                   email: Api.Email;
                   full_name: FullName;
+                  role: Role;
                 };
               };
             }
@@ -212,6 +201,7 @@ namespace Api {
                   id: Id;
                   full_name: FullName;
                   email: Api.Email;
+                  role: Role;
                 };
                 tokens: {
                   access_token: Jwt;
@@ -251,67 +241,6 @@ namespace Api {
         @doc("Sign in an existing user with email and password")
         op signIn(@body body: Request.Body): Response.Response;
       }
-
-      @route("/voter-code")
-      namespace VotersCode {
-        namespace Request {
-          model Body {
-            voter_code: VoterCode;
-            election_id: Id;
-          }
-        }
-
-        namespace Response {
-          namespace Success {
-            model SignInSuccess {
-              code: "SIGN_IN_SUCCESSFUL";
-              data: {
-                voter: {
-                  id: Id;
-                  election_id: Id;
-                  status: "NOT_VOTED" | "VOTED";
-                  code: string;
-                  voted_at: string | null;
-                };
-                tokens: {
-                  access_token: Jwt;
-                  refresh_token: Jwt;
-                };
-              };
-            }
-
-            alias Success = SignInSuccess;
-          }
-
-          namespace Error {
-            @error
-            model ElectionNotActiveError {
-              @statusCode _code: 400;
-              code: "ERR_ELECTION_NOT_ACTIVE";
-            }
-
-            @error
-            model VoterAlreadyVotedError {
-              @statusCode _code: 400;
-              code: "ERR_VOTER_ALREADY_VOTED";
-            }
-
-            alias Error =
-              | NotFoundError<"VOTER">
-              | NotFoundError<"ELECTION">
-              | ElectionNotActiveError
-              | VoterAlreadyVotedError
-              | BadRequestError
-              | UnexpectedError;
-          }
-
-          alias Response = Success.Success | Error.Error;
-        }
-
-        @post
-        @doc("Sign in a voter with voter code for a specific election")
-        op signInVoter(@body body: Request.Body): Response.Response;
-      }
     }
 
     @useAuth(BearerAuth)
@@ -322,17 +251,12 @@ namespace Api {
           model UserProfile {
             code: "USER_PROFILE";
             data: {
-              role: Role.ADMIN | Role.USER;
+              role: Role.ADMIN | Role.OFFICIAL;
               id: Id;
               full_name: FullName;
               email: Api.Email;
               created_at: DateTime;
               updated_at: DateTime | null;
-            } | {
-              role: Role.VOTER;
-              id: Id;
-              code: VoterCode;
-              election_id: Id;
             };
           }
 
@@ -353,49 +277,51 @@ namespace Api {
   }
 
   @useAuth(BearerAuth)
-  @tag("Election")
-  @route("/elections")
-  namespace Election {
-    model Election {
+  @tag("Surveillance")
+  @route("/surveillance")
+  namespace Surveillance {
+    model Session {
       id: Id;
-      title: ElectionTitle;
-      description: ElectionDescription | null;
-      start_timestamp: ElectionStartDate;
-      end_timestamp: ElectionEndDate;
-      status: "UPCOMING" | "ONGOING" | "COMPLETED";
+      title: SessionTitle;
+      description: SessionDescription | null;
+      start_timestamp: SessionStartDate;
+      end_timestamp: SessionEndDate;
+      status: "UPCOMING" | "ACTIVE" | "COMPLETED";
       created_at: DateTime;
       updated_at: DateTime | null;
     }
 
-    model Votes {
+    model SurveillanceEvent {
       id: Id;
-      election_id: Id;
-      position_id: Id;
-      candidate_id: Id;
-      voter_id: Id;
+      session_id: Id;
+      device_id: DeviceIdCode;
+      timestamp: DateTime;
+      detected: boolean;
+      ipfs_cid: string | null;
+      ipfs_url: string | null;
       created_at: DateTime;
     }
 
     namespace Create {
       namespace Request {
         model Body {
-          title: ElectionTitle;
-          description?: ElectionDescription;
-          start_timestamp: ElectionStartDate;
-          end_timestamp: ElectionEndDate;
+          title: SessionTitle;
+          description?: SessionDescription;
+          start_timestamp: SessionStartDate;
+          end_timestamp: SessionEndDate;
         }
       }
 
       namespace Response {
         namespace Success {
-          model ElectionCreated {
-            code: "ELECTION_CREATED";
+          model SessionCreated {
+            code: "SESSION_CREATED";
             data: {
               id: Id;
             };
           }
 
-          alias Success = ElectionCreated;
+          alias Success = SessionCreated;
         }
 
         namespace Error {
@@ -412,8 +338,8 @@ namespace Api {
       }
 
       @post
-      @doc("Create an election")
-      op createElection(@body body: Request.Body): Response.Response;
+      @doc("Create a surveillance session")
+      op createSession(@body body: Request.Body): Response.Response;
     }
 
     namespace List {
@@ -423,12 +349,12 @@ namespace Api {
 
       namespace Response {
         namespace Success {
-          model ElectionsList {
-            code: "ELECTIONS_LIST";
-            data: Pagination.Paginated<Election>;
+          model SessionsList {
+            code: "SESSIONS_LIST";
+            data: Pagination.Paginated<Session>;
           }
 
-          alias Success = ElectionsList;
+          alias Success = SessionsList;
         }
 
         namespace Error {
@@ -438,15 +364,15 @@ namespace Api {
         alias Response = Success.Success | Error.Error;
       }
 
-      @doc("List elections")
-      op listElections(...Request.Query): Response.Response;
+      @doc("List surveillance sessions")
+      op listSessions(...Request.Query): Response.Response;
     }
 
-    @route("/{electionId}")
+    @route("/{sessionId}")
     namespace ById {
       model Path {
         @path
-        electionId: Id;
+        sessionId: Id;
       }
 
       namespace Get {
@@ -456,28 +382,29 @@ namespace Api {
 
         namespace Response {
           namespace Success {
-            model ElectionDetails {
-              code: "ELECTION_DETAILS";
+            model SessionDetails {
+              code: "SESSION_DETAILS";
               data: {
-                election: Election;
-                positions: (Position.Position & {
-                  candidates: Candidate.Candidate[];
+                session: Session;
+                devices: Device.Device[];
+                events: (SurveillanceEvent & {
+                  device: Device.Device;
                 })[];
               };
             }
 
-            alias Success = ElectionDetails;
+            alias Success = SessionDetails;
           }
 
           namespace Error {
-            alias Error = NotFoundError<"ELECTION"> | UnexpectedError;
+            alias Error = NotFoundError<"SESSION"> | UnexpectedError;
           }
 
           alias Response = Success.Success | Error.Error;
         }
 
-        @doc("Get election by id")
-        op getElectionById(...Request.Path): Response.Response;
+        @doc("Get surveillance session by id")
+        op getSessionById(...Request.Path): Response.Response;
       }
 
       namespace Update {
@@ -488,11 +415,11 @@ namespace Api {
 
         namespace Response {
           namespace Success {
-            model ElectionUpdated {
-              code: "ELECTION_UPDATED";
+            model SessionUpdated {
+              code: "SESSION_UPDATED";
             }
 
-            alias Success = ElectionUpdated;
+            alias Success = SessionUpdated;
           }
 
           namespace Error {
@@ -503,8 +430,8 @@ namespace Api {
         }
 
         @patch(#{ implicitOptionality: false })
-        @doc("Update an election")
-        op updateElectionById(
+        @doc("Update a surveillance session")
+        op updateSessionById(
           ...Request.Path,
           @body body: Request.Body,
         ): Response.Response;
@@ -517,22 +444,22 @@ namespace Api {
 
         namespace Response {
           namespace Success {
-            model ElectionDeleted {
-              code: "ELECTION_DELETED";
+            model SessionDeleted {
+              code: "SESSION_DELETED";
             }
-            alias Success = ElectionDeleted;
+            alias Success = SessionDeleted;
           }
 
           namespace Error {
-            alias Error = NotFoundError<"ELECTION"> | UnexpectedError;
+            alias Error = NotFoundError<"SESSION"> | UnexpectedError;
           }
 
           alias Response = Success.Success | Error.Error;
         }
 
         @delete
-        @doc("Delete an election by ID.")
-        op deleteElectionById(...Request.Path): Response.Response;
+        @doc("Delete a surveillance session by ID.")
+        op deleteSessionById(...Request.Path): Response.Response;
       }
 
       @route("/end")
@@ -543,420 +470,560 @@ namespace Api {
 
         namespace Response {
           namespace Success {
-            model ElectionEnded {
-              code: "ELECTION_ENDED";
+            model SessionEnded {
+              code: "SESSION_ENDED";
               data: {
                 id: Id;
               };
             }
-            alias Success = ElectionEnded;
+            alias Success = SessionEnded;
           }
 
           namespace Error {
-            alias Error = NotFoundError<"ELECTION"> | UnexpectedError;
+            alias Error = NotFoundError<"SESSION"> | UnexpectedError;
           }
 
           alias Response = Success.Success | Error.Error;
         }
 
         @post
-        @doc("End an election, setting its status to COMPLETED.")
-        op endElection(...Request.Path): Response.Response;
+        @doc("End a surveillance session, setting its status to COMPLETED.")
+        op endSession(...Request.Path): Response.Response;
       }
 
-      @route("/voters")
-      namespace Voter {
-        model Voter {
-          id: Id;
-          election_id: Id;
-          code: VoterCode;
-          status: "NOT_VOTED" | "VOTED";
-          voted_at: DateTime | null;
-        }
-
-        namespace Create {
-          namespace Request {
-            alias Path = ById.Path;
-
-            model Body {
-              count: int32;
-            }
-          }
-
-          namespace Response {
-            namespace Success {
-              model VotersGenerated {
-                code: "VOTERS_GENERATED";
-                data: Voter[];
-              }
-
-              alias Success = VotersGenerated;
-            }
-
-            namespace Error {
-              alias Error = NotFoundError<"ELECTION"> | BadRequestError | UnexpectedError;
-            }
-
-            alias Response = Success.Success | Error.Error;
-          }
-
-          @post
-          @doc("Generate voter codes for a specific election")
-          op generateVoters(
-            ...Request.Path,
-            @body body: Request.Body,
-          ): Response.Response;
-        }
-
+      @route("/events")
+      namespace Event {
         namespace List {
           namespace Request {
             alias Path = ById.Path;
-          }
 
-          namespace Response {
-            namespace Success {
-              model VotersList {
-                code: "VOTERS_LIST";
-                data: Voter[];
+            model Query {
+              @query
+              @minValue(1)
+              page?: integer;
+
+              @query
+              @minValue(10)
+              @maxValue(100)
+              per_page?: integer;
+
+              @query
+              device_id?: DeviceIdCode;
+
+              @query
+              start_date?: DateTime;
+
+              @query
+              end_date?: DateTime;
+
+              @query
+              detected?: boolean;
+            }
+
+            namespace Response {
+              namespace Success {
+                model EventsList {
+                  code: "EVENTS_LIST";
+                  data: Pagination.Paginated<SurveillanceEvent>;
+                }
+                alias Success = EventsList;
               }
-              alias Success = VotersList;
+
+              namespace Error {
+                alias Error = NotFoundError<"SESSION"> | UnexpectedError;
+              }
+
+              alias Response = Success.Success | Error.Error;
             }
 
-            namespace Error {
-              alias Error = NotFoundError<"ELECTION"> | UnexpectedError;
-            }
-
-            alias Response = Success.Success | Error.Error;
+            @doc("List surveillance events for a specific session")
+            op listEvents(...Request.Path, ...Request.Query): Response.Response;
           }
-
-          @doc("List voters for a specific election")
-          op listVoters(...Request.Path): Response.Response;
         }
 
-        @route("/submit")
-        namespace Submit {
+        @route("/events/ai-detection")
+        namespace AIDetection {
           namespace Request {
             alias Path = ById.Path;
 
             model Body {
-              election_id: Id;
-              voter_code: VoterCode;
-              votes: {
-                position_id: Id;
-                candidate_id: Id;
-              }[];
+              image_url: string;
+              session_id: Id;
+              device_id: DeviceIdCode;
+              timestamp: DateTime;
             }
           }
 
           namespace Response {
             namespace Success {
-              model VoteSubmitted {
-                code: "VOTE_SUBMITTED";
+              model AIDetectionResult {
+                code: "AI_DETECTION_COMPLETED";
                 data: {
-                  success: true;
-                  message: "Votes submitted successfully";
+                  detected: boolean;
+                  matches: Criminal.Criminal[];
+                  confidence: float64;
+                  ipfs_cid: string | null;
+                  ipfs_url: string | null;
                 };
               }
-              alias Success = VoteSubmitted;
+              alias Success = AIDetectionResult;
             }
 
             namespace Error {
-              @error
-              model VoterAlreadyVotedError {
-                @statusCode _code: 400;
-                code: "ERR_VOTER_ALREADY_VOTED";
-              }
-
-              alias Error =
-                | NotFoundError<"VOTER">
-                | VoterAlreadyVotedError
-                | BadRequestError
-                | UnexpectedError;
+              alias Error = NotFoundError<"SESSION"> | BadRequestError | UnexpectedError;
             }
+
             alias Response = Success.Success | Error.Error;
           }
 
           @post
-          @doc("Submit votes for an election using a voter code.")
-          op submitVoterVote(
+          @doc("Perform AI detection on image to check for criminals in the criminal database.")
+          op performAIDetection(
             ...Request.Path,
             @body body: Request.Body,
           ): Response.Response;
         }
+
+        @route("/results")
+        namespace Results {
+          namespace Request {
+            alias Path = ById.Path;
+          }
+
+          namespace Response {
+            namespace Success {
+              model SessionResults {
+                code: "SESSION_RESULTS";
+                data: {
+                  session: Session;
+                  total_events: int32;
+                  total_detections: int32;
+                  devices: (Device.Device & {
+                    event_count: int32;
+                    detection_count: int32;
+                  })[];
+                  top_detections: (Criminal.Criminal & {
+                    count: int32;
+                  })[];
+                };
+              }
+
+              alias Success = SessionResults;
+            }
+
+            namespace Error {
+              alias Error = NotFoundError<"SESSION"> | UnexpectedError;
+            }
+
+            alias Response = Success.Success | Error.Error;
+          }
+
+          @doc("Get results for a specific surveillance session")
+          op getSessionResults(...Request.Path): Response.Response;
+        }
+
+        @tag("Criminal")
+        @route("/criminals")
+        namespace Criminal {
+          model Criminal {
+            id: Id;
+            name: CriminalName;
+            aliases: string[];
+            offense: CriminalOffense | null;
+            mugshot: MediaDescription | null;
+            created_at: DateTime;
+          }
+
+          namespace Create {
+            namespace Request {
+              alias Path = ById.Path;
+
+              model CriminalPayload {
+                name: CriminalName;
+                aliases?: string[];
+                offense?: CriminalOffense;
+                mugshot?: MediaDescription;
+              }
+
+              model Body {
+                criminals: CriminalPayload[];
+              }
+            }
+
+            namespace Response {
+              namespace Success {
+                model CriminalCreated {
+                  code: "CRIMINALS_LIST";
+                  data: Criminal[];
+                }
+
+                alias Success = CriminalCreated;
+              }
+
+              namespace Error {
+                alias Error = NotFoundError<"SESSION"> | BadRequestError | UnexpectedError;
+              }
+
+              alias Response = Success.Success | Error.Error;
+            }
+
+            @post
+            @doc("Create a criminal profile for a specific session")
+            op createCriminal(
+              ...Request.Path,
+              @body body: Request.Body,
+            ): Response.Response;
+          }
+
+          @route("/{criminalId}")
+          namespace Get {
+            namespace Request {
+              model Path {
+                ...ById.Path;
+
+                @path
+                criminalId: Id;
+              }
+            }
+
+            namespace Response {
+              namespace Success {
+                model CriminalDetails {
+                  code: "CRIMINAL_DETAILS";
+                  data: Criminal;
+                }
+
+                alias Success = CriminalDetails;
+              }
+
+              namespace Error {
+                alias Error = NotFoundError<"CRIMINAL"> | NotFoundError<"SESSION"> | UnexpectedError;
+              }
+
+              alias Response = Success.Success | Error.Error;
+            }
+
+            @doc("Get details of a specific criminal")
+            op getCriminalById(...Request.Path): Response.Response;
+          }
+        }
+
+        @tag("Device")
+        @route("/devices")
+        namespace Device {
+          model Device {
+            id: Id;
+            device_code: DeviceIdCode;
+            location: DeviceLocation;
+            session_id: Id;
+            status: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
+            ip_address: string | null;
+            last_heartbeat: DateTime | null;
+            created_at: DateTime;
+            updated_at: DateTime | null;
+          }
+
+          namespace Create {
+            namespace Request {
+              alias Path = ById.Path;
+
+              model DevicePayload {
+                device_code: DeviceIdCode;
+                location: DeviceLocation;
+                ip_address?: string;
+              }
+
+              model Body {
+                devices: DevicePayload[];
+              }
+            }
+
+            namespace Response {
+              namespace Success {
+                model DevicesList {
+                  code: "DEVICES_LIST";
+                  data: Device[];
+                }
+
+                alias Success = DevicesList;
+              }
+
+              namespace Error {
+                alias Error = NotFoundError<"SESSION"> | UnexpectedError;
+              }
+
+              alias Response = Success.Success | Error.Error;
+            }
+
+            @doc("Register devices for a specific surveillance session")
+            op registerDevices(
+              ...Request.Path,
+              @body body: Request.Body,
+            ): Response.Response;
+          }
+        }
       }
 
-      @route("/results")
-      namespace Results {
+      @route("/metrics")
+      namespace Metrics {
+        namespace Response {
+          namespace Success {
+            model SurveillanceMetrics {
+              code: "SURVEILLANCE_METRICS";
+              data: {
+                total_sessions: int32;
+                active_sessions: int32;
+                completed_sessions: int32;
+                total_events: int32;
+                total_detections: int32;
+                total_devices: int32;
+              };
+            }
+            alias Success = SurveillanceMetrics;
+          }
+          namespace Error {
+            alias Error = UnexpectedError;
+          }
+          alias Response = Success.Success | Error.Error;
+        }
+
+        @doc("Get platform-wide surveillance metrics")
+        op getPlatformSurveillanceMetrics(): Response.Response;
+      }
+    }
+
+    @useAuth(BearerAuth)
+    @tag("IoT")
+    @route("/iot")
+    namespace IoT {
+      @route("/device-register")
+      namespace DeviceRegister {
         namespace Request {
-          alias Path = ById.Path;
+          model Body {
+            device_code: DeviceIdCode;
+            location: DeviceLocation;
+            ip_address?: string;
+            session_id?: Id;
+          }
         }
 
         namespace Response {
           namespace Success {
-            model ElectionResults {
-              code: "ELECTION_RESULTS";
+            model DeviceRegistered {
+              code: "DEVICE_REGISTERED";
               data: {
-                election: Election;
-                total_votes: int32;
-                total_voters: int32;
-                positions: (Position.Position & {
-                  total_votes: int32;
-                  candidates: (Candidate.Candidate & {
-                    votes: int32;
-                    percentage: float64;
-                  })[];
-                })[];
+                id: Id;
+                device_code: DeviceIdCode;
+                location: DeviceLocation;
+                status: "ACTIVE";
+                auth_token: Jwt;
               };
             }
 
-            alias Success = ElectionResults;
+            alias Success = DeviceRegistered;
           }
 
           namespace Error {
-            alias Error = NotFoundError<"ELECTION"> | UnexpectedError;
+            @error
+            model DeviceAlreadyRegisteredError {
+              @statusCode _code: 409;
+              code: "ERR_DEVICE_ALREADY_REGISTERED";
+            }
+
+            alias Error = DeviceAlreadyRegisteredError | BadRequestError | UnexpectedError;
           }
 
           alias Response = Success.Success | Error.Error;
         }
 
-        @doc("Get results for a specific election")
-        op getElectionResults(...Request.Path): Response.Response;
+        @post
+        @doc("Register a new IoT device with the surveillance system")
+        op registerIoTDevice(@body body: Request.Body): Response.Response;
       }
 
-      @tag("Candidate")
-      @route("/candidates")
-      namespace Candidate {
-        model Candidate {
-          id: Id;
-          position_id: Id;
-          name: CandidateName;
-          bio: CandidateBio | null;
-          image: MediaDescription | null;
-          created_at: DateTime;
-        }
-
-        namespace Create {
-          namespace Request {
-            alias Path = ById.Path;
-
-            model CandidatePayload {
-              name: CandidateName;
-              bio?: CandidateBio;
-              image?: MediaDescription;
-              position_id: Id;
-            }
-
-            model Body {
-              candidates: CandidatePayload[];
-            }
-          }
-
-          namespace Response {
-            namespace Success {
-              model CandidateCreated {
-                code: "CANDIDATES_LIST";
-                data: Candidate[];
+      @route("/stream")
+      namespace Stream {
+        @route("/{deviceId}")
+        namespace ById {
+          @route("/upload")
+          namespace Upload {
+            namespace Request {
+              model Path {
+                @path
+                deviceId: DeviceIdCode;
               }
 
-              alias Success = CandidateCreated;
-            }
-
-            namespace Error {
-              alias Error =
-                | NotFoundError<"ELECTION">
-                | NotFoundError<"POSITION">
-                | BadRequestError
-                | UnexpectedError;
-            }
-
-            alias Response = Success.Success | Error.Error;
-          }
-
-          @post
-          @doc("Create a candidate for a specific election")
-          op createCandidate(
-            ...Request.Path,
-            @body body: Request.Body,
-          ): Response.Response;
-        }
-
-        @route("/{candidateId}")
-        namespace Get {
-          namespace Request {
-            model Path {
-              ...ById.Path;
-
-              @path
-              candidateId: Id;
-            }
-          }
-
-          namespace Response {
-            namespace Success {
-              model CandidateDetails {
-                code: "CANDIDATE_DETAILS";
-                data: Candidate;
+              model Headers {
+                @header
+                authorization: string;
               }
 
-              alias Success = CandidateDetails;
+              model Body {
+                image: HttpPart<ImageFile>;
+                timestamp: DateTime;
+                session_id: Id;
+              }
             }
 
-            namespace Error {
-              alias Error = NotFoundError<"CANDIDATE"> | NotFoundError<"ELECTION"> | UnexpectedError;
-            }
-
-            alias Response = Success.Success | Error.Error;
-          }
-
-          @doc("Get details of a specific candidate")
-          op getCandidateById(...Request.Path): Response.Response;
-        }
-      }
-
-      @tag("Position")
-      @route("/positions")
-      namespace Position {
-        model Position {
-          id: Id;
-          election_id: Id;
-          title: PositionTitle;
-          description: PositionDescription | null;
-          created_at: DateTime;
-          updated_at: DateTime | null;
-        }
-
-        namespace Create {
-          namespace Request {
-            alias Path = ById.Path;
-
-            model PositionPayload {
-              title: PositionTitle;
-              description?: PositionDescription;
-            }
-
-            model Body {
-              positions: PositionPayload[];
-            }
-          }
-
-          namespace Response {
-            namespace Success {
-              model PositionsList {
-                code: "POSITIONS_LIST";
-                data: Position[];
+            namespace Response {
+              namespace Success {
+                model StreamUploadSuccess {
+                  code: "STREAM_UPLOADED";
+                  data: {
+                    event_id: Id;
+                    ipfs_cid: string;
+                    ipfs_url: string;
+                    detected: boolean;
+                    timestamp: DateTime;
+                  };
+                }
+                alias Success = StreamUploadSuccess;
               }
 
-              alias Success = PositionsList;
+              namespace Error {
+                @error
+                model InvalidDeviceError {
+                  @statusCode _code: 401;
+                  code: "ERR_INVALID_DEVICE";
+                }
+
+                alias Error = InvalidDeviceError | BadRequestError | UnexpectedError;
+              }
+
+              alias Response = Success.Success | Error.Error;
             }
 
-            namespace Error {
-              alias Error = NotFoundError<"ELECTION"> | UnexpectedError;
+            @post
+            @doc("Upload surveillance stream from IoT device. IoT devices use this endpoint to send captured images to the cloud server.")
+            op uploadStream(
+              ...Request.Path,
+              ...Request.Headers,
+              @multipartBody body: Request.Body,
+            ): Response.Response;
+          }
+
+          @route("/heartbeat")
+          namespace Heartbeat {
+            namespace Request {
+              model Path {
+                @path
+                deviceId: DeviceIdCode;
+              }
+
+              model Headers {
+                @header
+                authorization: string;
+              }
+
+              model Body {
+                status: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
+                timestamp: DateTime;
+                battery_level?: int32;
+                signal_strength?: int32;
+              }
             }
 
-            alias Response = Success.Success | Error.Error;
+            namespace Response {
+              namespace Success {
+                model HeartbeatSuccess {
+                  code: "HEARTBEAT_RECEIVED";
+                  data: {
+                    device_id: DeviceIdCode;
+                    timestamp: DateTime;
+                    acknowledged: boolean;
+                  };
+                }
+                alias Success = HeartbeatSuccess;
+              }
+
+              namespace Error {
+                alias Error = BadRequestError | NotFoundError<"DEVICE"> | UnexpectedError;
+              }
+
+              alias Response = Success.Success | Error.Error;
+            }
+
+            @post
+            @doc("Send heartbeat signal from IoT device to indicate it is still active.")
+            op sendHeartbeat(
+              ...Request.Path,
+              ...Request.Headers,
+              @body body: Request.Body,
+            ): Response.Response;
+          }
+        }
+      }
+    }
+
+    @tag("Storage")
+    @route("/storage")
+    namespace Storage {
+      @route("/upload")
+      namespace Upload {
+        namespace Request {
+          model Headers {
+            @header
+            contentType: "multipart/form-data";
           }
 
-          @doc("Create a position for a specific election")
-          op createPosition(
-            ...Request.Path,
-            @body body: Request.Body,
-          ): Response.Response;
-        }
-      }
-    }
-
-    @route("/metrics")
-    namespace Metrics {
-      namespace Response {
-        namespace Success {
-          model ElectionMetrics {
-            code: "ELECTION_METRICS";
-            data: {
-              total_elections: int32;
-              active_elections: int32;
-              completed_elections: int32;
-            };
+          model Body {
+            files: HttpPart<ImageFile[]>;
           }
-          alias Success = ElectionMetrics;
-        }
-        namespace Error {
-          alias Error = UnexpectedError;
-        }
-        alias Response = Success.Success | Error.Error;
-      }
-
-      @doc("Get platform-wide election metrics")
-      op getPlatformElectionMetrics(): Response.Response;
-    }
-  }
-
-  @tag("Storage")
-  @route("/storage")
-  namespace Storage {
-    @route("/upload")
-    namespace Upload {
-      namespace Request {
-        model Headers {
-          @header
-          contentType: "multipart/form-data";
         }
 
-        model Body {
-          files: HttpPart<ImageFile[]>;
-        }
-      }
-
-      namespace Response {
-        namespace Success {
-          model MediaUploadSuccess {
-            code: "MEDIA_UPLOADED";
-            data: MediaDescription[];
+        namespace Response {
+          namespace Success {
+            model MediaUploadSuccess {
+              code: "MEDIA_UPLOADED";
+              data: MediaDescription[];
+            }
+            alias Success = MediaUploadSuccess;
           }
-          alias Success = MediaUploadSuccess;
+
+          namespace Error {
+            alias Error = BadRequestError | UnauthorizedError | UnexpectedError;
+          }
+
+          alias Response = Success.Success | Error.Error;
         }
 
-        namespace Error {
-          alias Error = BadRequestError | UnauthorizedError | UnexpectedError;
-        }
+        @post
+        @useAuth(BearerAuth)
+        @doc("Upload multiple media files to IPFS via the cloud server")
+        op uploadMedia(
+          ...Request.Headers,
+          @multipartBody body: Request.Body,
+        ): Response.Response;
+      }
+    }
 
-        alias Response = Success.Success | Error.Error;
+    namespace Pagination {
+      model Options {
+        page: int64;
+        per_page: int64;
       }
 
-      @post
-      @useAuth(BearerAuth)
-      @doc("Upload multiple media files")
-      op uploadMedia(
-        ...Request.Headers,
-        @multipartBody body: Request.Body,
-      ): Response.Response;
-    }
-  }
+      model Meta {
+        ...Options;
+        total: int64;
+      }
 
-  namespace Pagination {
-    model Options {
-      page: int64;
-      per_page: int64;
-    }
+      model Paginated<T> {
+        data: T[];
+        meta: Meta;
+      }
 
-    model Meta {
-      ...Options;
-      total: int64;
-    }
+      model Query {
+        @query
+        @minValue(1)
+        page?: integer;
 
-    model Paginated<T> {
-      data: T[];
-      meta: Meta;
-    }
-
-    model Query {
-      @query
-      @minValue(1)
-      page?: integer;
-
-      @query
-      @minValue(10)
-      @maxValue(100)
-      per_page?: integer;
+        @query
+        @minValue(10)
+        @maxValue(100)
+        per_page?: integer;
+      }
     }
   }
 }
+

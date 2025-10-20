@@ -61,6 +61,7 @@ export default defineConfig({
 							{ text: "Hardware", link: "/project-report/materials-hardware" },
 						]
 					},
+					{ text: "System Images", link: "/project-report/images" },
 					{ text: "Methods", link: "/project-report/methods" },
 				],
 			},

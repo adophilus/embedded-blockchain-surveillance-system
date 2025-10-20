@@ -8,4 +8,5 @@ This directory contains materials specifically prepared for project reporting re
   - [Overview](./materials-overview.md) - High-level system components overview
   - [Software](./materials-software.md) - Software components and tools
   - [Hardware](./materials-hardware.md) - Hardware components and specifications
+- [System Images](./images.md) - Visual representations of system components and implementation
 - [Methods](./methods.md) - Detailed account of methods employed in implementation

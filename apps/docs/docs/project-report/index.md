@@ -12,4 +12,5 @@ This section contains materials specifically prepared for project reporting requ
   - [Overview](/project-report/materials-overview) - High-level system components overview
   - [Software](/project-report/materials-software) - Software components and tools
   - [Hardware](/project-report/materials-hardware) - Hardware components and specifications
+- [System Images](/project-report/images) - Visual representations of system components and implementation
 - [Methods](/project-report/methods) - Detailed account of methods employed in implementation

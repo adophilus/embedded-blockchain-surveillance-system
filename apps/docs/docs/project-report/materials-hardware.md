@@ -39,7 +39,6 @@ The primary hardware component of the surveillance system is the ESP32-CAM micro
 ### PIR (Passive Infrared) Sensors
 PIR sensors are used to detect motion and trigger the surveillance recording process:
 
-- **Detection Range**: Adjustable detection range up to 12 meters
 - **Detection Angle**: 110-degree wide-angle lens for comprehensive coverage
 - **Operating Voltage**: 3.3V to 5V (compatible with ESP32-CAM)
 - **Power Consumption**: Low power consumption for continuous monitoring
@@ -61,12 +60,12 @@ PIR sensors are used to detect motion and trigger the surveillance recording pro
 The system uses the following power management components:
 
 1. **Primary Power Source**:
-   - Rechargeable 7.4V Li-ion battery (2S configuration) as the main power source
+   - Rechargeable 7.4V 40000mAh Li-ion Battery (2S configuration) as the main power source
    - Provides extended operational time for continuous surveillance
    - Can be recharged via external charging circuitry
 
 2. **Voltage Regulation**:
-   - Buck converter to step down 7.4V battery voltage to 5V
+   - LM2596 DC-DC Buck Converter to step down 7.4V battery voltage to 5V
    - Efficient DC-DC conversion for ESP32-CAM operation
    - Maintains stable voltage output throughout battery discharge cycle
 
@@ -117,16 +116,18 @@ The hardware components work together in the following architecture:
 6. **Officials** are alerted if criminal detection occurs
 
 ### Power Flow
-- External power source → Voltage regulation → ESP32-CAM → Sensors
+- 7.4V 40000mAh Li-ion Battery → LM2596 DC-DC Buck Converter → ESP32-CAM and Sensors
 - Power management ensures stable operation of all components
 - Low-power modes extend operational time for battery-powered deployments
 
 ## Hardware Specifications Summary
 
-| Component | Model/Type | Key Specifications |
-|-----------|------------|-------------------|
-| Main Controller | ESP32-CAM | Dual-core, Wi-Fi, OV2640 camera, PSRAM |
-| Motion Sensor | HC-SR501 PIR | 110° detection angle, 12m range, 3.3V-5V, digital GPIO output |
-| Power Supply | 7.4V Li-ion Battery | 2S configuration, buck converter to 5V, slide power switch |
-| Enclosure | IP65/IP66 | Weather-resistant, UV-resistant materials |
-| Camera Resolution | Up to UXGA | 1600×1200 for OV2640 sensor |
+| Component | Model/Type | Key Specifications | Price (₦) |
+|-----------|------------|-------------------|-------------|
+| Main Controller | ESP32-CAM | Dual-core, Wi-Fi, OV2640 camera, PSRAM | 18,000 |
+| Motion Sensor | PIR Sensor | 110° detection angle, 3.3V-5V, digital GPIO output | 3,500 |
+| Power Supply | 7.4V 40000mAh Li-ion Battery | 2S configuration, LM2596 DC-DC Buck Converter to 5V | 9,400 |
+| Voltage Regulator | LM2596 DC-DC Buck Converter | Steps down 7.4V to 5V for ESP32-CAM | 4,500 |
+| Power Switch | Slide Switch | Main power switch for the entire system | 100 |
+| Connection | Jumper Wires | For connecting all components | 2,500 |
+| Enclosure | IP65/IP66 | Weather-resistant, UV-resistant materials | 7,000 |

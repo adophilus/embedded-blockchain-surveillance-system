@@ -122,12 +122,12 @@ The hardware components work together in the following architecture:
 
 ## Hardware Specifications Summary
 
-| Component | Model/Type | Key Specifications | Price (₦) |
-|-----------|------------|-------------------|-------------|
-| Main Controller | ESP32-CAM | Dual-core, Wi-Fi, OV2640 camera, PSRAM | 18,000 |
-| Motion Sensor | PIR Sensor | 110° detection angle, 3.3V-5V, digital GPIO output | 3,500 |
-| Power Supply | 7.4V 40000mAh Li-ion Battery | 2S configuration, LM2596 DC-DC Buck Converter to 5V | 9,400 |
-| Voltage Regulator | LM2596 DC-DC Buck Converter | Steps down 7.4V to 5V for ESP32-CAM | 4,500 |
-| Power Switch | Slide Switch | Main power switch for the entire system | 100 |
-| Connection | Jumper Wires | For connecting all components | 2,500 |
-| Enclosure | IP65/IP66 | Weather-resistant, UV-resistant materials | 7,000 |
+| Category | Component | Function | Estimated Price (₦) |
+|----------|-----------|----------|-------------------|
+| Processing | ESP32-CAM | Main controller with dual-core processor, Wi-Fi, and integrated camera | 18,000 |
+| Sensors | PIR Sensor | Detects motion using infrared radiation and sends digital signal to ESP32-CAM | 3,500 |
+| Power | 7.4V 40000mAh Li-ion Battery | Primary power source providing extended operational time | 9,400 |
+| Power | LM2596 DC-DC Buck Converter | Steps down 7.4V battery voltage to 5V for ESP32-CAM operation | 4,500 |
+| Power | Slide Switch | Main power switch for the entire system | 100 |
+| Connections | Jumper Wires | For connecting all components electrically | 2,500 |
+| Housing | IP65/IP66 Enclosure | Weather-resistant housing for outdoor protection | 7,000 |

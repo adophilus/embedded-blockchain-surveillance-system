@@ -34,3 +34,35 @@ The system leverages a comprehensive technology stack designed to provide:
 - **Real-Time Monitoring**: IoT devices with motion sensors providing continuous surveillance
 - **Immutable Records**: Blockchain-based timestamping and event logging
 - **Secure Access**: Role-based authentication and authorization for officials
+
+## Cost Breakdown
+
+### Hardware Components
+
+| Category | Component | Function | Estimated Price (₦) |
+|----------|-----------|----------|-------------------|
+| Processing | ESP32-CAM | Main controller with dual-core processor, Wi-Fi, and integrated camera | 18,000 |
+| Sensors | PIR Sensor | Detects motion using infrared radiation and sends digital signal to ESP32-CAM | 3,500 |
+| Power | 7.4V 40000mAh Li-ion Battery | Primary power source providing extended operational time | 9,400 |
+| Power | LM2596 DC-DC Buck Converter | Steps down 7.4V battery voltage to 5V for ESP32-CAM operation | 4,500 |
+| Power | Slide Switch | Main power switch for the entire system | 100 |
+| Connections | Jumper Wires | For connecting all components electrically | 2,500 |
+| Housing | IP65/IP66 Enclosure | Weather-resistant housing for outdoor protection | 7,000 |
+
+### Software and Infrastructure
+
+| Category | Component | Function | Estimated Price (₦) |
+|----------|-----------|----------|-------------------|
+| Development Tools | Solidity, OpenZeppelin, Foundry | Smart contract development and testing tools | Free (Open Source) |
+| Backend Framework | Hono | Web framework for cloud server API development | Free (Open Source) |
+| IPFS Client | Helia | Decentralized storage client for video stream management | Free (Open Source) |
+| AI Library | faceapi.js | Face detection and recognition for criminal identification | Free (Open Source) |
+| Frontend Framework | React, Viem | User interface and blockchain interaction | Free (Open Source) |
+| Cloud Infrastructure | 3.5GB VPS (Racknerd) | Monthly hosting for cloud server | ~15,000/month |
+| Blockchain | Polygon Network | Gas fees for smart contract interactions | Variable (low cost) |
+| IPFS Gateway | thirdweb | Decentralized storage access | Free tier available |
+| Development Environment | VS Code, Git, Node.js, TypeScript | Development tools and runtime | Free (Open Source) |
+
+## Total Estimated Cost
+
+The total initial hardware cost is approximately **₦45,000**, with ongoing monthly infrastructure costs of about **₦15,000** for the VPS hosting. The software components are primarily open-source tools with minimal licensing costs.

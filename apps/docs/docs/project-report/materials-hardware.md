@@ -120,14 +120,3 @@ The hardware components work together in the following architecture:
 - Power management ensures stable operation of all components
 - Low-power modes extend operational time for battery-powered deployments
 
-## Hardware Specifications Summary
-
-| Category | Component | Function | Estimated Price (₦) |
-|----------|-----------|----------|-------------------|
-| Processing | ESP32-CAM | Main controller with dual-core processor, Wi-Fi, and integrated camera | 18,000 |
-| Sensors | PIR Sensor | Detects motion using infrared radiation and sends digital signal to ESP32-CAM | 3,500 |
-| Power | 7.4V 40000mAh Li-ion Battery | Primary power source providing extended operational time | 9,400 |
-| Power | LM2596 DC-DC Buck Converter | Steps down 7.4V battery voltage to 5V for ESP32-CAM operation | 4,500 |
-| Power | Slide Switch | Main power switch for the entire system | 100 |
-| Connections | Jumper Wires | For connecting all components electrically | 2,500 |
-| Housing | IP65/IP66 Enclosure | Weather-resistant housing for outdoor protection | 7,000 |

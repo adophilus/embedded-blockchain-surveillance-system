@@ -120,14 +120,9 @@ namespace Api {
   @example("Armed robbery, assault")
   scalar CriminalOffense extends string;
 
-  @example("DANGER001")
+  @example("CRIMINAL001")
   scalar CriminalIdCode extends string;
 
-  @example("CAM-001")
-  scalar DeviceIdCode extends string;
-
-  @example("Downtown Entrance")
-  scalar DeviceLocation extends string;
 
   @tag("Authentication")
   @route("/auth")
@@ -245,7 +240,7 @@ namespace Api {
     model SurveillanceEvent {
       id: Id;
       session_id: Id;
-      device_id: DeviceIdCode;
+      device_id: string;
       timestamp: DateTime;
       detected: boolean;
       ipfs_cid: string | null;
@@ -459,7 +454,7 @@ namespace Api {
               per_page?: integer;
 
               @query
-              device_id?: DeviceIdCode;
+              device_id?: string;
 
               @query
               start_date?: DateTime;
@@ -500,7 +495,7 @@ namespace Api {
             model Body {
               image_url: string;
               session_id: Id;
-              device_id: DeviceIdCode;
+              device_id: string;
               timestamp: DateTime;
             }
           }
@@ -659,61 +654,7 @@ namespace Api {
           }
         }
 
-        @tag("Device")
-        @route("/devices")
-        namespace Device {
-          model Device {
-            id: Id;
-            device_code: DeviceIdCode;
-            location: DeviceLocation;
-            session_id: Id;
-            status: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
-            ip_address: string | null;
-            last_heartbeat: DateTime | null;
-            created_at: DateTime;
-            updated_at: DateTime | null;
-          }
 
-          namespace Create {
-            namespace Request {
-              alias Path = ById.Path;
-
-              model DevicePayload {
-                device_code: DeviceIdCode;
-                location: DeviceLocation;
-                ip_address?: string;
-              }
-
-              model Body {
-                devices: DevicePayload[];
-              }
-            }
-
-            namespace Response {
-              namespace Success {
-                model DevicesList {
-                  code: "DEVICES_LIST";
-                  data: Device[];
-                }
-
-                alias Success = DevicesList;
-              }
-
-              namespace Error {
-                alias Error = NotFoundError<"SESSION"> | UnexpectedError;
-              }
-
-              alias Response = Success.Success | Error.Error;
-            }
-
-            @post
-            @doc("Register devices for a specific surveillance session")
-            op registerDevices(
-              ...Request.Path,
-              @body body: Request.Body,
-            ): Response.Response;
-          }
-        }
       }
     }
 
@@ -729,7 +670,6 @@ namespace Api {
               completed_sessions: int32;
               total_events: int32;
               total_detections: int32;
-              total_devices: int32;
             };
           }
           alias Success = SurveillanceMetrics;
@@ -758,7 +698,7 @@ namespace Api {
           namespace Request {
             model Path {
               @path
-              deviceId: DeviceIdCode;
+              deviceId: string;
             }
 
             model Headers {
@@ -815,7 +755,7 @@ namespace Api {
           namespace Request {
             model Path {
               @path
-              deviceId: DeviceIdCode;
+              deviceId: string;
             }
 
             model Headers {
@@ -836,7 +776,7 @@ namespace Api {
               model HeartbeatSuccess {
                 code: "HEARTBEAT_RECEIVED";
                 data: {
-                  device_id: DeviceIdCode;
+                  device_id: string;
                   timestamp: DateTime;
                   acknowledged: boolean;
                 };

@@ -124,6 +124,87 @@ namespace Api {
   scalar CriminalIdCode extends string;
 
 
+  @tag("Criminal")
+  @route("/criminals")
+  namespace Criminal {
+    model Criminal {
+      id: Id;
+      name: CriminalName;
+      aliases: string[];
+      offense: CriminalOffense | null;
+      mugshot: MediaDescription | null;
+      created_at: DateTime;
+    }
+
+    namespace Create {
+      namespace Request {
+        model CriminalPayload {
+          name: CriminalName;
+          aliases?: string[];
+          offense?: CriminalOffense;
+          mugshot?: MediaDescription;
+        }
+
+        model Body {
+          criminals: CriminalPayload[];
+        }
+      }
+
+      namespace Response {
+        namespace Success {
+          model CriminalCreated {
+            code: "CRIMINALS_LIST";
+            data: Criminal[];
+          }
+
+          alias Success = CriminalCreated;
+        }
+
+        namespace Error {
+          alias Error = BadRequestError | UnexpectedError;
+        }
+
+        alias Response = Success.Success | Error.Error;
+      }
+
+      @post
+      @doc("Create criminal profiles")
+      op createCriminal(
+        @body body: Request.Body,
+      ): Response.Response;
+    }
+
+    @route("/{criminalId}")
+    namespace ById {
+      namespace Request {
+        model Path {
+          @path
+          criminalId: Id;
+        }
+      }
+
+      namespace Response {
+        namespace Success {
+          model CriminalDetails {
+            code: "CRIMINAL_DETAILS";
+            data: Criminal;
+          }
+
+          alias Success = CriminalDetails;
+        }
+
+        namespace Error {
+          alias Error = NotFoundError<"CRIMINAL"> | UnexpectedError;
+        }
+
+        alias Response = Success.Success | Error.Error;
+      }
+
+      @doc("Get details of a specific criminal")
+      op getCriminalById(...Request.Path): Response.Response;
+    }
+  }
+
   @tag("Authentication")
   @route("/auth")
   namespace Authentication {
@@ -434,7 +515,7 @@ namespace Api {
                 code: "AI_DETECTION_COMPLETED";
                 data: {
                   detected: boolean;
-                  matches: Api.Surveillance.Criminal.Criminal[];
+                  matches: Api.Criminal.Criminal[];
                   confidence: float64;
                   ipfs_cid: string | null;
                   ipfs_url: string | null;
@@ -462,86 +543,6 @@ namespace Api {
 
   @tag("Criminal")
   @route("/criminals")
-  namespace Criminal {
-    model Criminal {
-      id: Id;
-      name: CriminalName;
-      aliases: string[];
-      offense: CriminalOffense | null;
-      mugshot: MediaDescription | null;
-      created_at: DateTime;
-    }
-
-    namespace Create {
-      namespace Request {
-        model CriminalPayload {
-          name: CriminalName;
-          aliases?: string[];
-          offense?: CriminalOffense;
-          mugshot?: MediaDescription;
-        }
-
-        model Body {
-          criminals: CriminalPayload[];
-        }
-      }
-
-      namespace Response {
-        namespace Success {
-          model CriminalCreated {
-            code: "CRIMINALS_LIST";
-            data: Criminal[];
-          }
-
-          alias Success = CriminalCreated;
-        }
-
-        namespace Error {
-          alias Error = BadRequestError | UnexpectedError;
-        }
-
-        alias Response = Success.Success | Error.Error;
-      }
-
-      @post
-      @doc("Create criminal profiles")
-      op createCriminal(
-        @body body: Request.Body,
-      ): Response.Response;
-    }
-
-    @route("/{criminalId}")
-    namespace ById {
-      namespace Request {
-        model Path {
-          @path
-          criminalId: Id;
-        }
-      }
-
-      namespace Response {
-        namespace Success {
-          model CriminalDetails {
-            code: "CRIMINAL_DETAILS";
-            data: Criminal;
-          }
-
-          alias Success = CriminalDetails;
-        }
-
-        namespace Error {
-          alias Error = NotFoundError<"CRIMINAL"> | UnexpectedError;
-        }
-
-        alias Response = Success.Success | Error.Error;
-      }
-
-      @doc("Get details of a specific criminal")
-      op getCriminalById(...Request.Path): Response.Response;
-    }
-  }
-
-
       }
     }
 

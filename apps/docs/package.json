@@ -11,6 +11,10 @@
 		"build": "./scripts/build.sh",
 		"preview": "vitepress preview docs"
 	},
+	"dependencies": {
+    "@embedded-blockchain-surveillance-system/docs-openapi": "workspace:^",
+    "@scalar/api-reference": "^1.25.21"
+	},
 	"devDependencies": {
 		"@t3-oss/env-core": "^0.12.0",
 		"@types/node": "^22.7.2",

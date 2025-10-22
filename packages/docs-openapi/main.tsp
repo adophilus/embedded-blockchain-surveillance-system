@@ -132,55 +132,6 @@ namespace Api {
   @tag("Authentication")
   @route("/auth")
   namespace Authentication {
-    @route("/sign-up")
-    namespace SignUp {
-      @route("/email")
-      namespace Email {
-        namespace Request {
-          model Body {
-            full_name: FullName;
-            email: Api.Email;
-            password: Password;
-            role: Role;
-          }
-        }
-
-        namespace Response {
-          namespace Success {
-            model SignUpSuccess {
-              code: "SIGN_UP_SUCCESSFUL";
-              data: {
-                user: {
-                  id: Id;
-                  email: Api.Email;
-                  full_name: FullName;
-                  role: Role;
-                };
-              };
-            }
-
-            alias Success = SignUpSuccess;
-          }
-
-          namespace Error {
-            @error
-            model EmailAlreadyInUseError {
-              @statusCode _code: 409;
-              code: "ERR_EMAIL_ALREADY_IN_USE";
-            }
-
-            alias Error = EmailAlreadyInUseError | BadRequestError | UnexpectedError;
-          }
-
-          alias Response = Success.Success | Error.Error;
-        }
-
-        @post
-        @doc("Sign up a new user with email and password")
-        op signUp(@body body: Request.Body): Response.Response;
-      }
-    }
-
     @route("/sign-in")
     namespace SignIn {
       @route("/email")
@@ -386,9 +337,9 @@ namespace Api {
               code: "SESSION_DETAILS";
               data: {
                 session: Session;
-                devices: Device.Device[];
+                devices: Api.Surveillance.ById.Event.Device.Device[];
                 events: (SurveillanceEvent & {
-                  device: Device.Device;
+                  device: Api.Surveillance.ById.Event.Device.Device;
                 })[];
               };
             }
@@ -519,29 +470,29 @@ namespace Api {
               @query
               detected?: boolean;
             }
+          }
 
-            namespace Response {
-              namespace Success {
-                model EventsList {
-                  code: "EVENTS_LIST";
-                  data: Pagination.Paginated<SurveillanceEvent>;
-                }
-                alias Success = EventsList;
+          namespace Response {
+            namespace Success {
+              model EventsList {
+                code: "EVENTS_LIST";
+                data: Pagination.Paginated<SurveillanceEvent>;
               }
-
-              namespace Error {
-                alias Error = NotFoundError<"SESSION"> | UnexpectedError;
-              }
-
-              alias Response = Success.Success | Error.Error;
+              alias Success = EventsList;
             }
 
-            @doc("List surveillance events for a specific session")
-            op listEvents(...Request.Path, ...Request.Query): Response.Response;
+            namespace Error {
+              alias Error = NotFoundError<"SESSION"> | UnexpectedError;
+            }
+
+            alias Response = Success.Success | Error.Error;
           }
+
+          @doc("List surveillance events for a specific session")
+          op listEvents(...Request.Path, ...Request.Query): Response.Response;
         }
 
-        @route("/events/ai-detection")
+        @route("/ai-detection")
         namespace AIDetection {
           namespace Request {
             alias Path = ById.Path;
@@ -755,6 +706,7 @@ namespace Api {
               alias Response = Success.Success | Error.Error;
             }
 
+            @post
             @doc("Register devices for a specific surveillance session")
             op registerDevices(
               ...Request.Path,
@@ -763,266 +715,221 @@ namespace Api {
           }
         }
       }
-
-      @route("/metrics")
-      namespace Metrics {
-        namespace Response {
-          namespace Success {
-            model SurveillanceMetrics {
-              code: "SURVEILLANCE_METRICS";
-              data: {
-                total_sessions: int32;
-                active_sessions: int32;
-                completed_sessions: int32;
-                total_events: int32;
-                total_detections: int32;
-                total_devices: int32;
-              };
-            }
-            alias Success = SurveillanceMetrics;
-          }
-          namespace Error {
-            alias Error = UnexpectedError;
-          }
-          alias Response = Success.Success | Error.Error;
-        }
-
-        @doc("Get platform-wide surveillance metrics")
-        op getPlatformSurveillanceMetrics(): Response.Response;
-      }
     }
 
-    @useAuth(BearerAuth)
-    @tag("IoT")
-    @route("/iot")
-    namespace IoT {
-      @route("/device-register")
-      namespace DeviceRegister {
-        namespace Request {
-          model Body {
-            device_code: DeviceIdCode;
-            location: DeviceLocation;
-            ip_address?: string;
-            session_id?: Id;
+    @route("/metrics")
+    namespace Metrics {
+      namespace Response {
+        namespace Success {
+          model SurveillanceMetrics {
+            code: "SURVEILLANCE_METRICS";
+            data: {
+              total_sessions: int32;
+              active_sessions: int32;
+              completed_sessions: int32;
+              total_events: int32;
+              total_detections: int32;
+              total_devices: int32;
+            };
           }
+          alias Success = SurveillanceMetrics;
         }
-
-        namespace Response {
-          namespace Success {
-            model DeviceRegistered {
-              code: "DEVICE_REGISTERED";
-              data: {
-                id: Id;
-                device_code: DeviceIdCode;
-                location: DeviceLocation;
-                status: "ACTIVE";
-                auth_token: Jwt;
-              };
-            }
-
-            alias Success = DeviceRegistered;
-          }
-
-          namespace Error {
-            @error
-            model DeviceAlreadyRegisteredError {
-              @statusCode _code: 409;
-              code: "ERR_DEVICE_ALREADY_REGISTERED";
-            }
-
-            alias Error = DeviceAlreadyRegisteredError | BadRequestError | UnexpectedError;
-          }
-
-          alias Response = Success.Success | Error.Error;
+        namespace Error {
+          alias Error = UnexpectedError;
         }
-
-        @post
-        @doc("Register a new IoT device with the surveillance system")
-        op registerIoTDevice(@body body: Request.Body): Response.Response;
+        alias Response = Success.Success | Error.Error;
       }
 
-      @route("/stream")
-      namespace Stream {
-        @route("/{deviceId}")
-        namespace ById {
-          @route("/upload")
-          namespace Upload {
-            namespace Request {
-              model Path {
-                @path
-                deviceId: DeviceIdCode;
-              }
+      @doc("Get platform-wide surveillance metrics")
+      op getPlatformSurveillanceMetrics(): Response.Response;
+    }
+  }
 
-              model Headers {
-                @header
-                authorization: string;
-              }
-
-              model Body {
-                image: HttpPart<ImageFile>;
-                timestamp: DateTime;
-                session_id: Id;
-              }
+  @useAuth(BearerAuth)
+  @tag("IoT")
+  @route("/iot")
+  namespace IoT {
+    @route("/stream")
+    namespace Stream {
+      @route("/{deviceId}")
+      namespace ById {
+        @route("/upload")
+        namespace Upload {
+          namespace Request {
+            model Path {
+              @path
+              deviceId: DeviceIdCode;
             }
 
-            namespace Response {
-              namespace Success {
-                model StreamUploadSuccess {
-                  code: "STREAM_UPLOADED";
-                  data: {
-                    event_id: Id;
-                    ipfs_cid: string;
-                    ipfs_url: string;
-                    detected: boolean;
-                    timestamp: DateTime;
-                  };
-                }
-                alias Success = StreamUploadSuccess;
-              }
-
-              namespace Error {
-                @error
-                model InvalidDeviceError {
-                  @statusCode _code: 401;
-                  code: "ERR_INVALID_DEVICE";
-                }
-
-                alias Error = InvalidDeviceError | BadRequestError | UnexpectedError;
-              }
-
-              alias Response = Success.Success | Error.Error;
+            model Headers {
+              @header
+              authorization: string;
             }
 
-            @post
-            @doc("Upload surveillance stream from IoT device. IoT devices use this endpoint to send captured images to the cloud server.")
-            op uploadStream(
-              ...Request.Path,
-              ...Request.Headers,
-              @multipartBody body: Request.Body,
-            ): Response.Response;
+            model Body {
+              image: HttpPart<ImageFile>;
+              timestamp: HttpPart<DateTime>;
+              session_id: HttpPart<Id>;
+            }
           }
 
-          @route("/heartbeat")
-          namespace Heartbeat {
-            namespace Request {
-              model Path {
-                @path
-                deviceId: DeviceIdCode;
+          namespace Response {
+            namespace Success {
+              model StreamUploadSuccess {
+                code: "STREAM_UPLOADED";
+                data: {
+                  event_id: Id;
+                  ipfs_cid: string;
+                  ipfs_url: string;
+                  detected: boolean;
+                  timestamp: DateTime;
+                };
               }
-
-              model Headers {
-                @header
-                authorization: string;
-              }
-
-              model Body {
-                status: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
-                timestamp: DateTime;
-                battery_level?: int32;
-                signal_strength?: int32;
-              }
+              alias Success = StreamUploadSuccess;
             }
 
-            namespace Response {
-              namespace Success {
-                model HeartbeatSuccess {
-                  code: "HEARTBEAT_RECEIVED";
-                  data: {
-                    device_id: DeviceIdCode;
-                    timestamp: DateTime;
-                    acknowledged: boolean;
-                  };
-                }
-                alias Success = HeartbeatSuccess;
+            namespace Error {
+              @error
+              model InvalidDeviceError {
+                @statusCode _code: 401;
+                code: "ERR_INVALID_DEVICE";
               }
 
-              namespace Error {
-                alias Error = BadRequestError | NotFoundError<"DEVICE"> | UnexpectedError;
-              }
-
-              alias Response = Success.Success | Error.Error;
+              alias Error = InvalidDeviceError | BadRequestError | UnexpectedError;
             }
 
-            @post
-            @doc("Send heartbeat signal from IoT device to indicate it is still active.")
-            op sendHeartbeat(
-              ...Request.Path,
-              ...Request.Headers,
-              @body body: Request.Body,
-            ): Response.Response;
+            alias Response = Success.Success | Error.Error;
           }
+
+          @post
+          @doc("Upload surveillance stream from IoT device. IoT devices use this endpoint to send captured images to the cloud server.")
+          op uploadStream(
+            ...Request.Path,
+            ...Request.Headers,
+            @multipartBody body: Request.Body,
+          ): Response.Response;
+        }
+
+        @route("/heartbeat")
+        namespace Heartbeat {
+          namespace Request {
+            model Path {
+              @path
+              deviceId: DeviceIdCode;
+            }
+
+            model Headers {
+              @header
+              authorization: string;
+            }
+
+            model Body {
+              status: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
+              timestamp: DateTime;
+              battery_level?: int32;
+              signal_strength?: int32;
+            }
+          }
+
+          namespace Response {
+            namespace Success {
+              model HeartbeatSuccess {
+                code: "HEARTBEAT_RECEIVED";
+                data: {
+                  device_id: DeviceIdCode;
+                  timestamp: DateTime;
+                  acknowledged: boolean;
+                };
+              }
+              alias Success = HeartbeatSuccess;
+            }
+
+            namespace Error {
+              alias Error = BadRequestError | NotFoundError<"DEVICE"> | UnexpectedError;
+            }
+
+            alias Response = Success.Success | Error.Error;
+          }
+
+          @post
+          @doc("Send heartbeat signal from IoT device to indicate it is still active.")
+          op sendHeartbeat(
+            ...Request.Path,
+            ...Request.Headers,
+            @body body: Request.Body,
+          ): Response.Response;
         }
       }
     }
+  }
 
-    @tag("Storage")
-    @route("/storage")
-    namespace Storage {
-      @route("/upload")
-      namespace Upload {
-        namespace Request {
-          model Headers {
-            @header
-            contentType: "multipart/form-data";
-          }
-
-          model Body {
-            files: HttpPart<ImageFile[]>;
-          }
+  @tag("Storage")
+  @route("/storage")
+  namespace Storage {
+    @route("/upload")
+    namespace Upload {
+      namespace Request {
+        model Headers {
+          @header
+          contentType: "multipart/form-data";
         }
 
-        namespace Response {
-          namespace Success {
-            model MediaUploadSuccess {
-              code: "MEDIA_UPLOADED";
-              data: MediaDescription[];
-            }
-            alias Success = MediaUploadSuccess;
-          }
-
-          namespace Error {
-            alias Error = BadRequestError | UnauthorizedError | UnexpectedError;
-          }
-
-          alias Response = Success.Success | Error.Error;
+        model Body {
+          files: HttpPart<ImageFile[]>;
         }
-
-        @post
-        @useAuth(BearerAuth)
-        @doc("Upload multiple media files to IPFS via the cloud server")
-        op uploadMedia(
-          ...Request.Headers,
-          @multipartBody body: Request.Body,
-        ): Response.Response;
       }
+
+      namespace Response {
+        namespace Success {
+          model MediaUploadSuccess {
+            code: "MEDIA_UPLOADED";
+            data: MediaDescription[];
+          }
+          alias Success = MediaUploadSuccess;
+        }
+
+        namespace Error {
+          alias Error = BadRequestError | UnauthorizedError | UnexpectedError;
+        }
+
+        alias Response = Success.Success | Error.Error;
+      }
+
+      @post
+      @useAuth(BearerAuth)
+      @doc("Upload multiple media files to IPFS via the cloud server")
+      op uploadMedia(
+        ...Request.Headers,
+        @multipartBody body: Request.Body,
+      ): Response.Response;
+    }
+  }
+
+  namespace Pagination {
+    model Options {
+      page: int64;
+      per_page: int64;
     }
 
-    namespace Pagination {
-      model Options {
-        page: int64;
-        per_page: int64;
-      }
+    model Meta {
+      ...Options;
+      total: int64;
+    }
 
-      model Meta {
-        ...Options;
-        total: int64;
-      }
+    model Paginated<T> {
+      data: T[];
+      meta: Meta;
+    }
 
-      model Paginated<T> {
-        data: T[];
-        meta: Meta;
-      }
+    model Query {
+      @query
+      @minValue(1)
+      page?: integer;
 
-      model Query {
-        @query
-        @minValue(1)
-        page?: integer;
-
-        @query
-        @minValue(10)
-        @maxValue(100)
-        per_page?: integer;
-      }
+      @query
+      @minValue(10)
+      @maxValue(100)
+      per_page?: integer;
     }
   }
 }

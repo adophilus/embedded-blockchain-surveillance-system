@@ -30,7 +30,7 @@ import {
   XCircle
 } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
-import type { Election, Position, Candidate, Voter } from '@embedded-blockchain-surveillance-system/backend/types'
+import type { Election, Position, Candidate, Voter } from '@embedded-blockchain-surveillance-system/server/types'
 
 interface AdminDashboardProps {
   user: {

@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Storage } from '@/features/storage'
 import { CheckCircle, AlertCircle, User, Calendar, Clock } from 'lucide-react'
 import { toast } from 'sonner'
-import type { Election, Position } from '@embedded-blockchain-surveillance-system/backend/types'
+import type { Election, Position } from '@embedded-blockchain-surveillance-system/server/types'
 import { useState } from 'react'
 import Backend from '@/features/backend'
 

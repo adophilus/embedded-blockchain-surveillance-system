@@ -20,10 +20,18 @@ const IotDeviceHeartbeatRoute = new Hono().post(
 
 		if (result.isErr) {
 			response = result.error;
-			statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+			switch (result.error.code) {
+				case "ERR_DEVICE_NOT_FOUND": {
+					statusCode = StatusCodes.NOT_FOUND;
+					break;
+				}
+				default: {
+					statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+				}
+			}
 		} else {
 			response = result.value;
-			statusCode = StatusCodes.CREATED;
+			statusCode = StatusCodes.OK;
 		}
 
 		return c.json(response, statusCode);

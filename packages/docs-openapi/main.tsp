@@ -590,17 +590,12 @@ namespace Api {
             namespace Success {
               model HeartbeatSuccess {
                 code: "HEARTBEAT_RECEIVED";
-                data: {
-                  device_id: string;
-                  timestamp: DateTime;
-                  acknowledged: boolean;
-                };
               }
               alias Success = HeartbeatSuccess;
             }
 
             namespace Error {
-              alias Error = BadRequestError | UnexpectedError;
+              alias Error = NotFoundError<"DEVICE"> | BadRequestError | UnexpectedError;
             }
 
             alias Response = Success.Success | Error.Error;

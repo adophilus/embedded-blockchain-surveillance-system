@@ -2,8 +2,6 @@ import type { Result } from "true-myth";
 
 export type IotDeviceServiceError = 
   | "ERR_DEVICE_NOT_FOUND"
-  | "ERR_INVALID_DEVICE_STATUS"
-  | "ERR_DATABASE_ERROR"
   | "ERR_UNEXPECTED";
 
 export abstract class IotDeviceService {

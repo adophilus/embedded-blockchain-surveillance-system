@@ -1,8 +1,9 @@
 import type { ColumnType } from 'kysely'
 
 type MediaDescription = {
-  source: 'sqlite'
+  source: 'ipfs'
   id: string
+  url: string
 }
 
 type TimestampModel = {
@@ -15,7 +16,7 @@ type UsersTable = TimestampModel & {
   full_name: string
   email: string
   password_hash: string
-  role: 'ADMIN' | 'USER'
+  role: 'ADMIN' | 'OFFICIAL' | 'SYSTEM'
 }
 
 type TokensTable = TimestampModel & {
@@ -27,49 +28,40 @@ type TokensTable = TimestampModel & {
   used_at: string | null
 }
 
-type ElectionsTable = TimestampModel & {
+type SurveillanceSessionsTable = TimestampModel & {
   id: string
   title: string
   description: string | null
   start_timestamp: string
   end_timestamp: string
-  status: 'UPCOMING' | 'ONGOING' | 'COMPLETED'
+  status: 'UPCOMING' | 'ACTIVE' | 'COMPLETED'
 }
 
-type PositionsTable = TimestampModel & {
+type SurveillanceEventsTable = TimestampModel & {
   id: string
-  title: string
-  description: string | null
-  election_id: string
+  session_id: string
+  device_id: string
+  timestamp: string
+  detected: boolean
+  ipfs_cid: string | null
+  ipfs_url: string | null
 }
 
-type CandidatesTable = TimestampModel & {
+type CriminalsTable = TimestampModel & {
   id: string
   name: string
-  bio: string | null
-  image: MediaDescription | null
-  position_id: string
+  aliases: string
+  offense: string | null
+  mugshot: MediaDescription | null
 }
 
-type VotersTable = TimestampModel & {
+type IoTDevicesTable = TimestampModel & {
   id: string
-  election_id: string
-  code: string
-} & (
-    | {
-        status: 'NOT_VOTED'
-        voted_at: null
-      }
-    | { status: 'VOTED'; voted_at: string }
-  )
-
-type VotesTable = {
-  id: string
-  election_id: string
-  position_id: string
-  candidate_id: string
-  voter_id: string
-  created_at: ColumnType<string, never, never>
+  device_code: string
+  location: string
+  status: 'ACTIVE' | 'INACTIVE' | 'MAINTENANCE'
+  ip_address: string | null
+  last_heartbeat: string | null
 }
 
 type FilesTable = TimestampModel & {
@@ -82,10 +74,9 @@ type FilesTable = TimestampModel & {
 export type KyselyDatabaseTables = {
   users: UsersTable
   tokens: TokensTable
-  elections: ElectionsTable
-  positions: PositionsTable
-  candidates: CandidatesTable
-  voters: VotersTable
-  votes: VotesTable
+  surveillance_sessions: SurveillanceSessionsTable
+  surveillance_events: SurveillanceEventsTable
+  criminals: CriminalsTable
+  iot_devices: IoTDevicesTable
   files: FilesTable
 }

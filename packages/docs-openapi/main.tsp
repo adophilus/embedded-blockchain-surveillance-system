@@ -248,45 +248,7 @@ namespace Api {
       created_at: DateTime;
     }
 
-    namespace Create {
-      namespace Request {
-        model Body {
-          title: SessionTitle;
-          description?: SessionDescription;
-          start_timestamp: SessionStartDate;
-          end_timestamp: SessionEndDate;
-        }
-      }
 
-      namespace Response {
-        namespace Success {
-          model SessionCreated {
-            code: "SESSION_CREATED";
-            data: {
-              id: Id;
-            };
-          }
-
-          alias Success = SessionCreated;
-        }
-
-        namespace Error {
-          @error
-          model InvalidDateRangeError {
-            @statusCode _code: 400;
-            code: "ERR_INVALID_DATE_RANGE";
-          }
-
-          alias Error = BadRequestError | InvalidDateRangeError | UnexpectedError;
-        }
-
-        alias Response = Success.Success | Error.Error;
-      }
-
-      @post
-      @doc("Create a surveillance session")
-      op createSession(@body body: Request.Body): Response.Response;
-    }
 
     namespace List {
       namespace Request {
@@ -332,10 +294,7 @@ namespace Api {
               code: "SESSION_DETAILS";
               data: {
                 session: Session;
-                devices: Api.Surveillance.ById.Event.Device.Device[];
-                events: (SurveillanceEvent & {
-                  device: Api.Surveillance.ById.Event.Device.Device;
-                })[];
+                events: SurveillanceEvent[];
               };
             }
 
@@ -408,34 +367,7 @@ namespace Api {
         op deleteSessionById(...Request.Path): Response.Response;
       }
 
-      @route("/end")
-      namespace End {
-        namespace Request {
-          alias Path = ById.Path;
-        }
 
-        namespace Response {
-          namespace Success {
-            model SessionEnded {
-              code: "SESSION_ENDED";
-              data: {
-                id: Id;
-              };
-            }
-            alias Success = SessionEnded;
-          }
-
-          namespace Error {
-            alias Error = NotFoundError<"SESSION"> | UnexpectedError;
-          }
-
-          alias Response = Success.Success | Error.Error;
-        }
-
-        @post
-        @doc("End a surveillance session, setting its status to COMPLETED.")
-        op endSession(...Request.Path): Response.Response;
-      }
 
       @route("/events")
       namespace Event {
@@ -452,9 +384,6 @@ namespace Api {
               @minValue(10)
               @maxValue(100)
               per_page?: integer;
-
-              @query
-              device_id?: string;
 
               @query
               start_date?: DateTime;
@@ -495,7 +424,6 @@ namespace Api {
             model Body {
               image_url: string;
               session_id: Id;
-              device_id: string;
               timestamp: DateTime;
             }
           }
@@ -506,7 +434,7 @@ namespace Api {
                 code: "AI_DETECTION_COMPLETED";
                 data: {
                   detected: boolean;
-                  matches: Criminal.Criminal[];
+                  matches: Api.Surveillance.Criminal.Criminal[];
                   confidence: float64;
                   ipfs_cid: string | null;
                   ipfs_url: string | null;
@@ -530,129 +458,88 @@ namespace Api {
           ): Response.Response;
         }
 
-        @route("/results")
-        namespace Results {
-          namespace Request {
-            alias Path = ById.Path;
-          }
 
-          namespace Response {
-            namespace Success {
-              model SessionResults {
-                code: "SESSION_RESULTS";
-                data: {
-                  session: Session;
-                  total_events: int32;
-                  total_detections: int32;
-                  devices: (Device.Device & {
-                    event_count: int32;
-                    detection_count: int32;
-                  })[];
-                  top_detections: (Criminal.Criminal & {
-                    count: int32;
-                  })[];
-                };
-              }
 
-              alias Success = SessionResults;
-            }
+  @tag("Criminal")
+  @route("/criminals")
+  namespace Criminal {
+    model Criminal {
+      id: Id;
+      name: CriminalName;
+      aliases: string[];
+      offense: CriminalOffense | null;
+      mugshot: MediaDescription | null;
+      created_at: DateTime;
+    }
 
-            namespace Error {
-              alias Error = NotFoundError<"SESSION"> | UnexpectedError;
-            }
-
-            alias Response = Success.Success | Error.Error;
-          }
-
-          @doc("Get results for a specific surveillance session")
-          op getSessionResults(...Request.Path): Response.Response;
+    namespace Create {
+      namespace Request {
+        model CriminalPayload {
+          name: CriminalName;
+          aliases?: string[];
+          offense?: CriminalOffense;
+          mugshot?: MediaDescription;
         }
 
-        @tag("Criminal")
-        @route("/criminals")
-        namespace Criminal {
-          model Criminal {
-            id: Id;
-            name: CriminalName;
-            aliases: string[];
-            offense: CriminalOffense | null;
-            mugshot: MediaDescription | null;
-            created_at: DateTime;
-          }
-
-          namespace Create {
-            namespace Request {
-              alias Path = ById.Path;
-
-              model CriminalPayload {
-                name: CriminalName;
-                aliases?: string[];
-                offense?: CriminalOffense;
-                mugshot?: MediaDescription;
-              }
-
-              model Body {
-                criminals: CriminalPayload[];
-              }
-            }
-
-            namespace Response {
-              namespace Success {
-                model CriminalCreated {
-                  code: "CRIMINALS_LIST";
-                  data: Criminal[];
-                }
-
-                alias Success = CriminalCreated;
-              }
-
-              namespace Error {
-                alias Error = NotFoundError<"SESSION"> | BadRequestError | UnexpectedError;
-              }
-
-              alias Response = Success.Success | Error.Error;
-            }
-
-            @post
-            @doc("Create a criminal profile for a specific session")
-            op createCriminal(
-              ...Request.Path,
-              @body body: Request.Body,
-            ): Response.Response;
-          }
-
-          @route("/{criminalId}")
-          namespace Get {
-            namespace Request {
-              model Path {
-                ...ById.Path;
-
-                @path
-                criminalId: Id;
-              }
-            }
-
-            namespace Response {
-              namespace Success {
-                model CriminalDetails {
-                  code: "CRIMINAL_DETAILS";
-                  data: Criminal;
-                }
-
-                alias Success = CriminalDetails;
-              }
-
-              namespace Error {
-                alias Error = NotFoundError<"CRIMINAL"> | NotFoundError<"SESSION"> | UnexpectedError;
-              }
-
-              alias Response = Success.Success | Error.Error;
-            }
-
-            @doc("Get details of a specific criminal")
-            op getCriminalById(...Request.Path): Response.Response;
-          }
+        model Body {
+          criminals: CriminalPayload[];
         }
+      }
+
+      namespace Response {
+        namespace Success {
+          model CriminalCreated {
+            code: "CRIMINALS_LIST";
+            data: Criminal[];
+          }
+
+          alias Success = CriminalCreated;
+        }
+
+        namespace Error {
+          alias Error = BadRequestError | UnexpectedError;
+        }
+
+        alias Response = Success.Success | Error.Error;
+      }
+
+      @post
+      @doc("Create criminal profiles")
+      op createCriminal(
+        @body body: Request.Body,
+      ): Response.Response;
+    }
+
+    @route("/{criminalId}")
+    namespace ById {
+      namespace Request {
+        model Path {
+          @path
+          criminalId: Id;
+        }
+      }
+
+      namespace Response {
+        namespace Success {
+          model CriminalDetails {
+            code: "CRIMINAL_DETAILS";
+            data: Criminal;
+          }
+
+          alias Success = CriminalDetails;
+        }
+
+        namespace Error {
+          alias Error = NotFoundError<"CRIMINAL"> | UnexpectedError;
+        }
+
+        alias Response = Success.Success | Error.Error;
+      }
+
+      @doc("Get details of a specific criminal")
+      op getCriminalById(...Request.Path): Response.Response;
+    }
+  }
 
 
       }
@@ -729,13 +616,7 @@ namespace Api {
             }
 
             namespace Error {
-              @error
-              model InvalidDeviceError {
-                @statusCode _code: 401;
-                code: "ERR_INVALID_DEVICE";
-              }
-
-              alias Error = InvalidDeviceError | BadRequestError | UnexpectedError;
+              alias Error = BadRequestError | UnexpectedError;
             }
 
             alias Response = Success.Success | Error.Error;
@@ -785,7 +666,7 @@ namespace Api {
             }
 
             namespace Error {
-              alias Error = BadRequestError | NotFoundError<"DEVICE"> | UnexpectedError;
+              alias Error = BadRequestError | UnexpectedError;
             }
 
             alias Response = Success.Success | Error.Error;
@@ -803,47 +684,7 @@ namespace Api {
     }
   }
 
-  @tag("Storage")
-  @route("/storage")
-  namespace Storage {
-    @route("/upload")
-    namespace Upload {
-      namespace Request {
-        model Headers {
-          @header
-          contentType: "multipart/form-data";
-        }
 
-        model Body {
-          files: HttpPart<ImageFile[]>;
-        }
-      }
-
-      namespace Response {
-        namespace Success {
-          model MediaUploadSuccess {
-            code: "MEDIA_UPLOADED";
-            data: MediaDescription[];
-          }
-          alias Success = MediaUploadSuccess;
-        }
-
-        namespace Error {
-          alias Error = BadRequestError | UnauthorizedError | UnexpectedError;
-        }
-
-        alias Response = Success.Success | Error.Error;
-      }
-
-      @post
-      @useAuth(BearerAuth)
-      @doc("Upload multiple media files to IPFS via the cloud server")
-      op uploadMedia(
-        ...Request.Headers,
-        @multipartBody body: Request.Body,
-      ): Response.Response;
-    }
-  }
 
   namespace Pagination {
     model Options {

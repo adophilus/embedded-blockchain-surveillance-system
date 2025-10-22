@@ -8,9 +8,12 @@ This section contains materials specifically prepared for project reporting requ
 
 ## Table of Contents
 
-- [Materials](/project-report/materials) - Organized materials documentation
-  - [Overview](/project-report/materials-overview) - High-level system components overview
-  - [Software](/project-report/materials-software) - Software components and tools
+- [Materials](/project-report/materials) - Organized documentation of system components
+  - [Overview](/project-report/materials-overview) - High-level system components overview with cost breakdown
+  - [Software](/project-report/materials-software) - Software components, frameworks, and tools used
   - [Hardware](/project-report/materials-hardware) - Hardware components and specifications
 - [System Images](/project-report/images) - Visual representations of system components and implementation
-- [Methods](/project-report/methods) - Detailed account of methods employed in implementation
+  - Individual component images (ESP32-CAM, PIR sensor, 7.4V battery, etc.)
+  - System diagrams (circuit schematic, coupled implementation)
+  - Software interface screenshots (IPFS dashboard)
+- [Methods](/project-report/methods) - Detailed account of implementation methods and design choices

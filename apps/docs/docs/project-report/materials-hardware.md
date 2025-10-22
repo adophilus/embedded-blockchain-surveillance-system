@@ -4,11 +4,14 @@ layout: doc
 
 # Materials: Hardware
 
-This section details the hardware materials used in the implementation of the Embedded Blockchain Surveillance System, including IoT devices and sensors that form the surveillance network.
+This section details the hardware materials used in the implementation of the Embedded Blockchain Surveillance System, including IoT devices and sensors that form the surveillance network. Visual representations of these components can be found in the [System Images](/project-report/images) section.
 
 ## IoT Surveillance Devices
 
 ### ESP32-CAM Microcontroller
+![ESP32-CAM](../images/esp32-cam.jpg)
+*The primary hardware component of the surveillance system*
+
 The primary hardware component of the surveillance system is the ESP32-CAM microcontroller, which provides:
 
 - **Core Processor**: ESP32 dual-core microcontroller with built-in Wi-Fi connectivity
@@ -37,6 +40,9 @@ The primary hardware component of the surveillance system is the ESP32-CAM micro
 ## Motion Detection Sensors
 
 ### PIR (Passive Infrared) Sensors
+![PIR Motion Sensor](../images/pir-motion-sensor.jpg)
+*Detects motion and triggers the surveillance recording process*
+
 PIR sensors are used to detect motion and trigger the surveillance recording process:
 
 - **Detection Angle**: 110-degree wide-angle lens for comprehensive coverage
@@ -56,23 +62,38 @@ PIR sensors are used to detect motion and trigger the surveillance recording pro
 
 ## Power Management Components
 
-### Power Supply Components
-The system uses the following power management components:
+### 7.4V 40000mAh Li-ion Battery
+![7.4V Li-ion Battery](../images/7.4v-battery.jpg)
+*40000mAh rechargeable Li-ion battery providing extended surveillance operations*
 
-1. **Primary Power Source**:
-   - Rechargeable 7.4V 40000mAh Li-ion Battery (2S configuration) as the main power source
-   - Provides extended operational time for continuous surveillance
-   - Can be recharged via external charging circuitry
+The primary power source for the surveillance system is a high-capacity 7.4V 40000mAh Li-ion Battery (2S configuration) which provides:
 
-2. **Voltage Regulation**:
-   - LM2596 DC-DC Buck Converter to step down 7.4V battery voltage to 5V
-   - Efficient DC-DC conversion for ESP32-CAM operation
-   - Maintains stable voltage output throughout battery discharge cycle
+- Extended operational time for continuous surveillance (approximately 3-4 days of continuous operation)
+- Rechargeable via external charging circuitry
+- Stable power delivery for all system components
+- Weather-resistant housing for outdoor deployment
 
-3. **Power Control**:
-   - Slide switch as the main power switch for the entire system
-   - Allows manual on/off control of the surveillance system
-   - Disconnects power completely when switched off to conserve battery
+### LM2596 DC-DC Buck Converter
+![LM2596 DC-DC Buck Converter](../images/lm2596_dc-dc_buck_converter.jpeg)
+*Steps down 7.4V battery voltage to 5V for ESP32-CAM operation*
+
+The LM2596 DC-DC Buck Converter is used to:
+
+- Step down the 7.4V battery voltage to the required 5V for ESP32-CAM operation
+- Provide efficient DC-DC conversion with minimal power loss
+- Maintain stable voltage output throughout the battery discharge cycle
+- Include built-in protection mechanisms for overcurrent and overheating
+
+### Slide Switch
+![Slide Switch](../images/switch.jpg)
+*Main power switch for controlling the entire system*
+
+A slide switch serves as the main power switch for the entire system:
+
+- Allows manual on/off control of the surveillance system
+- Completely disconnects power when switched off to conserve battery
+- Integrated into the power circuit for easy access
+- Durable construction for reliable operation in field conditions
 
 ## Connectivity Hardware
 
@@ -119,4 +140,16 @@ The hardware components work together in the following architecture:
 - 7.4V 40000mAh Li-ion Battery → LM2596 DC-DC Buck Converter → ESP32-CAM and Sensors
 - Power management ensures stable operation of all components
 - Low-power modes extend operational time for battery-powered deployments
+
+### System Schematic
+![Circuit Schematic](../images/schematic.png)
+*Complete circuit diagram showing the connections between all components*
+
+### Coupled System Implementation
+![Coupled System](../images/coupled-system.jpg)
+*Actual implementation of the coupled system showing all components working together*
+
+### IPFS Dashboard
+![IPFS Dashboard](../images/ipfs-dashboard.jpg)
+*Dashboard showing the IPFS storage interface where surveillance videos are stored*
 

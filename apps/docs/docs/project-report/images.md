@@ -4,7 +4,7 @@ layout: doc
 
 # System Images
 
-This page displays visual representations of the Embedded Blockchain Surveillance System components, including individual hardware components, the system schematic, and the coupled system implementation.
+This page displays visual representations of the Embedded Blockchain Surveillance System components, including individual hardware components, system diagrams, and the IPFS dashboard.
 
 ## Individual Components
 
@@ -24,6 +24,10 @@ This page displays visual representations of the Embedded Blockchain Surveillanc
 ![LM2596 DC-DC Buck Converter](../images/lm2596_dc-dc_buck_converter.jpeg)
 *LM2596 DC-DC buck converter that steps down 7.4V battery voltage to 5V for the ESP32-CAM.*
 
+### 7.4V Li-ion Battery
+![7.4V Li-ion Battery](../images/7.4v-battery.jpg)
+*40000mAh rechargeable Li-ion battery providing power for extended surveillance operations.*
+
 ## System Diagrams
 
 ### Circuit Schematic
@@ -33,3 +37,7 @@ This page displays visual representations of the Embedded Blockchain Surveillanc
 ### Coupled System Implementation
 ![Coupled System](../images/coupled-system.jpg)
 *Actual implementation of the coupled system showing all components connected and working together.*
+
+## IPFS Dashboard
+![IPFS Dashboard](../images/ipfs-dashboard.jpg)
+*Dashboard showing the IPFS storage interface where surveillance videos are stored with content addressing through CIDs.*

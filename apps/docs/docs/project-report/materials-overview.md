@@ -4,7 +4,7 @@ layout: doc
 
 # Materials: Overview
 
-This section provides a high-level overview of the materials used in the implementation of the Embedded Blockchain Surveillance System. The materials are categorized into software and hardware components that work together to create a comprehensive surveillance solution.
+This section provides a high-level overview of the materials used in the implementation of the Embedded Blockchain Surveillance System. The materials are categorized into software and hardware components that work together to create a comprehensive surveillance solution. Visual representations of these components can be found in the [System Images](/project-report/images) section.
 
 ## System Components Overview
 
@@ -19,6 +19,9 @@ The Embedded Blockchain Surveillance System combines multiple technologies to ac
 ### Hardware Components
 - **IoT Surveillance Devices**: ESP32-CAM microcontrollers with integrated cameras
 - **Motion Sensors**: PIR sensors for detecting movement and triggering recordings
+- **Power Supply**: 7.4V 40000mAh Li-ion Battery for extended operation
+- **Power Management**: LM2596 DC-DC Buck Converter for voltage regulation
+- **System Control**: Slide switch for manual power control
 
 ### Infrastructure
 - **Server Infrastructure**: 3.5GB VPS from Racknerd for cloud server deployment
@@ -34,6 +37,21 @@ The system leverages a comprehensive technology stack designed to provide:
 - **Real-Time Monitoring**: IoT devices with motion sensors providing continuous surveillance
 - **Immutable Records**: Blockchain-based timestamping and event logging
 - **Secure Access**: Role-based authentication and authorization for officials
+
+## System Architecture Visualization
+
+### Individual Components
+Visual representations of individual hardware components:
+- ![ESP32-CAM](../images/esp32-cam.jpg) - Main controller with integrated camera
+- ![PIR Motion Sensor](../images/pir-motion-sensor.jpg) - Detects motion and triggers recordings
+- ![7.4V Battery](../images/7.4v-battery.jpg) - High-capacity power source for extended operation
+- ![Buck Converter](../images/lm2596_dc-dc_buck_converter.jpeg) - Voltage regulation component
+- ![Slide Switch](../images/switch.jpg) - Manual power control component
+
+### System Integration
+- ![Circuit Schematic](../images/schematic.png) - Complete circuit diagram showing component connections
+- ![Coupled System](../images/coupled-system.jpg) - Actual implementation of all components working together
+- ![IPFS Dashboard](../images/ipfs-dashboard.jpg) - Interface for decentralized video storage
 
 ## Cost Breakdown
 

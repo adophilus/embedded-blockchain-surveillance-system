@@ -4,7 +4,7 @@ layout: doc
 
 # Materials: Software
 
-This section details the software materials used in the implementation of the Embedded Blockchain Surveillance System, including frameworks, libraries, development tools, and infrastructure components.
+This section details the software materials used in the implementation of the Embedded Blockchain Surveillance System, including frameworks, libraries, development tools, and infrastructure components. Visual representations of these components can be found in the [System Images](/project-report/images) section.
 
 ## Development Frameworks and Libraries
 
@@ -128,3 +128,15 @@ This section details the software materials used in the implementation of the Em
 3. **Task Runner**: PNPM for monorepo management and dependency resolution
 4. **Testing Framework**: Foundry's testing framework for smart contracts
 5. **Network Tools**: Anvil for local blockchain testing and development
+
+## Software Interface Visualization
+
+### IPFS Dashboard
+![IPFS Dashboard](../images/ipfs-dashboard.jpg)
+*Dashboard showing the IPFS storage interface where surveillance videos are stored with content addressing through CIDs*
+
+The thirdweb IPFS Gateway provides a user-friendly interface for managing decentralized storage of surveillance footage. The dashboard allows officials to:
+- View stored video streams with their unique CIDs
+- Monitor storage usage and costs
+- Access video metadata and timestamps
+- Verify the immutability of stored content

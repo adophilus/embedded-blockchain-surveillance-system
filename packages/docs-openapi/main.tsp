@@ -123,7 +123,6 @@ namespace Api {
   @example("CRIMINAL001")
   scalar CriminalIdCode extends string;
 
-
   @tag("Criminal")
   @route("/criminals")
   namespace Criminal {
@@ -169,9 +168,7 @@ namespace Api {
 
       @post
       @doc("Create criminal profiles")
-      op createCriminal(
-        @body body: Request.Body,
-      ): Response.Response;
+      op createCriminal(@body body: Request.Body): Response.Response;
     }
 
     @route("/{criminalId}")
@@ -329,8 +326,6 @@ namespace Api {
       created_at: DateTime;
     }
 
-
-
     namespace List {
       namespace Request {
         alias Query = Pagination.Query;
@@ -392,63 +387,6 @@ namespace Api {
         @doc("Get surveillance session by id")
         op getSessionById(...Request.Path): Response.Response;
       }
-
-      namespace Update {
-        namespace Request {
-          alias Path = ById.Path;
-          alias Body = OptionalProperties<Create.Request.Body>;
-        }
-
-        namespace Response {
-          namespace Success {
-            model SessionUpdated {
-              code: "SESSION_UPDATED";
-            }
-
-            alias Success = SessionUpdated;
-          }
-
-          namespace Error {
-            alias Error = BadRequestError | UnexpectedError;
-          }
-
-          alias Response = Success.Success | Error.Error;
-        }
-
-        @patch(#{ implicitOptionality: false })
-        @doc("Update a surveillance session")
-        op updateSessionById(
-          ...Request.Path,
-          @body body: Request.Body,
-        ): Response.Response;
-      }
-
-      namespace Delete {
-        namespace Request {
-          alias Path = ById.Path;
-        }
-
-        namespace Response {
-          namespace Success {
-            model SessionDeleted {
-              code: "SESSION_DELETED";
-            }
-            alias Success = SessionDeleted;
-          }
-
-          namespace Error {
-            alias Error = NotFoundError<"SESSION"> | UnexpectedError;
-          }
-
-          alias Response = Success.Success | Error.Error;
-        }
-
-        @delete
-        @doc("Delete a surveillance session by ID.")
-        op deleteSessionById(...Request.Path): Response.Response;
-      }
-
-
 
       @route("/events")
       namespace Event {
@@ -538,11 +476,6 @@ namespace Api {
             @body body: Request.Body,
           ): Response.Response;
         }
-
-
-
-  @tag("Criminal")
-  @route("/criminals")
       }
     }
 
@@ -684,8 +617,6 @@ namespace Api {
       }
     }
   }
-
-
 
   namespace Pagination {
     model Options {

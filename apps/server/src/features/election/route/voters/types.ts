@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { type types, schema as apiSchema } from '@vs/api'
+import { type types, schema as apiSchema } from '@embedded-blockchain-surveillance-system/api'
 
 export namespace Request {
   export const path = z.object({

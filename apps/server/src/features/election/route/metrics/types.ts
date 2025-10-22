@@ -1,4 +1,4 @@
-import type { types } from '@vs/api'
+import type { types } from '@embedded-blockchain-surveillance-system/api'
 
 export namespace Request {
   // No path or query parameters for platform-wide metrics

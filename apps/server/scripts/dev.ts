@@ -1,4 +1,4 @@
-import { bootstrap } from '@vs/backend'
+import { bootstrap } from '@embedded-blockchain-surveillance-system/backend'
 import { serve } from '@hono/node-server'
 
 const { app, logger, config, cronService } = await bootstrap()

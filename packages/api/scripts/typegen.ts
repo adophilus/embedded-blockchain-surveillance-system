@@ -1,6 +1,6 @@
 import { writeFile } from 'node:fs/promises'
 import SwaggerParser from '@apidevtools/swagger-parser'
-import openapiSchema from '@vs/docs-openapi/openapi.yaml?raw'
+import openapiSchema from '@embedded-blockchain-surveillance-system/docs-openapi/openapi.yaml?raw'
 import openapiTS, { astToString } from 'openapi-typescript'
 import { generateZodClientFromOpenAPI } from 'openapi-zod-client'
 import type { oas30 } from 'openapi3-ts'

@@ -1,4 +1,4 @@
-import { schema as apiSchema, type types } from '@vs/api'
+import { schema as apiSchema, type types } from '@embedded-blockchain-surveillance-system/api'
 import type { z } from 'zod'
 
 export namespace Request {

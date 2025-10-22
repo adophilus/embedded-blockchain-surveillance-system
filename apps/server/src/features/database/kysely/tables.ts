@@ -37,14 +37,16 @@ type SurveillanceSessionsTable = TimestampModel & {
   status: 'UPCOMING' | 'ACTIVE' | 'COMPLETED'
 }
 
-type SurveillanceEventsTable = TimestampModel & {
+type SurveillanceEventsTable = {
   id: string
   session_id: string
   device_id: string
   timestamp: string
   detected: boolean
-  ipfs_cid: string | null
-  ipfs_url: string | null
+  media_source: string | null
+  media_id: string | null
+  media_url: string | null
+  created_at: string
 }
 
 type CriminalsTable = TimestampModel & {

@@ -1,8 +1,8 @@
-import { env } from '../env'
+import { env } from "../env";
 
 const ServerConfig = {
-  port: env.PORT,
-  url: env.BACKEND_URL
-}
+	port: env.SERVER_PORT,
+	url: env.SERVER_URL,
+};
 
-export default ServerConfig
+export default ServerConfig;

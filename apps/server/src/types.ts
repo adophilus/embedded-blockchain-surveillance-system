@@ -1,6 +1,6 @@
 import type { Insertable, Selectable, Updateable } from 'kysely'
 import type { KyselyDatabaseTables } from './features/database/kysely'
-import type { types } from '@vs/api'
+import type { types } from '@embedded-blockchain-surveillance-system/api'
 
 type ApiCompatibility<T> = T
 type KSelectable<T> = Selectable<T>

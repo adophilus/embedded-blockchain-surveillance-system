@@ -1,8 +1,10 @@
 import type { Result, Unit } from "true-myth";
 
-export type IotDeviceServiceError = "ERR_DEVICE_NOT_FOUND" | "ERR_UNEXPECTED";
+export type UpdateDeviceRepositoryError =
+	| "ERR_DEVICE_NOT_FOUND"
+	| "ERR_UNEXPECTED";
 
-export abstract class IotDeviceService {
+export abstract class IotDeviceRepository {
 	/**
 	 * Update the heartbeat timestamp for an IoT device
 	 * @param deviceId - The ID of the IoT device
@@ -12,5 +14,5 @@ export abstract class IotDeviceService {
 	public abstract updateHeartbeat(
 		deviceId: string,
 		timestamp: Date,
-	): Promise<Result<Unit, IotDeviceServiceError>>;
+	): Promise<Result<Unit, UpdateDeviceRepositoryError>>;
 }

@@ -6,7 +6,7 @@ import type { IotDeviceService } from "@/features/iot/service/interface";
 export class IotDeviceHeartbeatUseCaseImplementation
 	implements IotDeviceHeartbeatUseCase
 {
-	constructor(private service: IotDeviceService) {}
+	constructor(private readonly service: IotDeviceService) {}
 
 	async execute(
 		payload: Request.Path & Request.Body,

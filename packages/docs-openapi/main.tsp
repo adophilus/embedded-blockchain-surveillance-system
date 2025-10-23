@@ -529,8 +529,6 @@ namespace Api {
 
             model Body {
               image: HttpPart<ImageFile>;
-              timestamp: HttpPart<DateTime>;
-              session_id: HttpPart<Id>;
             }
           }
 
@@ -538,13 +536,6 @@ namespace Api {
             namespace Success {
               model StreamUploadSuccess {
                 code: "STREAM_UPLOADED";
-                data: {
-                  event_id: Id;
-                  ipfs_cid: string;
-                  ipfs_url: string;
-                  detected: boolean;
-                  timestamp: DateTime;
-                };
               }
               alias Success = StreamUploadSuccess;
             }
@@ -579,8 +570,6 @@ namespace Api {
             }
 
             model Body {
-              status: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
-              timestamp: DateTime;
               battery_level?: int32;
               signal_strength?: int32;
             }

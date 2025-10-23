@@ -13,7 +13,7 @@ export class IotDeviceUploadUseCaseImplementation
 	): Promise<Result<Response.Success, Response.Error>> {
 		const result = await this.service.uploadStream(
 			payload.deviceId,
-			payload.
+			payload.image,
 		);
 
 		if (result.isErr) {

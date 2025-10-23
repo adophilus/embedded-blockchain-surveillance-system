@@ -1,9 +1,9 @@
 import { Hono } from "hono";
 import CreateCriminalProfileRoute from "./create";
-import IotDeviceUploadRoute from "./upload";
+import GetCriminalProfileByIdRoute from "./get";
 
 const CriminalRouter = new Hono()
 	.route("/", CreateCriminalProfileRoute)
-	.route("/{criminalId}", IotDeviceUploadRoute);
+	.route("/{criminalId}", GetCriminalProfileByIdRoute);
 
 export default CriminalRouter;

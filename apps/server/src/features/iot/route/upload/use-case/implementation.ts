@@ -31,8 +31,16 @@ export class IotDeviceUploadUseCaseImplementation
 			}
 		}
 
+		// get current/active surveillance session
+
+		// determine if a criminal is in the stream
+
+		// add new surveillance event
+
+		// notify officials (if criminal is in stream)
+
 		return Result.ok({
-			code: "HEARTBEAT_RECEIVED",
+			code: "STREAM_UPLOADED",
 		});
 	}
 }

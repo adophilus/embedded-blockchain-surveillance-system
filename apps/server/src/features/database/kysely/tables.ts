@@ -4,13 +4,15 @@ import type { types } from "@embedded-blockchain-surveillance-system/api";
 export type MediaDescription =
 	types.components["schemas"]["Api.MediaDescription"];
 
+type Id = ColumnType<string, string, never>;
+
 type TimestampModel = {
 	created_at: ColumnType<number, never, never>;
 	updated_at: ColumnType<number | null, never, number>;
 };
 
 type UsersTable = TimestampModel & {
-	id: string;
+	id: Id;
 	full_name: string;
 	email: string;
 	password_hash: string;
@@ -18,7 +20,7 @@ type UsersTable = TimestampModel & {
 };
 
 type TokensTable = TimestampModel & {
-	id: string;
+	id: Id;
 	user_id: string;
 	purpose: string;
 	token: string;
@@ -27,7 +29,7 @@ type TokensTable = TimestampModel & {
 };
 
 type SurveillanceSessionsTable = TimestampModel & {
-	id: string;
+	id: Id;
 	title: string;
 	description: string | null;
 	start_timestamp: string;
@@ -36,7 +38,7 @@ type SurveillanceSessionsTable = TimestampModel & {
 };
 
 type SurveillanceEventsTable = {
-	id: string;
+	id: Id;
 	session_id: string;
 	device_id: string;
 	timestamp: string;
@@ -48,7 +50,7 @@ type SurveillanceEventsTable = {
 };
 
 type CriminalsTable = TimestampModel & {
-	id: string;
+	id: Id;
 	name: string;
 	aliases: string[];
 	offense: string | null;
@@ -56,7 +58,7 @@ type CriminalsTable = TimestampModel & {
 };
 
 type IoTDevicesTable = TimestampModel & {
-	id: string;
+	id: Id;
 	device_code: string;
 	location: string;
 	status: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
@@ -65,7 +67,7 @@ type IoTDevicesTable = TimestampModel & {
 };
 
 type FilesTable = TimestampModel & {
-	id: string;
+	id: Id;
 	original_name: string;
 	file_data: Buffer;
 	mime_type: string;

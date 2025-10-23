@@ -80,11 +80,16 @@ export class KyselyCriminalProfileRepository
 		id: string,
 	): Promise<Result<Unit, DeleteCriminalByIdError>> {
 		try {
-			await this.db
+			const deleted = await this.db
 				.deleteFrom("criminals")
 				.where("criminals.id", "=", id)
 				.returningAll()
-				.executeTakeFirstOrThrow();
+				.executeTakeFirst();
+
+			if (!deleted) {
+				return Result.err("ERR_CRIMINAL_NOT_FOUND");
+			}
+
 			return Result.ok();
 		} catch (error) {
 			this.logger.error("Failed to delete criminal", error);
@@ -92,7 +97,7 @@ export class KyselyCriminalProfileRepository
 		}
 	}
 
-	public async listAll(): Promise<
+	public async list(): Promise<
 		Result<Criminal.Selectable[], ListCriminalsError>
 	> {
 		try {

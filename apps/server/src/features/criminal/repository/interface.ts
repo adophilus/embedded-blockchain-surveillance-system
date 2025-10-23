@@ -60,7 +60,7 @@ export abstract class CriminalProfileRepository {
 	 *
 	 * @returns Result containing an array of Criminal.Selectable on success, or an error code
 	 */
-	public abstract listAll(): Promise<
+	public abstract list(): Promise<
 		Result<Criminal.Selectable[], ListCriminalsError>
 	>;
 }

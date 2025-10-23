@@ -1,0 +1,68 @@
+import type { SurveillanceSession } from "@/types";
+import type { Result, Unit } from "true-myth";
+
+export type CreateSurveillanceSessionError = "ERR_UNEXPECTED";
+export type FindSurveillanceSessionByIdError = "ERR_UNEXPECTED";
+export type ListSurveillanceSessionsError = "ERR_UNEXPECTED";
+export type UpdateSurveillanceSessionByIdError =
+	| "ERR_NOT_FOUND"
+	| "ERR_UNEXPECTED";
+export type DeleteSurveillanceSessionByIdError =
+	| "ERR_NOT_FOUND"
+	| "ERR_UNEXPECTED";
+
+export abstract class SurveillanceSessionRepository {
+	/**
+	 * Create a new surveillance session
+	 * @param session - The surveillance session data
+	 * @returns Result containing the created session or error
+	 */
+	public abstract create(
+		session: SurveillanceSession.Insertable,
+	): Promise<
+		Result<SurveillanceSession.Insertable, CreateSurveillanceSessionError>
+	>;
+
+	/**
+	 * Find a surveillance session by its ID
+	 * @param id - The ID of the surveillance session
+	 * @returns Result containing the session or error
+	 */
+	public abstract findById(
+		id: string,
+	): Promise<
+		Result<
+			SurveillanceSession.Selectable | null,
+			FindSurveillanceSessionByIdError
+		>
+	>;
+
+	/**
+	 * List surveillance sessions with optional filtering
+	 * @param filters - Optional filters for the sessions
+	 * @returns Result containing array of sessions or error
+	 */
+	public abstract list(): Promise<
+		Result<SurveillanceSession.Selectable[], ListSurveillanceSessionsError>
+	>;
+
+	/**
+	 * Update a surveillance session
+	 * @param id - The ID of the surveillance session to update
+	 * @param updates - The updates to apply
+	 * @returns Result indicating success or failure
+	 */
+	public abstract updateById(
+		id: string,
+		updates: SurveillanceSession.Updateable,
+	): Promise<Result<Unit, UpdateSurveillanceSessionByIdError>>;
+
+	/**
+	 * Delete a surveillance session
+	 * @param id - The ID of the surveillance session to delete
+	 * @returns Result indicating success or failure
+	 */
+	public abstract deleteById(
+		id: string,
+	): Promise<Result<Unit, DeleteSurveillanceSessionByIdError>>;
+}

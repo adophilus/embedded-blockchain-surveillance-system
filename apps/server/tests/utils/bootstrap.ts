@@ -1,63 +1,147 @@
-import 'reflect-metadata'
+import "reflect-metadata";
 
-import { Container } from '@n8n/di'
-import { HonoApp } from '@/features/app'
+import { Container } from "@n8n/di";
+import { HonoApp } from "@/features/app";
 import {
-  AuthTokenRepository,
-  AuthUserRepository,
-  KyselyAuthTokenRepository,
-  KyselyAuthUserRepository
-} from '@/features/auth/repository'
-import { config } from '@/features/config'
-import { KyselyClient } from '@/features/database/kysely'
-import { createKyselySqliteTestClient } from '@/features/database/kysely/sqlite'
-import { Logger } from '@/features/logger'
-import { Mailer, MockMailer } from '@/features/mailer'
-import { MockStorageService, StorageService } from '@/features/storage/service'
+	AuthTokenRepository,
+	AuthUserRepository,
+	KyselyAuthTokenRepository,
+	KyselyAuthUserRepository,
+} from "@/features/auth/repository";
+import { config } from "@/features/config";
+import { KyselyClient } from "@/features/database/kysely";
+import { createKyselySqliteTestClient } from "@/features/database/kysely/sqlite";
+import { Logger } from "@/features/logger";
+import { Mailer, MockMailer } from "@/features/mailer";
+import { MockStorageService, StorageService } from "@/features/storage/service";
+import {
+	SurveillanceSessionService,
+	SurveillanceSessionServiceImpl,
+} from "@/features/surveillance/session/service";
+import {
+	SurveillanceEventService,
+	SurveillanceEventServiceImpl,
+} from "@/features/surveillance/events/service";
+import {
+	SurveillanceSessionRepository,
+	KyselySurveillanceSessionRepository,
+} from "@/features/surveillance/session/repository";
+import {
+	SurveillanceEventRepository,
+	KyselySurveillanceEventRepository,
+} from "@/features/surveillance/events/repository";
+import {
+	CriminalProfileService,
+	CriminalProfileServiceImplementation,
+} from "@/features/criminal/service";
+import {
+	CriminalProfileRepository,
+	KyselyCriminalProfileRepository,
+} from "@/features/criminal/repository";
+import {
+	IotDeviceService,
+	IotDeviceServiceImplementation,
+} from "@/features/iot/service";
+import {
+	IotDeviceRepository,
+	KyselyIotDeviceRepository,
+} from "@/features/iot/repository";
 
 export const bootstrap = async () => {
-  // Logger
-  const logger = new Logger({ name: 'App' })
+	// Logger
+	const logger = new Logger({ name: "App" });
 
-  // Database
-  const kyselyClient = await createKyselySqliteTestClient()
+	// Database
+	const kyselyClient = await createKyselySqliteTestClient();
 
-  // Storage DI
-  const storageService = new MockStorageService()
+	// Storage DI
+	const storageService = new MockStorageService();
 
-  // Mailer DI
-  const mailer = new MockMailer()
+	// Mailer DI
+	const mailer = new MockMailer();
 
-  // Auth DI
-  const authUserRepository = new KyselyAuthUserRepository(kyselyClient, logger)
-  const authTokenRepository = new KyselyAuthTokenRepository(
-    kyselyClient,
-    logger
-  )
+	// Auth DI
+	const authUserRepository = new KyselyAuthUserRepository(kyselyClient, logger);
+	const authTokenRepository = new KyselyAuthTokenRepository(
+		kyselyClient,
+		logger,
+	);
 
-  const app = new HonoApp(logger)
+	// Surveillance DI
+	const surveillanceSessionRepository = new KyselySurveillanceSessionRepository(
+		kyselyClient,
+		logger,
+	);
+	const surveillanceEventRepository = new KyselySurveillanceEventRepository(
+		kyselyClient,
+		logger,
+	);
+	const surveillanceSessionService = new SurveillanceSessionServiceImpl(
+		surveillanceSessionRepository,
+		logger,
+	);
+	const surveillanceEventService = new SurveillanceEventServiceImpl(
+		surveillanceEventRepository,
+		logger,
+	);
 
-  // Logger DI
-  Container.set(Logger, logger)
+	// Criminal DI
+	const criminalProfileRepository = new KyselyCriminalProfileRepository(
+		kyselyClient,
+		logger,
+	);
+	const criminalProfileService = new CriminalProfileServiceImplementation(
+		criminalProfileRepository,
+		logger,
+	);
 
-  // Database DI
-  Container.set(KyselyClient, kyselyClient)
+	// IoT DI
+	const iotDeviceRepository = new KyselyIotDeviceRepository(
+		kyselyClient,
+		logger,
+	);
+	const iotDeviceService = new IotDeviceServiceImplementation(
+		iotDeviceRepository,
+		logger,
+	);
 
-  // Storage DI
-  Container.set(StorageService, storageService)
+	const app = new HonoApp(logger);
 
-  // Mailer DI
-  Container.set(Mailer, mailer)
+	// Logger DI
+	Container.set(Logger, logger);
 
-  // Auth DI
-  Container.set(AuthUserRepository, authUserRepository)
-  Container.set(AuthTokenRepository, authTokenRepository)
+	// Database DI
+	Container.set(KyselyClient, kyselyClient);
 
-  return { app, logger, config }
-}
+	// Storage DI
+	Container.set(StorageService, storageService);
 
-const { app: appClass, logger } = await bootstrap()
+	// Mailer DI
+	Container.set(Mailer, mailer);
 
-const app = appClass.create()
+	// Auth DI
+	Container.set(AuthUserRepository, authUserRepository);
+	Container.set(AuthTokenRepository, authTokenRepository);
 
-export { app, logger }
+	// Surveillance DI
+	Container.set(SurveillanceSessionRepository, surveillanceSessionRepository);
+	Container.set(SurveillanceEventRepository, surveillanceEventRepository);
+	Container.set(SurveillanceSessionService, surveillanceSessionService);
+	Container.set(SurveillanceEventService, surveillanceEventService);
+
+	// Criminal DI
+	Container.set(CriminalProfileRepository, criminalProfileRepository);
+	Container.set(CriminalProfileService, criminalProfileService);
+
+	// IoT DI
+	Container.set(IotDeviceRepository, iotDeviceRepository);
+	Container.set(IotDeviceService, iotDeviceService);
+
+	return { app, logger, config };
+};
+
+const { app: appClass, logger } = await bootstrap();
+
+const app = appClass.create();
+
+export { app, logger };

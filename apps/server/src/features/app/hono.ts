@@ -7,6 +7,8 @@ import type { Logger } from "@/features/logger";
 import AuthRouter from "@/features/auth/route";
 import type App from "./interface";
 import IotDeviceRouter from "../iot/route";
+import SurveillanceRouter from "../surveillance/route";
+import CriminalRouter from "../criminal/route";
 
 class HonoApp implements App {
 	constructor(private logger: Logger) {}
@@ -14,7 +16,9 @@ class HonoApp implements App {
 	create() {
 		const ApiRouter = new Hono()
 			.route("/auth", AuthRouter)
-			.route("/iot", IotDeviceRouter);
+			.route("/iot", IotDeviceRouter)
+			.route("/surveillance", SurveillanceRouter)
+			.route("/criminals", CriminalRouter);
 
 		return new Hono()
 			.use(compress())

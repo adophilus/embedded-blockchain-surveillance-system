@@ -1,9 +1,6 @@
-import { Hono } from 'hono'
-import UploadRoute from './upload'
-import GetFileRoute from './get'
+import { Hono } from "hono";
+import GetFileRoute from "./get";
 
-const StorageRouter = new Hono()
-  .route('/upload', UploadRoute)
-  .route('/:id', GetFileRoute)
+const StorageRouter = new Hono().route("/:id", GetFileRoute);
 
-export default StorageRouter
+export default StorageRouter;

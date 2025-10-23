@@ -20,7 +20,7 @@ type UsersTable = TimestampModel & {
 	full_name: string;
 	email: string;
 	password_hash: string;
-	role: "ADMIN" | "OFFICIAL" | "SYSTEM";
+	role: "ADMIN" | "OFFICIAL"
 };
 
 type TokensTable = TimestampModel & {

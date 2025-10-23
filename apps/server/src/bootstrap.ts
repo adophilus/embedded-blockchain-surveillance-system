@@ -1,184 +1,241 @@
-import 'reflect-metadata'
+import "reflect-metadata";
 
-import { Container } from '@n8n/di'
-import { App, HonoApp } from '@/features/app'
+import { Container } from "@n8n/di";
+import { App, HonoApp } from "@/features/app";
 import {
-  AuthUserRepository,
-  KyselyAuthUserRepository
-} from '@/features/auth/repository'
+	AuthUserRepository,
+	KyselyAuthUserRepository,
+} from "@/features/auth/repository";
 import {
-  GetUserProfileUseCase,
-  SignInWithEmailUseCase,
-  SignInWithVoterCodeUseCase,
-  SignUpWithEmailUseCase
-} from '@/features/auth/use-case'
-import { config } from '@/features/config'
-import { KyselyClient } from '@/features/database/kysely'
-import { createKyselySqliteClient } from '@/features/database/kysely/sqlite'
-import { Logger } from '@/features/logger'
+	SignInUseCase,
+	SignUpUseCase,
+	GetUserProfileUseCase,
+	SignInUseCaseImplementation,
+	SignUpUseCaseImplementation,
+} from "@/features/auth/use-case";
+import { config } from "@/features/config";
+import { KyselyClient } from "@/features/database/kysely";
+import { createKyselySqliteClient } from "@/features/database/kysely/sqlite";
+import { Logger } from "@/features/logger";
 import {
-  StorageService,
-  SqliteStorageService
-} from '@/features/storage/service'
+	StorageService,
+	SqliteStorageService,
+} from "@/features/storage/service";
+import { CronService } from "@/features/cron/service";
+import { GetFileUseCase } from "@/features/storage/route/get/use-case";
+import { KyselyStorageRepository } from "@/features/storage/repository";
 import {
-  ElectionRepository,
-  KyselyElectionRepository
-} from '@/features/election/repository'
+	SurveillanceSessionService,
+	SurveillanceSessionServiceImpl,
+} from "@/features/surveillance/session/service";
 import {
-  ListElectionsUseCase,
-  CreateElectionUseCase,
-  CreatePositionUseCase,
-  GetElectionByIdUseCase,
-  CreateCandidateUseCase,
-  GenerateVotersUseCase,
-  GetPlatformElectionMetricsUseCase,
-  ListVotersUseCase,
-  GetElectionResultsUseCase,
-  EndElectionUseCase,
-  DeleteElectionUseCase
-} from '@/features/election/use-case'
-import { PositionRepository } from '@/features/election/position/repository'
-import { KyselyPositionRepository } from '@/features/election/position/repository/kysely'
-import { CandidateRepository } from '@/features/election/candidate/repository'
-import { KyselyCandidateRepository } from '@/features/election/candidate/repository/kysely'
+	SurveillanceEventService,
+	SurveillanceEventServiceImpl,
+} from "@/features/surveillance/events/service";
 import {
-  KyselyVoterRepository,
-  VoterRepository
-} from '@/features/election/voter/repository'
-import { KyselyVoteRepository } from '@/features/election/voting/repository/kysely'
-import { VoteRepository } from '@/features/election/voting/repository'
-import { CronService } from '@/features/cron/service'
-import { ElectionStatusCronJob } from '@/features/election/cron'
-import { UploadUseCase } from '@/features/storage/route/upload/use-case'
-import { GetFileUseCase } from '@/features/storage/route/get/use-case'
-import { KyselyStorageRepository } from '@/features/storage/repository'
-import { SubmitVoteUseCase } from '@/features/election/voter/use-case'
+	SurveillanceSessionRepository,
+	KyselySurveillanceSessionRepository,
+} from "@/features/surveillance/session/repository";
+import {
+	SurveillanceEventRepository,
+	KyselySurveillanceEventRepository,
+} from "@/features/surveillance/events/repository";
+import {
+	CriminalProfileService,
+	CriminalProfileServiceImplementation,
+} from "@/features/criminal/service";
+import {
+	CriminalProfileRepository,
+	KyselyCriminalProfileRepository,
+} from "@/features/criminal/repository";
+import {
+	IotDeviceService,
+	IotDeviceServiceImplementation,
+} from "@/features/iot/service";
+import {
+	IotDeviceRepository,
+	KyselyIotDeviceRepository,
+} from "@/features/iot/repository";
+import {
+	ListSurveillanceSessionsUseCase,
+	ListSurveillanceSessionsUseCaseImplementation,
+} from "@/features/surveillance/route/list/use-case";
+import {
+	GetSurveillanceSessionByIdUseCase,
+	GetSurveillanceSessionByIdUseCaseImplementation,
+} from "@/features/surveillance/route/get/use-case";
+import {
+	ListSurveillanceEventsUseCase,
+	ListSurveillanceEventsUseCaseImplementation,
+} from "@/features/surveillance/route/events/use-case";
+import {
+	GetSurveillanceMetricsUseCase,
+	GetSurveillanceMetricsUseCaseImplementation,
+} from "@/features/surveillance/route/metrics/use-case";
+import {
+	IotDeviceUploadUseCase,
+	IotDeviceUploadUseCaseImplementation,
+} from "@/features/iot/route/upload/use-case";
+import {
+	IotDeviceHeartbeatUseCase,
+	IotDeviceHeartbeatUseCaseImplementation,
+} from "@/features/iot/route/heartbeat/use-case";
 
 export const bootstrap = async () => {
-  const logger = new Logger()
+	const logger = new Logger();
 
-  // Database
-  const kyselyClient = await createKyselySqliteClient()
+	// Database
+	const kyselyClient = await createKyselySqliteClient();
 
-  // Storage DI
-  const storageRepository = new KyselyStorageRepository(kyselyClient, logger)
-  const storageService = new SqliteStorageService(storageRepository)
+	// Storage DI
+	const storageRepository = new KyselyStorageRepository(kyselyClient, logger);
+	const storageService = new SqliteStorageService(storageRepository);
 
-  // Auth DI
-  const authUserRepository = new KyselyAuthUserRepository(kyselyClient, logger)
+	// Auth DI
+	const authUserRepository = new KyselyAuthUserRepository(kyselyClient, logger);
 
-  // Auth Use Cases
-  const getUserProfileUseCase = new GetUserProfileUseCase()
-  const signInWithEmailUseCase = new SignInWithEmailUseCase(authUserRepository)
-  const signUpWithEmailUseCase = new SignUpWithEmailUseCase(authUserRepository)
-  const signInWithVoterCodeUseCase = new SignInWithVoterCodeUseCase(
-    kyselyClient,
-    logger
-  )
+	// Surveillance DI
+	const surveillanceSessionRepository = new KyselySurveillanceSessionRepository(
+		kyselyClient,
+		logger,
+	);
+	const surveillanceEventRepository = new KyselySurveillanceEventRepository(
+		kyselyClient,
+		logger,
+	);
+	const surveillanceSessionService = new SurveillanceSessionServiceImpl(
+		surveillanceSessionRepository,
+		logger,
+	);
+	const surveillanceEventService = new SurveillanceEventServiceImpl(
+		surveillanceEventRepository,
+		logger,
+	);
 
-  // Elections DI
-  const electionRepository = new KyselyElectionRepository(kyselyClient, logger)
-  const positionRepository = new KyselyPositionRepository(kyselyClient, logger)
-  const candidateRepository = new KyselyCandidateRepository(
-    kyselyClient,
-    logger
-  )
-  const voterRepository = new KyselyVoterRepository(kyselyClient, logger)
-  const voteRepository = new KyselyVoteRepository(kyselyClient, logger)
-  const submitVoteUseCase = new SubmitVoteUseCase(
-    voterRepository,
-    voteRepository
-  )
+	// Criminal DI
+	const criminalProfileRepository = new KyselyCriminalProfileRepository(
+		kyselyClient,
+		logger,
+	);
+	const criminalProfileService = new CriminalProfileServiceImplementation(
+		criminalProfileRepository,
+		logger,
+	);
 
-  // Cron Service
-  const electionStatusCronJob = new ElectionStatusCronJob(
-    electionRepository,
-    logger
-  )
-  const cronService = new CronService([electionStatusCronJob], logger)
+	// IoT DI
+	const iotDeviceRepository = new KyselyIotDeviceRepository(
+		kyselyClient,
+		logger,
+	);
+	const iotDeviceService = new IotDeviceServiceImplementation(
+		iotDeviceRepository,
+		storageService,
+	);
 
-  // Elections Use Cases
-  const generateVotersUseCase = new GenerateVotersUseCase(voterRepository)
-  const listElectionsUseCase = new ListElectionsUseCase(electionRepository)
-  const createElectionUseCase = new CreateElectionUseCase(electionRepository)
-  const createPositionUseCase = new CreatePositionUseCase(positionRepository)
-  const createCandidateUseCase = new CreateCandidateUseCase(candidateRepository)
-  const getElectionByIdUseCase = new GetElectionByIdUseCase(
-    electionRepository,
-    positionRepository,
-    candidateRepository,
-    logger
-  )
-  const getPlatformElectionMetricsUseCase =
-    new GetPlatformElectionMetricsUseCase(electionRepository, logger)
-  const listVotersUseCase = new ListVotersUseCase(voterRepository, logger)
-  const uploadUseCase = new UploadUseCase(storageRepository)
-  const getFileUseCase = new GetFileUseCase(storageRepository, logger)
-  const endElectionUseCase = new EndElectionUseCase(electionRepository)
-  const getElectionResultsUseCase = new GetElectionResultsUseCase(
-    electionRepository,
-    voterRepository,
-    voteRepository,
-    positionRepository,
-    candidateRepository,
-    logger
-  )
-  const deleteElectionUseCase = new DeleteElectionUseCase(
-    electionRepository,
-    logger
-  )
+	// Auth Use Cases
+	const getUserProfileUseCase = new GetUserProfileUseCase();
+	const signInUseCase = new SignInUseCaseImplementation(authUserRepository);
+	const signUpUseCase = new SignUpUseCaseImplementation(authUserRepository);
 
-  const app = new HonoApp(logger)
+	// Cron Service
+	const cronService = new CronService([], logger);
 
-  // App
-  Container.set(App, app)
+	// Surveillance Use Cases
+	const listSurveillanceSessionsUseCase =
+		new ListSurveillanceSessionsUseCaseImplementation(
+			surveillanceSessionService,
+			logger,
+		);
+	const getSurveillanceSessionByIdUseCase =
+		new GetSurveillanceSessionByIdUseCaseImplementation(
+			surveillanceSessionService,
+			surveillanceEventService,
+			logger,
+		);
+	const listSurveillanceEventsUseCase =
+		new ListSurveillanceEventsUseCaseImplementation(
+			surveillanceEventService,
+			logger,
+		);
+	const getSurveillanceMetricsUseCase =
+		new GetSurveillanceMetricsUseCaseImplementation(
+			surveillanceSessionService,
+			surveillanceEventService,
+			logger,
+		);
 
-  // Database
-  Container.set(KyselyClient, kyselyClient)
+	// Storage Use Cases
+	const getFileUseCase = new GetFileUseCase(storageRepository, logger);
 
-  // Storage DI
-  Container.set(StorageService, storageService)
+	// IoT Use Cases
+	const iotDeviceUploadUseCase = new IotDeviceUploadUseCaseImplementation(
+		iotDeviceService,
+		criminalProfileService,
+		surveillanceSessionService,
+		surveillanceEventService,
+		logger,
+	);
+	const iotDeviceHeartbeatUseCase = new IotDeviceHeartbeatUseCaseImplementation(
+		iotDeviceService,
+	);
 
-  // OpenTelemetry DI
-  Container.set(Logger, logger)
+	const app = new HonoApp(logger);
 
-  // Auth DI
-  Container.set(AuthUserRepository, authUserRepository)
+	// App
+	Container.set(App, app);
 
-  // Auth Use Cases
-  Container.set(GetUserProfileUseCase, getUserProfileUseCase)
-  Container.set(SignInWithEmailUseCase, signInWithEmailUseCase)
-  Container.set(SignUpWithEmailUseCase, signUpWithEmailUseCase)
-  Container.set(SignInWithVoterCodeUseCase, signInWithVoterCodeUseCase)
+	// Database
+	Container.set(KyselyClient, kyselyClient);
 
-  // Elections DI
-  Container.set(ElectionRepository, electionRepository)
-  Container.set(PositionRepository, positionRepository)
-  Container.set(CandidateRepository, candidateRepository)
-  Container.set(VoterRepository, voterRepository)
-  Container.set(VoteRepository, voteRepository)
-  Container.set(SubmitVoteUseCase, submitVoteUseCase)
+	// Storage DI
+	Container.set(StorageService, storageService);
 
-  // Cron Service
-  Container.set(CronService, cronService)
+	// OpenTelemetry DI
+	Container.set(Logger, logger);
 
-  // Elections Use Cases
-  Container.set(GenerateVotersUseCase, generateVotersUseCase)
-  Container.set(ListElectionsUseCase, listElectionsUseCase)
-  Container.set(CreateElectionUseCase, createElectionUseCase)
-  Container.set(CreatePositionUseCase, createPositionUseCase)
-  Container.set(CreateCandidateUseCase, createCandidateUseCase)
-  Container.set(GetElectionByIdUseCase, getElectionByIdUseCase)
-  Container.set(
-    GetPlatformElectionMetricsUseCase,
-    getPlatformElectionMetricsUseCase
-  )
-  Container.set(ListVotersUseCase, listVotersUseCase)
-  Container.set(EndElectionUseCase, endElectionUseCase)
-  Container.set(GetElectionResultsUseCase, getElectionResultsUseCase)
-  Container.set(DeleteElectionUseCase, deleteElectionUseCase)
-  Container.set(UploadUseCase, uploadUseCase)
-  Container.set(GetFileUseCase, getFileUseCase)
+	// Auth DI
+	Container.set(AuthUserRepository, authUserRepository);
 
-  return { app, logger, config, cronService }
-}
+	// Auth Use Cases
+	Container.set(GetUserProfileUseCase, getUserProfileUseCase);
+	Container.set(SignInUseCase, signInUseCase);
+	Container.set(SignUpUseCase, signUpUseCase);
+
+	// Cron Service DI
+	Container.set(CronService, cronService);
+
+	// Storage Service DI
+	Container.set(GetFileUseCase, getFileUseCase);
+
+	// Surveillance DI
+	Container.set(SurveillanceSessionRepository, surveillanceSessionRepository);
+	Container.set(SurveillanceEventRepository, surveillanceEventRepository);
+	Container.set(SurveillanceSessionService, surveillanceSessionService);
+	Container.set(SurveillanceEventService, surveillanceEventService);
+
+	// Criminal DI
+	Container.set(CriminalProfileRepository, criminalProfileRepository);
+	Container.set(CriminalProfileService, criminalProfileService);
+
+	// IoT DI
+	Container.set(IotDeviceRepository, iotDeviceRepository);
+	Container.set(IotDeviceService, iotDeviceService);
+
+	// Surveillance Use Cases
+	Container.set(
+		ListSurveillanceSessionsUseCase,
+		listSurveillanceSessionsUseCase,
+	);
+	Container.set(
+		GetSurveillanceSessionByIdUseCase,
+		getSurveillanceSessionByIdUseCase,
+	);
+	Container.set(ListSurveillanceEventsUseCase, listSurveillanceEventsUseCase);
+	Container.set(GetSurveillanceMetricsUseCase, getSurveillanceMetricsUseCase);
+
+	// IoT Use Cases
+	Container.set(IotDeviceUploadUseCase, iotDeviceUploadUseCase);
+	Container.set(IotDeviceHeartbeatUseCase, iotDeviceHeartbeatUseCase);
+
+	return { app, logger, config, cronService };
+};

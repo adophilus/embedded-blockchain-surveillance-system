@@ -28,21 +28,12 @@ export abstract class SurveillanceEventService {
 	): Promise<Result<SurveillanceEvent.Selectable, GetEventError>>;
 
 	/**
-	 * List surveillance events with optional filtering
-	 * @param filters - Optional filters for the events
+	 * List surveillance events
 	 * @returns Result containing array of events or error
 	 */
-	public abstract list(
-		filters?: {
-			sessionId?: string;
-			deviceId?: string;
-			startDate?: string;
-			endDate?: string;
-			detected?: boolean;
-			page?: number;
-			perPage?: number;
-		},
-	): Promise<Result<SurveillanceEvent.Selectable[], ListEventsError>>;
+	public abstract list(): Promise<
+		Result<SurveillanceEvent.Selectable[], ListEventsError>
+	>;
 
 	/**
 	 * Update a surveillance event
@@ -61,19 +52,4 @@ export abstract class SurveillanceEventService {
 	 * @returns Result indicating success or failure
 	 */
 	public abstract delete(id: string): Promise<Result<Unit, DeleteEventError>>;
-
-	/**
-	 * Count surveillance events with optional filtering
-	 * @param filters - Optional filters for counting events
-	 * @returns Result containing the count or error
-	 */
-	public abstract count(
-		filters?: {
-			sessionId?: string;
-			deviceId?: string;
-			startDate?: string;
-			endDate?: string;
-			detected?: boolean;
-		},
-	): Promise<Result<number, CountEventsError>>;
 }

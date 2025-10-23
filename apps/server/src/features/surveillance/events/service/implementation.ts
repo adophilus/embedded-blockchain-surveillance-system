@@ -6,7 +6,6 @@ import type {
 	ListEventsError,
 	UpdateEventError,
 	DeleteEventError,
-	CountEventsError,
 } from "./interface";
 import type {
 	SurveillanceEventRepository,
@@ -50,18 +49,8 @@ export class SurveillanceEventServiceImpl implements SurveillanceEventService {
 		return Result.ok(result.value);
 	}
 
-	public async list(
-		filters?: {
-			sessionId?: string;
-			deviceId?: string;
-			startDate?: string;
-			endDate?: string;
-			detected?: boolean;
-			page?: number;
-			perPage?: number;
-		},
-	): Promise<Result<SurveillanceEvent.Selectable[], ListEventsError>> {
-		const result = await this.repository.list(filters);
+	public async list(): Promise<Result<SurveillanceEvent.Selectable[], ListEventsError>> {
+		const result = await this.repository.list();
 
 		if (result.isErr) {
 			this.logger.error("Unexpected error listing surveillance events", result.error);
@@ -104,24 +93,5 @@ export class SurveillanceEventServiceImpl implements SurveillanceEventService {
 		}
 
 		return Result.ok(Unit);
-	}
-
-	public async count(
-		filters?: {
-			sessionId?: string;
-			deviceId?: string;
-			startDate?: string;
-			endDate?: string;
-			detected?: boolean;
-		},
-	): Promise<Result<number, CountEventsError>> {
-		const result = await this.repository.count(filters);
-
-		if (result.isErr) {
-			this.logger.error("Unexpected error counting surveillance events", result.error);
-			return Result.err("ERR_UNEXPECTED");
-		}
-
-		return Result.ok(result.value);
 	}
 }

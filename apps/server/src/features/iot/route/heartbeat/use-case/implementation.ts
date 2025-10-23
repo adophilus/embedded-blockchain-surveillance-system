@@ -1,7 +1,7 @@
 import type { Request, Response } from "../types";
 import { Result } from "true-myth";
 import type { IotDeviceHeartbeatUseCase } from "./interface";
-import type { IotDeviceService } from "@/features/iot/service/interface";
+import type { IotDeviceService } from "@/features/iot/service";
 
 export class IotDeviceHeartbeatUseCaseImplementation
 	implements IotDeviceHeartbeatUseCase

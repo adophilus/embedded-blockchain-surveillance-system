@@ -1,13 +1,15 @@
 import { Result, Unit } from "true-myth";
 import type {
 	SurveillanceEventRepository,
-	SurveillanceEvent,
-	CreateSurveillanceEventInput,
-	UpdateSurveillanceEventInput,
 	CreateSurveillanceEventError,
+	FindSurveillanceEventByIdError,
+	ListSurveillanceEventsError,
+	UpdateSurveillanceEventError,
+	DeleteSurveillanceEventError,
 } from "./interface";
 import type { KyselyClient } from "@/features/database/kysely";
 import type { Logger } from "@/features/logger";
+import type { SurveillanceEvent } from "@/types";
 
 export class KyselySurveillanceEventRepository
 	implements SurveillanceEventRepository
@@ -18,8 +20,8 @@ export class KyselySurveillanceEventRepository
 	) {}
 
 	public async create(
-		event: CreateSurveillanceEventInput,
-	): Promise<Result<SurveillanceEvent, CreateSurveillanceEventError>> {
+		event: SurveillanceEvent.Insertable,
+	): Promise<Result<SurveillanceEvent.Selectable, CreateSurveillanceEventError>> {
 		try {
 			// Verify session exists
 			const sessionExists = await this.db
@@ -29,7 +31,7 @@ export class KyselySurveillanceEventRepository
 				.executeTakeFirst();
 
 			if (!sessionExists) {
-				return Result.err("ERR_SESSION_NOT_FOUND");
+				return Result.err("ERR_UNEXPECTED");
 			}
 
 			const newEvent = await this.db
@@ -60,7 +62,7 @@ export class KyselySurveillanceEventRepository
 
 	public async findById(
 		id: string,
-	): Promise<Result<SurveillanceEvent | null, CreateSurveillanceEventError>> {
+	): Promise<Result<SurveillanceEvent.Selectable | null, FindSurveillanceEventByIdError>> {
 		try {
 			const event = await this.db
 				.selectFrom("surveillance_events")
@@ -82,48 +84,15 @@ export class KyselySurveillanceEventRepository
 		}
 	}
 
-	public async list(filters?: {
-		sessionId?: string;
-		deviceId?: string;
-		startDate?: string;
-		endDate?: string;
-		detected?: boolean;
-		page?: number;
-		perPage?: number;
-	}): Promise<Result<SurveillanceEvent[], CreateSurveillanceEventError>> {
+	public async list(): Promise<
+		Result<SurveillanceEvent.Selectable[], ListSurveillanceEventsError>
+	> {
 		try {
-			let query = this.db.selectFrom("surveillance_events").selectAll();
-
-			if (filters?.sessionId) {
-				query = query.where("session_id", "=", filters.sessionId);
-			}
-
-			if (filters?.deviceId) {
-				query = query.where("device_id", "=", filters.deviceId);
-			}
-
-			if (filters?.startDate) {
-				query = query.where("timestamp", ">=", filters.startDate);
-			}
-
-			if (filters?.endDate) {
-				query = query.where("timestamp", "<=", filters.endDate);
-			}
-
-			if (filters?.detected !== undefined) {
-				query = query.where("detected", "=", filters.detected ? 1 : 0);
-			}
-
-			// Apply pagination if provided
-			if (filters?.page !== undefined && filters?.perPage !== undefined) {
-				const offset = (filters.page - 1) * filters.perPage;
-				query = query.offset(offset).limit(filters.perPage);
-			}
-
-			// Order by timestamp descending (newest first)
-			query = query.orderBy("timestamp", "desc");
-
-			const events = await query.execute();
+			const events = await this.db
+				.selectFrom("surveillance_events")
+				.selectAll()
+				.orderBy("timestamp", "desc")
+				.execute();
 
 			return Result.ok(
 				events.map((event) => ({
@@ -139,8 +108,8 @@ export class KyselySurveillanceEventRepository
 
 	public async update(
 		id: string,
-		updates: UpdateSurveillanceEventInput,
-	): Promise<Result<Unit, CreateSurveillanceEventError>> {
+		updates: SurveillanceEvent.Updateable,
+	): Promise<Result<Unit, UpdateSurveillanceEventError>> {
 		try {
 			const eventExists = await this.db
 				.selectFrom("surveillance_events")
@@ -149,7 +118,7 @@ export class KyselySurveillanceEventRepository
 				.executeTakeFirst();
 
 			if (!eventExists) {
-				return Result.err("ERR_EVENT_NOT_FOUND");
+				return Result.err("ERR_UNEXPECTED");
 			}
 
 			const updateData: Record<string, any> = {};
@@ -189,7 +158,7 @@ export class KyselySurveillanceEventRepository
 
 	public async delete(
 		id: string,
-	): Promise<Result<Unit, CreateSurveillanceEventError>> {
+	): Promise<Result<Unit, DeleteSurveillanceEventError>> {
 		try {
 			const eventExists = await this.db
 				.selectFrom("surveillance_events")
@@ -198,7 +167,7 @@ export class KyselySurveillanceEventRepository
 				.executeTakeFirst();
 
 			if (!eventExists) {
-				return Result.err("ERR_EVENT_NOT_FOUND");
+				return Result.err("ERR_UNEXPECTED");
 			}
 
 			await this.db
@@ -209,46 +178,6 @@ export class KyselySurveillanceEventRepository
 			return Result.ok(Unit);
 		} catch (error) {
 			this.logger.error("Failed to delete surveillance event", error);
-			return Result.err("ERR_UNEXPECTED");
-		}
-	}
-
-	public async count(filters?: {
-		sessionId?: string;
-		deviceId?: string;
-		startDate?: string;
-		endDate?: string;
-		detected?: boolean;
-	}): Promise<Result<number, CreateSurveillanceEventError>> {
-		try {
-			let query = this.db
-				.selectFrom("surveillance_events")
-				.select(({ fn }) => fn.countAll<number>().as("count"));
-
-			if (filters?.sessionId) {
-				query = query.where("session_id", "=", filters.sessionId);
-			}
-
-			if (filters?.deviceId) {
-				query = query.where("device_id", "=", filters.deviceId);
-			}
-
-			if (filters?.startDate) {
-				query = query.where("timestamp", ">=", filters.startDate);
-			}
-
-			if (filters?.endDate) {
-				query = query.where("timestamp", "<=", filters.endDate);
-			}
-
-			if (filters?.detected !== undefined) {
-				query = query.where("detected", "=", filters.detected ? 1 : 0);
-			}
-
-			const result = await query.executeTakeFirstOrThrow();
-			return Result.ok(result.count);
-		} catch (error) {
-			this.logger.error("Failed to count surveillance events", error);
 			return Result.err("ERR_UNEXPECTED");
 		}
 	}

@@ -6,6 +6,24 @@ export type CreateCriminalProfileServiceError =
 	| "ERR_UNEXPECTED";
 export type FindCriminalProfileByIdServiceError = "ERR_UNEXPECTED";
 
+export type DetectCriminalsInStreamServiceSuccess = {
+	detected: boolean;
+	matches: Array<{
+		criminal: Criminal.Selectable;
+		confidence: number;
+		boundingBox?: {
+			x: number;
+			y: number;
+			width: number;
+			height: number;
+		};
+	}>;
+};
+export type DetectCriminalsInStreamServiceError =
+	| "ERR_UNEXPECTED"
+	| "ERR_IMAGE_PROCESSING_FAILED"
+	| "ERR_AI_SERVICE_UNAVAILABLE";
+
 export abstract class CriminalProfileService {
 	/**
 	 * Create a new criminal profile.
@@ -27,5 +45,20 @@ export abstract class CriminalProfileService {
 		id: string,
 	): Promise<
 		Result<Criminal.Selectable | null, FindCriminalProfileByIdServiceError>
+	>;
+
+	/**
+	 * Detect if any known criminals are present in a surveillance stream image.
+	 *
+	 * @param imageData - The image data from the surveillance stream
+	 * @returns Result containing detection results with criminal matches and confidence scores, or an error code
+	 */
+	public abstract detectCriminalsInStream(
+		stream: ArrayBuffer,
+	): Promise<
+		Result<
+			DetectCriminalsInStreamServiceSuccess,
+			DetectCriminalsInStreamServiceError
+		>
 	>;
 }

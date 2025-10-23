@@ -1,9 +1,48 @@
-import { Hono } from 'hono'
-import SignInWithEmailRoute from './email'
-import SignInWithVoterCodeRoute from './voters'
+import { Container } from "@n8n/di";
+import { Hono } from "hono";
+import { StatusCodes } from "@/features/http";
+import middleware from "./middleware";
+import type { Response } from "./types";
+import { SignInUseCase } from "./use-case";
 
-const SignInRoute = new Hono()
-  .route('/email', SignInWithEmailRoute)
-  .route('/voter-code', SignInWithVoterCodeRoute)
+const SignInRoute = new Hono().post("/", middleware, async (c) => {
+	let response: Response.Response;
+	let statusCode: StatusCodes;
 
-export default SignInRoute
+	const payload = c.req.valid("json");
+
+	const useCase = Container.get(SignInUseCase);
+	const result = await useCase.execute(payload);
+
+	if (result.isErr) {
+		switch (result.error.code) {
+			case "ERR_USER_NOT_FOUND": {
+				response = result.error;
+				statusCode = StatusCodes.NOT_FOUND;
+				break;
+			}
+			case "ERR_INVALID_CREDENTIALS": {
+				response = result.error;
+				statusCode = StatusCodes.UNAUTHORIZED;
+				break;
+			}
+			case "ERR_USER_NOT_REGISTERED_WITH_PASSWORD": {
+				response = result.error;
+				statusCode = StatusCodes.UNAUTHORIZED;
+				break;
+			}
+			default: {
+				response = result.error;
+				statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+				break;
+			}
+		}
+	} else {
+		response = result.value;
+		statusCode = StatusCodes.OK;
+	}
+
+	return c.json(response, statusCode);
+});
+
+export default SignInRoute;

@@ -1,24 +1,11 @@
 import type { Result, Unit } from "true-myth";
-import type {
-	SurveillanceSession,
-	CreateSurveillanceSessionInput,
-	UpdateSurveillanceSessionInput,
-} from "../repository";
+import type { SurveillanceSession } from "@/types";
 
-export type CreateSessionError = "ERR_INVALID_INPUT" | "ERR_UNEXPECTED";
-
+export type CreateSessionError = "ERR_UNEXPECTED";
 export type GetSessionError = "ERR_SESSION_NOT_FOUND" | "ERR_UNEXPECTED";
-
-export type ListSessionsError = "ERR_INVALID_INPUT" | "ERR_UNEXPECTED";
-
-export type UpdateSessionError =
-	| "ERR_SESSION_NOT_FOUND"
-	| "ERR_INVALID_INPUT"
-	| "ERR_UNEXPECTED";
-
+export type ListSessionsError = "ERR_UNEXPECTED";
+export type UpdateSessionError = "ERR_SESSION_NOT_FOUND" | "ERR_UNEXPECTED";
 export type DeleteSessionError = "ERR_SESSION_NOT_FOUND" | "ERR_UNEXPECTED";
-
-export type CountSessionsError = "ERR_UNEXPECTED";
 
 export abstract class SurveillanceSessionService {
 	/**
@@ -27,8 +14,8 @@ export abstract class SurveillanceSessionService {
 	 * @returns Result containing the created session or error
 	 */
 	public abstract create(
-		session: CreateSurveillanceSessionInput,
-	): Promise<Result<SurveillanceSession, CreateSessionError>>;
+		session: SurveillanceSession.Insertable,
+	): Promise<Result<SurveillanceSession.Selectable, CreateSessionError>>;
 
 	/**
 	 * Get a surveillance session by its ID
@@ -37,14 +24,14 @@ export abstract class SurveillanceSessionService {
 	 */
 	public abstract getById(
 		id: string,
-	): Promise<Result<SurveillanceSession, GetSessionError>>;
+	): Promise<Result<SurveillanceSession.Selectable, GetSessionError>>;
 
 	/**
 	 * List surveillance sessions
 	 * @returns Result containing array of sessions or error
 	 */
 	public abstract list(): Promise<
-		Result<SurveillanceSession[], ListSessionsError>
+		Result<SurveillanceSession.Selectable[], ListSessionsError>
 	>;
 
 	/**
@@ -55,7 +42,7 @@ export abstract class SurveillanceSessionService {
 	 */
 	public abstract update(
 		id: string,
-		updates: UpdateSurveillanceSessionInput,
+		updates: SurveillanceSession.Updateable,
 	): Promise<Result<Unit, UpdateSessionError>>;
 
 	/**

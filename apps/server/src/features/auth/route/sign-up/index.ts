@@ -3,7 +3,7 @@ import { Hono } from "hono";
 import { StatusCodes } from "@/features/http";
 import middleware from "./middleware";
 import type { Response } from "./types";
-import SignUpUseCase from "./use-case";
+import { SignUpUseCase } from "./use-case";
 
 const SignUpRoute = new Hono().post("/", middleware, async (c) => {
 	let response: Response.Response;

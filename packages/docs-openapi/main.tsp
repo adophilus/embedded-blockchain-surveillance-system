@@ -16,8 +16,8 @@ namespace Api {
   @example("OFFICIAL001")
   scalar OfficerId extends string;
 
-  @example("2021-09-01T12:00:00Z")
-  scalar DateTime extends string;
+  @example(1761219932)
+  scalar DateTime extends integer;
 
   @example("745731af4484f323968969eda289aeee")
   scalar Token extends string;
@@ -126,7 +126,7 @@ namespace Api {
   @tag("Criminal")
   @route("/criminals")
   namespace Criminal {
-    model Criminal {
+    model CriminalProfile {
       id: Id;
       name: CriminalName;
       aliases: string[];
@@ -162,7 +162,7 @@ namespace Api {
       }
 
       @post
-      @doc("Create criminal profiles")
+      @doc("Create criminal profile")
       op createCriminal(@multipartBody body: Request.Body): Response.Response;
     }
 
@@ -177,22 +177,22 @@ namespace Api {
 
       namespace Response {
         namespace Success {
-          model CriminalDetails {
-            code: "CRIMINAL_DETAILS";
-            data: Criminal;
+          model CriminalProfileDetails {
+            code: "CRIMINAL_PROFILE_DETAILS";
+            data: CriminalProfile;
           }
 
-          alias Success = CriminalDetails;
+          alias Success = CriminalProfileDetails;
         }
 
         namespace Error {
-          alias Error = NotFoundError<"CRIMINAL"> | UnexpectedError;
+          alias Error = NotFoundError<"CRIMINAL_PROFILE"> | UnexpectedError;
         }
 
         alias Response = Success.Success | Error.Error;
       }
 
-      @doc("Get details of a specific criminal")
+      @doc("Get details of a specific criminal profile")
       op getCriminalById(...Request.Path): Response.Response;
     }
   }
@@ -448,7 +448,7 @@ namespace Api {
                 code: "AI_DETECTION_COMPLETED";
                 data: {
                   detected: boolean;
-                  matches: Api.Criminal.Criminal[];
+                  matches: Api.Criminal.CriminalProfile[];
                   confidence: float64;
                   ipfs_cid: string | null;
                   ipfs_url: string | null;

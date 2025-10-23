@@ -42,9 +42,12 @@ export class IotDeviceUploadUseCaseImplementation
 			}
 		}
 
-		this.logger.info(
-			"Stream uploaded successfully, starting criminal detection",
-		);
+		this.logger.info("Stream uploaded successfully");
+
+		// TODO: get current/active surveillance session
+		this.logger.info("Getting current/active surveillance session");
+
+		this.logger.info("Starting criminal detection");
 
 		// Convert image to ArrayBuffer for criminal detection
 		const imageArrayBuffer = await payload.image.arrayBuffer();
@@ -79,15 +82,13 @@ export class IotDeviceUploadUseCaseImplementation
 					}
 				});
 
-				// TODO: Add new surveillance event with criminal detection
+				// TODO: Add new surveillance event (with criminal detections)
 				// TODO: Notify officials about criminal detection
-				// TODO: Store detection results in database
 			} else {
 				this.logger.info("No criminals detected in the stream");
 			}
 		}
 
-		// TODO: get current/active surveillance session
 		// TODO: add new surveillance event
 		// TODO: notify officials (if criminal is in stream)
 

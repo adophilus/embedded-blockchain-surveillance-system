@@ -4,35 +4,42 @@ import { StatusCodes } from "@/features/http";
 import middleware from "./middleware";
 import type { Response } from "./types";
 import { SignUpUseCase } from "./use-case";
+import AuthMiddleware from "../../middleware";
 
-const SignUpRoute = new Hono().post("/", middleware, async (c) => {
-	let response: Response.Response;
-	let statusCode: StatusCodes;
+const SignUpRoute = new Hono().post(
+	"/",
+	AuthMiddleware.middleware,
+	AuthMiddleware.admin,
+	middleware,
+	async (c) => {
+		let response: Response.Response;
+		let statusCode: StatusCodes;
 
-	const payload = c.req.valid("json");
+		const payload = c.req.valid("json");
 
-	const useCase = Container.get(SignUpUseCase);
-	const result = await useCase.execute(payload);
+		const useCase = Container.get(SignUpUseCase);
+		const result = await useCase.execute(payload);
 
-	if (result.isErr) {
-		switch (result.error.code) {
-			case "ERR_EMAIL_ALREADY_IN_USE": {
-				response = result.error;
-				statusCode = StatusCodes.CONFLICT;
-				break;
+		if (result.isErr) {
+			switch (result.error.code) {
+				case "ERR_EMAIL_ALREADY_IN_USE": {
+					response = result.error;
+					statusCode = StatusCodes.CONFLICT;
+					break;
+				}
+				default: {
+					response = result.error;
+					statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+					break;
+				}
 			}
-			default: {
-				response = result.error;
-				statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-				break;
-			}
+		} else {
+			response = result.value;
+			statusCode = StatusCodes.CREATED;
 		}
-	} else {
-		response = result.value;
-		statusCode = StatusCodes.CREATED;
-	}
 
-	return c.json(response, statusCode);
-});
+		return c.json(response, statusCode);
+	},
+);
 
 export default SignUpRoute;

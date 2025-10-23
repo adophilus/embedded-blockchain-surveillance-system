@@ -1,9 +1,12 @@
-import { env } from '@/lib/env'
-import { createClient, createReactQueryClient } from '@embedded-blockchain-surveillance-system/api'
+import { env } from "@/lib/env";
+import {
+	createClient,
+	createReactQueryClient,
+} from "@embedded-blockchain-surveillance-system/api";
 
 namespace BackendClient {
-  export const client = createClient(env.VITE_BACKEND_URL)
-  export const $api = createReactQueryClient(client)
+	export const client = createClient(env.VITE_SERVER_URL);
+	export const $api = createReactQueryClient(client);
 }
 
-export default BackendClient
+export default BackendClient;

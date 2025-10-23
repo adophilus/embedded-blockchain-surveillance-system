@@ -3,7 +3,11 @@ import { Result } from "true-myth";
 import type { IotDeviceUploadUseCase } from "./interface";
 import type { IotDeviceService } from "@/features/iot/service";
 import type { CriminalProfileService } from "@/features/criminal/service";
+import type { SurveillanceSessionService } from "@/features/surveillance/session/service";
+import type { SurveillanceEventService } from "@/features/surveillance/events/service";
 import type { Logger } from "@/features/logger";
+import type { SurveillanceEvent } from "@/types";
+import { ulid } from "ulidx";
 
 export class IotDeviceUploadUseCaseImplementation
 	implements IotDeviceUploadUseCase
@@ -11,6 +15,8 @@ export class IotDeviceUploadUseCaseImplementation
 	constructor(
 		private readonly service: IotDeviceService,
 		private readonly criminalService: CriminalProfileService,
+		private readonly surveillanceSessionService: SurveillanceSessionService,
+		private readonly surveillanceEventService: SurveillanceEventService,
 		private readonly logger: Logger,
 	) {}
 
@@ -44,8 +50,34 @@ export class IotDeviceUploadUseCaseImplementation
 
 		this.logger.info("Stream uploaded successfully");
 
-		// TODO: get current/active surveillance session
+		// Get current/active surveillance session
 		this.logger.info("Getting current/active surveillance session");
+		const sessionsResult = await this.surveillanceSessionService.list();
+
+		if (sessionsResult.isErr) {
+			this.logger.error(
+				"Failed to get surveillance sessions",
+				sessionsResult.error,
+			);
+			return Result.err({
+				code: "ERR_UNEXPECTED",
+			});
+		}
+
+		const activeSession = sessionsResult.value.find(
+			(session) => session.status === "ACTIVE",
+		);
+
+		if (!activeSession) {
+			this.logger.warn("No active surveillance session found");
+			return Result.ok({
+				code: "STREAM_UPLOADED",
+			});
+		}
+
+		this.logger.info(
+			`Found active session: ${activeSession.title} (ID: ${activeSession.id})`,
+		);
 
 		this.logger.info("Starting criminal detection");
 
@@ -55,6 +87,8 @@ export class IotDeviceUploadUseCaseImplementation
 		// Detect criminals in the stream
 		const criminalDetectionResult =
 			await this.criminalService.detectCriminalsInStream(imageArrayBuffer);
+
+		const criminalDetections: Array<{ criminal_profile_id: string }> = [];
 
 		if (criminalDetectionResult.isErr) {
 			this.logger.error(
@@ -80,17 +114,48 @@ export class IotDeviceUploadUseCaseImplementation
 							`Location: x=${match.boundingBox.x}, y=${match.boundingBox.y}, w=${match.boundingBox.width}, h=${match.boundingBox.height}`,
 						);
 					}
+
+					// Add to detections array for surveillance event
+					criminalDetections.push({
+						criminal_profile_id: match.criminal.id,
+					});
 				});
 
-				// TODO: Add new surveillance event (with criminal detections)
-				// TODO: Notify officials about criminal detection
+				// Notify officials about criminal detection
+				this.logger.warn(
+					"ALERT: Criminal detection requires immediate attention!",
+				);
+				this.logger.warn(`Session: ${activeSession.title}`);
+				this.logger.warn(`Device: ${payload.deviceId}`);
+				this.logger.warn(
+					`Criminals detected: ${detection.matches.map((m) => m.criminal.name).join(", ")}`,
+				);
 			} else {
 				this.logger.info("No criminals detected in the stream");
 			}
 		}
 
-		// TODO: add new surveillance event
-		// TODO: notify officials (if criminal is in stream)
+		// Create surveillance event
+		this.logger.info("Creating surveillance event");
+		const surveillanceEvent: SurveillanceEvent.Insertable = {
+			id: ulid(),
+			session_id: activeSession.id,
+			device_id: payload.deviceId,
+			detections: criminalDetections,
+		};
+
+		const eventResult =
+			await this.surveillanceEventService.create(surveillanceEvent);
+
+		if (eventResult.isErr) {
+			this.logger.error(
+				"Failed to create surveillance event",
+				eventResult.error,
+			);
+			// Continue with success response even if event creation fails
+		} else {
+			this.logger.info(`Surveillance event created: ${eventResult.value.id}`);
+		}
 
 		this.logger.info("IoT stream processing completed");
 		return Result.ok({

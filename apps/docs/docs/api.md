@@ -15,7 +15,7 @@ const configuration = {
   spec: {
     servers: [
       {
-        url: env.VITE_BACKEND_URL,
+        url: env.VITE_SERVER_URL,
         description: capitalize(env.VITE_NODE_ENV)
       },
     ]

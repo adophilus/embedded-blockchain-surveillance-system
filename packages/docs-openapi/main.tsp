@@ -45,7 +45,7 @@ namespace Api {
 
   model MediaDescription {
     @example("ipfs")
-    source: "ipfs";
+    source: string;
 
     @example("QmXoypizjW3WknFiJnKLwL7Qh18qJnZ7qQFp2kFmCtmDZ9")
     id: string;
@@ -137,23 +137,18 @@ namespace Api {
 
     namespace Create {
       namespace Request {
-        model CriminalPayload {
-          name: CriminalName;
-          aliases?: string[];
-          offense?: CriminalOffense;
-          mugshot?: MediaDescription;
-        }
-
         model Body {
-          criminals: CriminalPayload[];
+          name: HttpPart<CriminalName>;
+          aliases?: HttpPart<string[]>;
+          offense?: HttpPart<CriminalOffense>;
+          mugshot?: HttpPart<ImageFile>;
         }
       }
 
       namespace Response {
         namespace Success {
           model CriminalCreated {
-            code: "CRIMINALS_LIST";
-            data: Criminal[];
+            code: "CRIMINAL_PROFILE_UPLOADED";
           }
 
           alias Success = CriminalCreated;
@@ -168,7 +163,7 @@ namespace Api {
 
       @post
       @doc("Create criminal profiles")
-      op createCriminal(@body body: Request.Body): Response.Response;
+      op createCriminal(@multipartBody body: Request.Body): Response.Response;
     }
 
     @route("/{criminalId}")

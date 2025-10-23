@@ -1,8 +1,8 @@
 import type { Result, Unit } from "true-myth";
+import type { IotDevice } from "@/types";
 
-export type UpdateDeviceRepositoryError =
-	| "ERR_DEVICE_NOT_FOUND"
-	| "ERR_UNEXPECTED";
+export type UpdateHeartbeatError = "ERR_DEVICE_NOT_FOUND" | "ERR_UNEXPECTED";
+export type FindByIdError = "ERR_UNEXPECTED";
 
 export abstract class IotDeviceRepository {
 	/**
@@ -14,5 +14,15 @@ export abstract class IotDeviceRepository {
 	public abstract updateHeartbeat(
 		deviceId: string,
 		timestamp: Date,
-	): Promise<Result<Unit, UpdateDeviceRepositoryError>>;
+	): Promise<Result<Unit, UpdateHeartbeatError>>;
+
+	/**
+	 * Find an IoT device by its ID.
+	 *
+	 * @param deviceId - The ID of the IoT device to look up
+	 * @returns Result indicating success or failure
+	 */
+	public abstract findById(
+		deviceId: string,
+	): Promise<Result<IotDevice.Selectable | null, FindByIdError>>;
 }

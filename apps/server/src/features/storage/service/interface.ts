@@ -1,21 +1,7 @@
-import type { Result, Unit } from 'true-myth'
-import type { File } from '@/types'
+import type { Result } from "true-myth";
 
-export type StorageServiceError = 'ERR_UNEXPECTED'
+export type UploadError = "ERR_UNEXPECTED";
 
-abstract class StorageService {
-  public abstract create(
-    payload: File.Insertable
-  ): Promise<Result<File.Selectable, StorageServiceError>>
-  public abstract createMany(
-    payload: File.Insertable[]
-  ): Promise<Result<File.Selectable[], StorageServiceError>>
-  public abstract findById(
-    id: string
-  ): Promise<Result<File.Selectable, StorageServiceError>>
-  public abstract deleteById(
-    id: string
-  ): Promise<Result<Unit, StorageServiceError>>
+export abstract class StorageService {
+	public abstract upload(payload: File): Promise<Result<string, UploadError>>;
 }
-
-export default StorageService

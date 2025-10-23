@@ -1,5 +1,4 @@
-import StorageService from './interface'
-import MockStorageService from './mock'
-import SqliteStorageService from './sqlite'
-
-export { StorageService, MockStorageService, SqliteStorageService }
+export * from "./interface";
+export * from "./ipfs";
+export * from "./mock";
+export * from "./sqlite";

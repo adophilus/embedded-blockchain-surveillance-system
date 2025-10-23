@@ -1,4 +1,4 @@
-import type { Result, Unit } from "true-myth";
+import { Result, type Unit } from "true-myth";
 import type {
 	IotDeviceService,
 	UpdateHeartbeatError,
@@ -13,11 +13,25 @@ export class IotDeviceServiceImplementation implements IotDeviceService {
 		private readonly storageService: StorageService,
 	) {}
 
-	public uploadStream(
+	public async uploadStream(
 		deviceId: string,
 		stream: File,
 	): Promise<Result<string, UploadStreamError>> {
-		throw new Error("Method not implemented.");
+		const findDeviceByIdResult =
+			await this.iotDeviceRepository.findById(deviceId);
+		if (findDeviceByIdResult.isErr) {
+			return Result.err("ERR_DEVICE_NOT_FOUND");
+		}
+
+		const uploadResult = await this.storageService.upload(stream);
+
+		if (uploadResult.isErr) {
+			return Result.err("ERR_UNEXPECTED");
+		}
+
+		const id = uploadResult.value;
+
+		return Result.ok(id);
 	}
 
 	public updateHeartbeat(

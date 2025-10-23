@@ -1,41 +1,24 @@
-import { Result, type Unit } from 'true-myth'
-import type StorageService from './interface'
-import type { StorageServiceError } from './interface'
-import type { StorageRepository } from '../repository/interface'
-import type { File } from '@/types'
+import { Result } from "true-myth";
+import type { StorageService, UploadError } from "./interface";
+import type { StorageRepository } from "../repository/interface";
+import { ulid } from "ulidx";
 
-class SqliteStorageService implements StorageService {
-  constructor(private readonly repository: StorageRepository) {}
+export class SqliteStorageService implements StorageService {
+	constructor(private readonly repository: StorageRepository) {}
 
-  public async create(
-    payload: File.Insertable
-  ): Promise<Result<File.Selectable, StorageServiceError>> {
-    return this.repository.create(payload)
-  }
+	public async upload(payload: File): Promise<Result<string, UploadError>> {
+		const creationResult = await this.repository.create({
+			id: ulid(),
+			mime_type: payload.type,
+			original_name: payload.name,
+			file_data: Buffer.from(await payload.arrayBuffer()),
+		});
 
-  public async createMany(
-    payload: File.Insertable[]
-  ): Promise<Result<File.Selectable[], StorageServiceError>> {
-    return this.repository.createMany(payload)
-  }
+		if (creationResult.isErr) {
+			return Result.err("ERR_UNEXPECTED");
+		}
 
-  async findById(
-    id: string
-  ): Promise<Result<File.Selectable, StorageServiceError>> {
-    const result = await this.repository.findById(id)
-    if (result.isErr) {
-      return Result.err(result.error)
-    }
-    const file = result.value
-    if (!file) {
-      return Result.err('ERR_UNEXPECTED')
-    }
-    return Result.ok(file)
-  }
-
-  async deleteById(id: string): Promise<Result<Unit, StorageServiceError>> {
-    return this.repository.deleteById(id)
-  }
+		const uploadedFile = creationResult.value;
+		return Result.ok(uploadedFile.id);
+	}
 }
-
-export default SqliteStorageService

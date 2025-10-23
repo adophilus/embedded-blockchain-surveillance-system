@@ -1,82 +1,18 @@
-import { Result, Unit } from 'true-myth'
-import type StorageService from './interface'
-import type { StorageServiceError } from './interface'
-import type { File } from '@/types'
-import { ulid } from 'ulidx'
+import { Result } from "true-myth";
+import type { StorageService, UploadError } from "./interface";
+import { ulid } from "ulidx";
 
-class MockStorageService implements StorageService {
-  // In-memory storage for mock files
-  private files: Record<string, File.Selectable> = {}
+export class MockStorageService implements StorageService {
+	private files: Record<string, File> = {};
 
-  public async create(
-    payload: File.Insertable
-  ): Promise<Result<File.Selectable, StorageServiceError>> {
-    try {
-      const now = new Date().toISOString()
-      const file: File.Selectable = {
-        ...payload,
-        created_at: now,
-        updated_at: null
-      }
+	public async upload(payload: File): Promise<Result<string, UploadError>> {
+		try {
+			const id = ulid();
 
-      this.files[payload.id] = file
-      return Result.ok(file)
-    } catch (error) {
-      return Result.err('ERR_UNEXPECTED')
-    }
-  }
-
-  public async createMany(
-    payloads: File.Insertable[]
-  ): Promise<Result<File.Selectable[], StorageServiceError>> {
-    try {
-      const now = new Date().toISOString()
-      const files: File.Selectable[] = []
-
-      for (const payload of payloads) {
-        const file: File.Selectable = {
-          ...payload,
-          created_at: now,
-          updated_at: null
-        }
-
-        this.files[payload.id] = file
-        files.push(file)
-      }
-
-      return Result.ok(files)
-    } catch (error) {
-      return Result.err('ERR_UNEXPECTED')
-    }
-  }
-
-  async findById(
-    id: string
-  ): Promise<Result<File.Selectable, StorageServiceError>> {
-    try {
-      const file = this.files[id]
-      if (!file) {
-        return Result.err('ERR_UNEXPECTED')
-      }
-
-      return Result.ok(file)
-    } catch (error) {
-      return Result.err('ERR_UNEXPECTED')
-    }
-  }
-
-  async deleteById(id: string): Promise<Result<Unit, StorageServiceError>> {
-    try {
-      if (!this.files[id]) {
-        return Result.err('ERR_UNEXPECTED')
-      }
-
-      delete this.files[id]
-      return Result.ok(Unit)
-    } catch (error) {
-      return Result.err('ERR_UNEXPECTED')
-    }
-  }
+			this.files[id] = payload;
+			return Result.ok(id);
+		} catch (error) {
+			return Result.err("ERR_UNEXPECTED");
+		}
+	}
 }
-
-export default MockStorageService

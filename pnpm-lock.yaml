@@ -111,6 +111,9 @@ importers:
       '@embedded-blockchain-surveillance-system/api':
         specifier: workspace:^
         version: link:../../packages/api
+      '@embedded-blockchain-surveillance-system/core':
+        specifier: workspace:^
+        version: link:../../packages/core
       '@embedded-blockchain-surveillance-system/server':
         specifier: workspace:^
         version: 'link:'
@@ -216,6 +219,9 @@ importers:
       tsyringe:
         specifier: ^4.10.0
         version: 4.10.0
+      ulidx:
+        specifier: ^2.4.1
+        version: 2.4.1
     devDependencies:
       '@effect/cli':
         specifier: ^0.61.8
@@ -19198,6 +19204,10 @@ packages:
       shell-quote: 1.8.3
     dev: true
 
+  /layerr@3.0.0:
+    resolution: {integrity: sha512-tv754Ki2dXpPVApOrjTyRo4/QegVb9eVFq4mjqp4+NM5NaX7syQvN5BBNfV/ZpAHCEHV24XdUVrBAoka4jt3pA==}
+    dev: false
+
   /leac@0.6.0:
     resolution: {integrity: sha512-y+SqErxb8h7nE/fiEX07jsbuhrpO9lL8eca7/Y1nuWV2moNlXhyd59iDGcRf6moVyDMbmTNzL40SUyrFU/yDpg==}
     dev: false
@@ -24877,6 +24887,13 @@ packages:
     resolution: {integrity: sha512-vA6nFepEmlSKkMBnLBaUMVvAC4G3CTmO58C12y4sq6WPDOR7mOFYOi7GlrQ4djeSbP6JG9Pv9tJDM97PedRSww==}
     dependencies:
       multiformats: 13.4.1
+    dev: false
+
+  /ulidx@2.4.1:
+    resolution: {integrity: sha512-xY7c8LPyzvhvew0Fn+Ek3wBC9STZAuDI/Y5andCKi9AX6/jvfaX45PhsDX8oxgPL0YFp0Jhr8qWMbS/p9375Xg==}
+    engines: {node: '>=16'}
+    dependencies:
+      layerr: 3.0.0
     dev: false
 
   /undici-types@6.21.0:

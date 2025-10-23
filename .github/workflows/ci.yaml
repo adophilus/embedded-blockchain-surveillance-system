@@ -118,7 +118,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./apps/backend/Dockerfile
+          file: ./apps/server/Dockerfile
           push: true
           tags: adophilus/embedded-blockchain-surveillance-system:latest
           build-args: |

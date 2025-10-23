@@ -12,7 +12,7 @@ FROM base AS build
 
 WORKDIR /app
 COPY . .
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --prod false && pnpm build:backend
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --prod false && pnpm build:server
 
 
 FROM base AS deploy
@@ -23,4 +23,4 @@ COPY --from=build /app ./
 
 EXPOSE $PORT
 
-CMD ["pnpm", "--filter", "@blockchain-voting-system/backend", "start"]
+CMD ["pnpm", "--filter", "@embedded-blockchain-surveillance-system/server", "start"]

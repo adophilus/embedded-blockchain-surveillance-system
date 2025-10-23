@@ -466,48 +466,6 @@ namespace Api {
           @doc("List surveillance events for a specific session")
           op listEvents(...Request.Path, ...Request.Query): Response.Response;
         }
-
-        @route("/ai-detection")
-        namespace AIDetection {
-          namespace Request {
-            alias Path = ById.Path;
-
-            model Body {
-              image_url: string;
-              session_id: Id;
-              timestamp: DateTime;
-            }
-          }
-
-          namespace Response {
-            namespace Success {
-              model AIDetectionResult {
-                code: "AI_DETECTION_COMPLETED";
-                data: {
-                  detected: boolean;
-                  matches: Api.Criminal.CriminalProfile[];
-                  confidence: float64;
-                  ipfs_cid: string | null;
-                  ipfs_url: string | null;
-                };
-              }
-              alias Success = AIDetectionResult;
-            }
-
-            namespace Error {
-              alias Error = NotFoundError<"SESSION"> | BadRequestError | UnexpectedError;
-            }
-
-            alias Response = Success.Success | Error.Error;
-          }
-
-          @post
-          @doc("Perform AI detection on image to check for criminals in the criminal database.")
-          op performAIDetection(
-            ...Request.Path,
-            @body body: Request.Body,
-          ): Response.Response;
-        }
       }
     }
 

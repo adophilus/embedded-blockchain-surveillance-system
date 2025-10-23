@@ -11,6 +11,10 @@ type TimestampModel = {
 	updated_at: ColumnType<number | null, never, number>;
 };
 
+type Detection = {
+	criminal_profile_id: string;
+};
+
 type UsersTable = TimestampModel & {
 	id: Id;
 	full_name: string;
@@ -39,13 +43,9 @@ type SurveillanceSessionsTable = TimestampModel & {
 
 type SurveillanceEventsTable = {
 	id: Id;
-	session_id: string;
+	detections: Detection[];
 	device_id: string;
-	timestamp: string;
-	detected: boolean;
-	media_source: string | null;
-	media_id: string | null;
-	media_url: string | null;
+	session_id: string;
 	created_at: ColumnType<number, never, never>;
 };
 

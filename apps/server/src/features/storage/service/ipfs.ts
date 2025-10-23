@@ -1,11 +1,14 @@
 import { Result } from "true-myth";
 import type { StorageService, UploadError } from "./interface";
 import type { IpfsClient } from "@embedded-blockchain-surveillance-system/core";
+import type { MediaDescription } from "@/types";
 
 export class IpfsStorageService implements StorageService {
 	constructor(private readonly client: IpfsClient) {}
 
-	public async upload(payload: File): Promise<Result<string, UploadError>> {
+	public async upload(
+		payload: File,
+	): Promise<Result<MediaDescription, UploadError>> {
 		const uploadResult = await this.client.uploadFile(payload);
 
 		if (uploadResult.isErr) {
@@ -14,6 +17,10 @@ export class IpfsStorageService implements StorageService {
 
 		const cid = uploadResult.value;
 
-		return Result.ok(cid);
+		return Result.ok({
+			id: cid,
+			source: "ipfs",
+			url: `ipfs://${cid}`,
+		});
 	}
 }

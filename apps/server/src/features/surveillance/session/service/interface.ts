@@ -64,13 +64,4 @@ export abstract class SurveillanceSessionService {
 	 * @returns Result indicating success or failure
 	 */
 	public abstract delete(id: string): Promise<Result<Unit, DeleteSessionError>>;
-
-	/**
-	 * Count surveillance sessions with optional filtering
-	 * @param filters - Optional filters for counting sessions
-	 * @returns Result containing the count or error
-	 */
-	public abstract count(filters?: {
-		status?: "UPCOMING" | "ACTIVE" | "COMPLETED";
-	}): Promise<Result<number, CountSessionsError>>;
 }

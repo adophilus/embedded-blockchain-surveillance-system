@@ -293,6 +293,43 @@ namespace Api {
       @doc("Get the authenticated user's profile")
       op getProfile(): Response.Response;
     }
+
+    @route("/sign-up")
+    @useAuth(BearerAuth)
+    namespace SignUp {
+      namespace Request {
+        model Body {
+          full_name: HttpPart<FullName>;
+          email: HttpPart<Email>;
+          password: HttpPart<Password>;
+          role?: HttpPart<Role>;
+        }
+      }
+
+      namespace Response {
+        namespace Success {
+          model UserCreated {
+            code: "USER_CREATED";
+          }
+
+          alias Success = UserCreated;
+        }
+
+        namespace Error {
+          alias Error =
+            | ConflictError<"EMAIL">
+            | BadRequestError
+            | UnauthorizedError
+            | UnexpectedError;
+        }
+
+        alias Response = Success.Success | Error.Error;
+      }
+
+      @post
+      @doc("Create a new user. Requires ADMIN role.")
+      op signUp(@multipartBody body: Request.Body): Response.Response;
+    }
   }
 
   @useAuth(BearerAuth)

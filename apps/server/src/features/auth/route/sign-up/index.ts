@@ -9,7 +9,7 @@ const SignUpRoute = new Hono().post("/", middleware, async (c) => {
 	let response: Response.Response;
 	let statusCode: StatusCodes;
 
-	const payload = c.req.valid("multipart");
+	const payload = c.req.valid("json");
 
 	const useCase = Container.get(SignUpUseCase);
 	const result = await useCase.execute(payload);

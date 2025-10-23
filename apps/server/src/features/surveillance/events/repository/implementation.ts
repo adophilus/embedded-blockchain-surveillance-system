@@ -4,8 +4,8 @@ import type {
 	CreateSurveillanceEventError,
 	FindSurveillanceEventByIdError,
 	ListSurveillanceEventsError,
-	UpdateSurveillanceEventError,
-	DeleteSurveillanceEventError,
+	UpdateSurveillanceEventByIdError,
+	DeleteSurveillanceEventByIdError,
 } from "./interface";
 import type { KyselyClient } from "@/features/database/kysely";
 import type { Logger } from "@/features/logger";
@@ -21,7 +21,9 @@ export class KyselySurveillanceEventRepository
 
 	public async create(
 		event: SurveillanceEvent.Insertable,
-	): Promise<Result<SurveillanceEvent.Selectable, CreateSurveillanceEventError>> {
+	): Promise<
+		Result<SurveillanceEvent.Selectable, CreateSurveillanceEventError>
+	> {
 		try {
 			// Verify session exists
 			const sessionExists = await this.db
@@ -62,7 +64,9 @@ export class KyselySurveillanceEventRepository
 
 	public async findById(
 		id: string,
-	): Promise<Result<SurveillanceEvent.Selectable | null, FindSurveillanceEventByIdError>> {
+	): Promise<
+		Result<SurveillanceEvent.Selectable | null, FindSurveillanceEventByIdError>
+	> {
 		try {
 			const event = await this.db
 				.selectFrom("surveillance_events")
@@ -106,10 +110,10 @@ export class KyselySurveillanceEventRepository
 		}
 	}
 
-	public async update(
+	public async updateById(
 		id: string,
 		updates: SurveillanceEvent.Updateable,
-	): Promise<Result<Unit, UpdateSurveillanceEventError>> {
+	): Promise<Result<Unit, UpdateSurveillanceEventByIdError>> {
 		try {
 			const eventExists = await this.db
 				.selectFrom("surveillance_events")
@@ -156,9 +160,9 @@ export class KyselySurveillanceEventRepository
 		}
 	}
 
-	public async delete(
+	public async deleteById(
 		id: string,
-	): Promise<Result<Unit, DeleteSurveillanceEventError>> {
+	): Promise<Result<Unit, DeleteSurveillanceEventByIdError>> {
 		try {
 			const eventExists = await this.db
 				.selectFrom("surveillance_events")

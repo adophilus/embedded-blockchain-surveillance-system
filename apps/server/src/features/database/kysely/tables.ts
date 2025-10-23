@@ -1,10 +1,8 @@
 import type { ColumnType } from "kysely";
+import type { types } from "@embedded-blockchain-surveillance-system/api";
 
-type MediaDescription = {
-	source: "ipfs";
-	id: string;
-	url: string;
-};
+export type MediaDescription =
+	types.components["schemas"]["Api.MediaDescription"];
 
 type TimestampModel = {
 	created_at: ColumnType<number, never, never>;
@@ -52,7 +50,7 @@ type SurveillanceEventsTable = {
 type CriminalsTable = TimestampModel & {
 	id: string;
 	name: string;
-	aliases: string;
+	aliases: string[];
 	offense: string | null;
 	mugshot: MediaDescription | null;
 };

@@ -550,7 +550,7 @@ namespace Api {
             }
 
             namespace Error {
-              alias Error = BadRequestError | UnexpectedError;
+              alias Error = NotFoundError<"DEVICE"> | BadRequestError | UnexpectedError;
             }
 
             alias Response = Success.Success | Error.Error;

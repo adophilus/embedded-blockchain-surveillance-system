@@ -212,19 +212,23 @@ namespace Api {
 
         namespace Response {
           namespace Success {
+            model AuthUser {
+              id: Id;
+              full_name: FullName;
+              email: Api.Email;
+              role: Role;
+            }
+
+            model AuthTokens {
+              access_token: Jwt;
+              refresh_token: Jwt;
+            }
+
             model SignInSuccess {
               code: "SIGN_IN_SUCCESSFUL";
               data: {
-                user: {
-                  id: Id;
-                  full_name: FullName;
-                  email: Api.Email;
-                  role: Role;
-                };
-                tokens: {
-                  access_token: Jwt;
-                  refresh_token: Jwt;
-                };
+                user: AuthUser;
+                tokens: AuthTokens;
               };
             }
 

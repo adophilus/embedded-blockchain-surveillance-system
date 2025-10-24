@@ -10,12 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as DashboardDashboardIndexRouteImport } from './routes/_dashboard/dashboard/index'
+import { Route as DashboardDashboardUploadRouteImport } from './routes/_dashboard/dashboard/upload'
+import { Route as DashboardDashboardSurveillanceRouteImport } from './routes/_dashboard/dashboard/surveillance'
+import { Route as DashboardDashboardMetricsRouteImport } from './routes/_dashboard/dashboard/metrics'
+import { Route as DashboardDashboardCriminalsRouteImport } from './routes/_dashboard/dashboard/criminals'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/_dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -23,40 +32,100 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardIndexRoute = DashboardIndexRouteImport.update({
+const DashboardDashboardIndexRoute = DashboardDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardDashboardUploadRoute =
+  DashboardDashboardUploadRouteImport.update({
+    id: '/dashboard/upload',
+    path: '/dashboard/upload',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardDashboardSurveillanceRoute =
+  DashboardDashboardSurveillanceRouteImport.update({
+    id: '/dashboard/surveillance',
+    path: '/dashboard/surveillance',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardDashboardMetricsRoute =
+  DashboardDashboardMetricsRouteImport.update({
+    id: '/dashboard/metrics',
+    path: '/dashboard/metrics',
+    getParentRoute: () => DashboardRoute,
+  } as any)
+const DashboardDashboardCriminalsRoute =
+  DashboardDashboardCriminalsRouteImport.update({
+    id: '/dashboard/criminals',
+    path: '/dashboard/criminals',
+    getParentRoute: () => DashboardRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/criminals': typeof DashboardDashboardCriminalsRoute
+  '/dashboard/metrics': typeof DashboardDashboardMetricsRoute
+  '/dashboard/surveillance': typeof DashboardDashboardSurveillanceRoute
+  '/dashboard/upload': typeof DashboardDashboardUploadRoute
+  '/dashboard': typeof DashboardDashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
-  '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/criminals': typeof DashboardDashboardCriminalsRoute
+  '/dashboard/metrics': typeof DashboardDashboardMetricsRoute
+  '/dashboard/surveillance': typeof DashboardDashboardSurveillanceRoute
+  '/dashboard/upload': typeof DashboardDashboardUploadRoute
+  '/dashboard': typeof DashboardDashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
-  '/dashboard/': typeof DashboardIndexRoute
+  '/_dashboard/dashboard/criminals': typeof DashboardDashboardCriminalsRoute
+  '/_dashboard/dashboard/metrics': typeof DashboardDashboardMetricsRoute
+  '/_dashboard/dashboard/surveillance': typeof DashboardDashboardSurveillanceRoute
+  '/_dashboard/dashboard/upload': typeof DashboardDashboardUploadRoute
+  '/_dashboard/dashboard/': typeof DashboardDashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/dashboard'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/dashboard/criminals'
+    | '/dashboard/metrics'
+    | '/dashboard/surveillance'
+    | '/dashboard/upload'
+    | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/dashboard'
-  id: '__root__' | '/' | '/login' | '/dashboard/'
+  to:
+    | '/'
+    | '/login'
+    | '/dashboard/criminals'
+    | '/dashboard/metrics'
+    | '/dashboard/surveillance'
+    | '/dashboard/upload'
+    | '/dashboard'
+  id:
+    | '__root__'
+    | '/'
+    | '/_dashboard'
+    | '/login'
+    | '/_dashboard/dashboard/criminals'
+    | '/_dashboard/dashboard/metrics'
+    | '/_dashboard/dashboard/surveillance'
+    | '/_dashboard/dashboard/upload'
+    | '/_dashboard/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
-  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -68,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_dashboard': {
+      id: '/_dashboard'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -75,20 +151,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/': {
-      id: '/dashboard/'
+    '/_dashboard/dashboard/': {
+      id: '/_dashboard/dashboard/'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof DashboardIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof DashboardDashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/dashboard/upload': {
+      id: '/_dashboard/dashboard/upload'
+      path: '/dashboard/upload'
+      fullPath: '/dashboard/upload'
+      preLoaderRoute: typeof DashboardDashboardUploadRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/dashboard/surveillance': {
+      id: '/_dashboard/dashboard/surveillance'
+      path: '/dashboard/surveillance'
+      fullPath: '/dashboard/surveillance'
+      preLoaderRoute: typeof DashboardDashboardSurveillanceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/dashboard/metrics': {
+      id: '/_dashboard/dashboard/metrics'
+      path: '/dashboard/metrics'
+      fullPath: '/dashboard/metrics'
+      preLoaderRoute: typeof DashboardDashboardMetricsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/dashboard/criminals': {
+      id: '/_dashboard/dashboard/criminals'
+      path: '/dashboard/criminals'
+      fullPath: '/dashboard/criminals'
+      preLoaderRoute: typeof DashboardDashboardCriminalsRouteImport
+      parentRoute: typeof DashboardRoute
     }
   }
 }
 
+interface DashboardRouteChildren {
+  DashboardDashboardCriminalsRoute: typeof DashboardDashboardCriminalsRoute
+  DashboardDashboardMetricsRoute: typeof DashboardDashboardMetricsRoute
+  DashboardDashboardSurveillanceRoute: typeof DashboardDashboardSurveillanceRoute
+  DashboardDashboardUploadRoute: typeof DashboardDashboardUploadRoute
+  DashboardDashboardIndexRoute: typeof DashboardDashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardDashboardCriminalsRoute: DashboardDashboardCriminalsRoute,
+  DashboardDashboardMetricsRoute: DashboardDashboardMetricsRoute,
+  DashboardDashboardSurveillanceRoute: DashboardDashboardSurveillanceRoute,
+  DashboardDashboardUploadRoute: DashboardDashboardUploadRoute,
+  DashboardDashboardIndexRoute: DashboardDashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
-  DashboardIndexRoute: DashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -4,11 +4,11 @@ import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Toaster } from "sonner";
 
 const RootLayout = () => (
-  <Provider>
-    <Outlet />
-    <TanStackRouterDevtools />
-    <Toaster />
-  </Provider>
+	<Provider>
+		<Outlet />
+		<TanStackRouterDevtools position="bottom-right" />
+		<Toaster />
+	</Provider>
 );
 
 export const Route = createRootRoute({ component: RootLayout });

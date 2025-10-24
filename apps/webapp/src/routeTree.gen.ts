@@ -8,19 +8,14 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createFileRoute } from '@tanstack/react-router'
-
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminDashboardRouteImport } from './routes/admin/_dashboard'
-import { Route as AdminLoginIndexRouteImport } from './routes/admin/login/index'
-import { Route as AdminDashboardDashboardIndexRouteImport } from './routes/admin/_dashboard/dashboard/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 
-const AdminRouteImport = createFileRoute('/admin')()
-
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,68 +23,49 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminDashboardRoute = AdminDashboardRouteImport.update({
-  id: '/_dashboard',
-  getParentRoute: () => AdminRoute,
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminLoginIndexRoute = AdminLoginIndexRouteImport.update({
-  id: '/login/',
-  path: '/login/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminDashboardDashboardIndexRoute =
-  AdminDashboardDashboardIndexRouteImport.update({
-    id: '/dashboard/',
-    path: '/dashboard/',
-    getParentRoute: () => AdminDashboardRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminDashboardRouteWithChildren
-  '/admin/login': typeof AdminLoginIndexRoute
-  '/admin/dashboard': typeof AdminDashboardDashboardIndexRoute
+  '/login': typeof LoginRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminDashboardRouteWithChildren
-  '/admin/login': typeof AdminLoginIndexRoute
-  '/admin/dashboard': typeof AdminDashboardDashboardIndexRoute
+  '/login': typeof LoginRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
-  '/admin/_dashboard': typeof AdminDashboardRouteWithChildren
-  '/admin/login/': typeof AdminLoginIndexRoute
-  '/admin/_dashboard/dashboard/': typeof AdminDashboardDashboardIndexRoute
+  '/login': typeof LoginRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/admin/login' | '/admin/dashboard'
+  fullPaths: '/' | '/login' | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/admin/login' | '/admin/dashboard'
-  id:
-    | '__root__'
-    | '/'
-    | '/admin'
-    | '/admin/_dashboard'
-    | '/admin/login/'
-    | '/admin/_dashboard/dashboard/'
+  to: '/' | '/login' | '/dashboard'
+  id: '__root__' | '/' | '/login' | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -99,57 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/_dashboard': {
-      id: '/admin/_dashboard'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminDashboardRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/login/': {
-      id: '/admin/login/'
-      path: '/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/_dashboard/dashboard/': {
-      id: '/admin/_dashboard/dashboard/'
+    '/dashboard/': {
+      id: '/dashboard/'
       path: '/dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AdminDashboardDashboardIndexRouteImport
-      parentRoute: typeof AdminDashboardRoute
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface AdminDashboardRouteChildren {
-  AdminDashboardDashboardIndexRoute: typeof AdminDashboardDashboardIndexRoute
-}
-
-const AdminDashboardRouteChildren: AdminDashboardRouteChildren = {
-  AdminDashboardDashboardIndexRoute: AdminDashboardDashboardIndexRoute,
-}
-
-const AdminDashboardRouteWithChildren = AdminDashboardRoute._addFileChildren(
-  AdminDashboardRouteChildren,
-)
-
-interface AdminRouteChildren {
-  AdminDashboardRoute: typeof AdminDashboardRouteWithChildren
-  AdminLoginIndexRoute: typeof AdminLoginIndexRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminDashboardRoute: AdminDashboardRouteWithChildren,
-  AdminLoginIndexRoute: AdminLoginIndexRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
+  LoginRoute: LoginRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

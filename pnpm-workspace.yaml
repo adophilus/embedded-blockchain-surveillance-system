@@ -1,4 +1,17 @@
 packages:
   - ./apps/*
   - ./packages/*
-nodeLinker: hoisted
+ignoredBuiltDependencies:
+  - '@ipshipyard/node-datachannel'
+  - '@parcel/watcher'
+  - core-js
+  - esbuild
+  - msgpackr-extract
+  - nx
+  - protobufjs
+  - sharp
+  - vue-demi
+onlyBuiltDependencies:
+  - '@tensorflow/tfjs-node'
+  - better-sqlite3
+  - canvas

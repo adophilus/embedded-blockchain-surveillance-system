@@ -13,6 +13,13 @@
           inherit system;
           overlays = [ foundry.overlay ];
         };
+        wrapWithMissingLibraries = binaryFile:
+          pkgs.writeShellScriptBin (baseNameOf binaryFile) ''
+            LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.libuuid ]}";
+            export LD_LIBRARY_PATH
+            exec ${binaryFile} "$@";
+          '';
+        node = wrapWithMissingLibraries (nixpkgs.lib.getExe pkgs.nodejs_22);
       in {
 
         devShell = with pkgs;
@@ -25,10 +32,13 @@
               # ... any other dependencies we need
               solc
 
-              nodejs_22
+              # nodejs_22
+              node
               pnpm_10
 
               kubo
+
+              libuuid
             ];
 
             # Decorative prompt override so we know when we're in a dev shell
@@ -38,4 +48,3 @@
           };
       });
 }
-

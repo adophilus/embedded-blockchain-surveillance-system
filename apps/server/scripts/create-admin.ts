@@ -3,15 +3,16 @@ import { hashPassword } from '@/features/auth/utils/password'
 import { Container } from '@n8n/di'
 import { bootstrap } from '@embedded-blockchain-surveillance-system/server'
 import { ulid } from 'ulidx'
+import type { User } from '@/types'
 
 await bootstrap()
 
-const adminPayload = {
+const adminPayload: User.Insertable = {
   id: ulid(),
-  email: 'topnotch@futo.edu.ng',
-  password_hash: await hashPassword('{%gJ$mbxT+07V:Zi'),
+  email: 'admin@surveillance.fudo.edu.ng',
+  password_hash: await hashPassword('super-secret-password'),
   full_name: 'Admin',
-  role: 'ADMIN'
+  role: 'ADMIN',
 } as const
 
 const authUserRepository = Container.get(AuthUserRepository)

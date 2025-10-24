@@ -202,7 +202,6 @@ namespace Api {
   namespace Authentication {
     @route("/sign-in")
     namespace SignIn {
-      @route("/email")
       namespace Email {
         namespace Request {
           model Body {

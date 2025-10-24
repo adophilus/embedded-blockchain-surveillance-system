@@ -1,38 +1,14 @@
-import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
-import { TanstackDevtools } from "@tanstack/react-devtools";
+import { Provider } from "@/components/provider";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import { Toaster } from "sonner";
 
-import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
-import TanStackRouterDevtools from "../integrations/tanstack-router/devtools";
+const RootLayout = () => (
+  <Provider>
+    <Outlet />
+    <TanStackRouterDevtools />
+    <Toaster />
+  </Provider>
+);
 
-import type { QueryClient } from "@tanstack/react-query";
-
-interface MyRouterContext {
-	queryClient: QueryClient;
-}
-
-const Devtools = () => {
-	if (import.meta.env.PROD) return null;
-
-	return (
-		<TanstackDevtools
-			config={{
-				position: "bottom-right",
-			}}
-			plugins={[
-				TanStackRouterDevtools,
-				TanStackQueryDevtools,
-			]}
-		/>
-	);
-};
-
-export const Route = createRootRouteWithContext<MyRouterContext>()({
-	component: () => (
-		<>
-			<div className="min-h-screen bg-background">
-				<Outlet />
-			</div>
-			<Devtools />
-		</>
-	),
-});
+export const Route = createRootRoute({ component: RootLayout });

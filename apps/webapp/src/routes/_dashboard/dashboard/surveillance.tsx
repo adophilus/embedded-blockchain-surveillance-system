@@ -20,7 +20,7 @@ import {
 import { Header } from "@/features/dashboard/header";
 
 export const Route = createFileRoute("/_dashboard/dashboard/surveillance")({
-	component: RouteComponent,
+	component: SurveillanceDashboardPage,
 });
 
 const formatDateTime = (timestamp) => {
@@ -265,7 +265,7 @@ const SurveillanceTab = ({ sessions }) => {
 	);
 };
 
-function RouteComponent() {
+function SurveillanceDashboardPage() {
 	const mockSessions = [
 		{
 			id: "sess-101",

@@ -1,8 +1,8 @@
 import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanstackDevtools } from "@tanstack/react-devtools";
 
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
+import TanStackRouterDevtools from "../integrations/tanstack-router/devtools";
 
 import type { QueryClient } from "@tanstack/react-query";
 
@@ -16,13 +16,10 @@ const Devtools = () => {
 	return (
 		<TanstackDevtools
 			config={{
-				position: "bottom-left",
+				position: "bottom-right",
 			}}
 			plugins={[
-				{
-					name: "Tanstack Router",
-					render: <TanStackRouterDevtoolsPanel />,
-				},
+				TanStackRouterDevtools,
 				TanStackQueryDevtools,
 			]}
 		/>

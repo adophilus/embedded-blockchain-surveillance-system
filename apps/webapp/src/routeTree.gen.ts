@@ -8,24 +8,24 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as LoginIndexRouteImport } from './routes/login/index'
 import { Route as AdminDashboardRouteImport } from './routes/admin/_dashboard'
 import { Route as AdminLoginIndexRouteImport } from './routes/admin/login/index'
 import { Route as AdminDashboardDashboardIndexRouteImport } from './routes/admin/_dashboard/dashboard/index'
-import { Route as AdminDashboardDashboardCreateElectionRouteImport } from './routes/admin/_dashboard/dashboard/create-election'
-import { Route as AdminDashboardDashboardElectionsIndexRouteImport } from './routes/admin/_dashboard/dashboard/elections/index'
-import { Route as AdminDashboardDashboardElectionsElectionIdDetailsRouteImport } from './routes/admin/_dashboard/dashboard/elections/$electionId/details'
 
+const AdminRouteImport = createFileRoute('/admin')()
+
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginIndexRoute = LoginIndexRouteImport.update({
-  id: '/login/',
-  path: '/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminDashboardRoute = AdminDashboardRouteImport.update({
@@ -43,96 +43,55 @@ const AdminDashboardDashboardIndexRoute =
     path: '/dashboard/',
     getParentRoute: () => AdminDashboardRoute,
   } as any)
-const AdminDashboardDashboardCreateElectionRoute =
-  AdminDashboardDashboardCreateElectionRouteImport.update({
-    id: '/dashboard/create-election',
-    path: '/dashboard/create-election',
-    getParentRoute: () => AdminDashboardRoute,
-  } as any)
-const AdminDashboardDashboardElectionsIndexRoute =
-  AdminDashboardDashboardElectionsIndexRouteImport.update({
-    id: '/dashboard/elections/',
-    path: '/dashboard/elections/',
-    getParentRoute: () => AdminDashboardRoute,
-  } as any)
-const AdminDashboardDashboardElectionsElectionIdDetailsRoute =
-  AdminDashboardDashboardElectionsElectionIdDetailsRouteImport.update({
-    id: '/dashboard/elections/$electionId/details',
-    path: '/dashboard/elections/$electionId/details',
-    getParentRoute: () => AdminDashboardRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminDashboardRouteWithChildren
-  '/login': typeof LoginIndexRoute
   '/admin/login': typeof AdminLoginIndexRoute
-  '/admin/dashboard/create-election': typeof AdminDashboardDashboardCreateElectionRoute
   '/admin/dashboard': typeof AdminDashboardDashboardIndexRoute
-  '/admin/dashboard/elections': typeof AdminDashboardDashboardElectionsIndexRoute
-  '/admin/dashboard/elections/$electionId/details': typeof AdminDashboardDashboardElectionsElectionIdDetailsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminDashboardRouteWithChildren
-  '/login': typeof LoginIndexRoute
   '/admin/login': typeof AdminLoginIndexRoute
-  '/admin/dashboard/create-election': typeof AdminDashboardDashboardCreateElectionRoute
   '/admin/dashboard': typeof AdminDashboardDashboardIndexRoute
-  '/admin/dashboard/elections': typeof AdminDashboardDashboardElectionsIndexRoute
-  '/admin/dashboard/elections/$electionId/details': typeof AdminDashboardDashboardElectionsElectionIdDetailsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/admin/_dashboard': typeof AdminDashboardRouteWithChildren
-  '/login/': typeof LoginIndexRoute
   '/admin/login/': typeof AdminLoginIndexRoute
-  '/admin/_dashboard/dashboard/create-election': typeof AdminDashboardDashboardCreateElectionRoute
   '/admin/_dashboard/dashboard/': typeof AdminDashboardDashboardIndexRoute
-  '/admin/_dashboard/dashboard/elections/': typeof AdminDashboardDashboardElectionsIndexRoute
-  '/admin/_dashboard/dashboard/elections/$electionId/details': typeof AdminDashboardDashboardElectionsElectionIdDetailsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/admin'
-    | '/login'
-    | '/admin/login'
-    | '/admin/dashboard/create-election'
-    | '/admin/dashboard'
-    | '/admin/dashboard/elections'
-    | '/admin/dashboard/elections/$electionId/details'
+  fullPaths: '/' | '/admin' | '/admin/login' | '/admin/dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/admin'
-    | '/login'
-    | '/admin/login'
-    | '/admin/dashboard/create-election'
-    | '/admin/dashboard'
-    | '/admin/dashboard/elections'
-    | '/admin/dashboard/elections/$electionId/details'
+  to: '/' | '/admin' | '/admin/login' | '/admin/dashboard'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/admin/_dashboard'
-    | '/login/'
     | '/admin/login/'
-    | '/admin/_dashboard/dashboard/create-election'
     | '/admin/_dashboard/dashboard/'
-    | '/admin/_dashboard/dashboard/elections/'
-    | '/admin/_dashboard/dashboard/elections/$electionId/details'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  LoginIndexRoute: typeof LoginIndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -140,16 +99,9 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login/': {
-      id: '/login/'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/_dashboard': {
       id: '/admin/_dashboard'
-      path: ''
+      path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof AdminRoute
@@ -168,33 +120,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardDashboardIndexRouteImport
       parentRoute: typeof AdminDashboardRoute
     }
-    '/admin/_dashboard/dashboard/create-election': {
-      id: '/admin/_dashboard/dashboard/create-election'
-      path: '/dashboard/create-election'
-      fullPath: '/admin/dashboard/create-election'
-      preLoaderRoute: typeof AdminDashboardDashboardCreateElectionRouteImport
-      parentRoute: typeof AdminDashboardRoute
-    }
-    '/admin/_dashboard/dashboard/elections/': {
-      id: '/admin/_dashboard/dashboard/elections/'
-      path: '/dashboard/elections'
-      fullPath: '/admin/dashboard/elections'
-      preLoaderRoute: typeof AdminDashboardDashboardElectionsIndexRouteImport
-      parentRoute: typeof AdminDashboardRoute
-    }
-    '/admin/_dashboard/dashboard/elections/$electionId/details': {
-      id: '/admin/_dashboard/dashboard/elections/$electionId/details'
-      path: '/dashboard/elections/$electionId/details'
-      fullPath: '/admin/dashboard/elections/$electionId/details'
-      preLoaderRoute: typeof AdminDashboardDashboardElectionsElectionIdDetailsRouteImport
-      parentRoute: typeof AdminDashboardRoute
-    }
   }
 }
 
+interface AdminDashboardRouteChildren {
+  AdminDashboardDashboardIndexRoute: typeof AdminDashboardDashboardIndexRoute
+}
+
+const AdminDashboardRouteChildren: AdminDashboardRouteChildren = {
+  AdminDashboardDashboardIndexRoute: AdminDashboardDashboardIndexRoute,
+}
+
+const AdminDashboardRouteWithChildren = AdminDashboardRoute._addFileChildren(
+  AdminDashboardRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminDashboardRoute: typeof AdminDashboardRouteWithChildren
+  AdminLoginIndexRoute: typeof AdminLoginIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDashboardRoute: AdminDashboardRouteWithChildren,
+  AdminLoginIndexRoute: AdminLoginIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  LoginIndexRoute: LoginIndexRoute,
+  AdminRoute: AdminRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

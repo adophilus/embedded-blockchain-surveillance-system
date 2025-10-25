@@ -2,28 +2,42 @@
 	"$schema": "./node_modules/nx/schemas/nx-schema.json",
 	"targetDefaults": {
 		"build": {
-			"dependsOn": ["^build"],
-			"outputs": ["{projectRoot}/build"],
+			"dependsOn": [
+				"^build"
+			],
+			"outputs": [
+				"{projectRoot}/build"
+			],
 			"cache": true
 		},
 		"test": {
-			"dependsOn": ["^test"],
+			"dependsOn": [
+				"^test"
+			],
 			"cache": true
 		},
 		"dev": {
-			"dependsOn": ["^dev"],
+			"dependsOn": [
+				"^dev"
+			],
 			"cache": true
 		},
 		"lint": {
-			"dependsOn": ["^lint"],
+			"dependsOn": [
+				"^lint"
+			],
 			"cache": true
 		},
 		"preview": {
-			"dependsOn": ["^preview"],
+			"dependsOn": [
+				"^preview"
+			],
 			"cache": true
 		},
 		"start": {
-			"dependsOn": ["^start"],
+			"dependsOn": [
+				"^start"
+			],
 			"cache": true
 		}
 	},
@@ -42,5 +56,6 @@
 				"watchDepsTargetName": "watch-deps"
 			}
 		}
-	]
+	],
+	"nxCloudId": "68fc9778ab7cea91683fd1ab"
 }

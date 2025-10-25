@@ -165,6 +165,29 @@ namespace Api {
       op createCriminal(@multipartBody body: Request.Body): Response.Response;
     }
 
+    namespace List {
+      namespace Response {
+        namespace Success {
+          model CriminalList {
+            code: "CRIMINAL_LIST";
+            data: CriminalProfile[];
+          }
+
+          alias Success = CriminalList;
+        }
+
+        namespace Error {
+          alias Error = UnexpectedError;
+        }
+
+        alias Response = Success.Success | Error.Error;
+      }
+
+      @get
+      @doc("List criminal profiles")
+      op listCriminals(): Response.Response;
+    }
+
     @route("/{criminalId}")
     namespace ById {
       namespace Request {

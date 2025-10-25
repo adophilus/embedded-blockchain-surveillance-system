@@ -1,16 +1,7 @@
 import { Kysely } from "kysely";
 
 export async function up(db: Kysely<any>): Promise<void> {
-	// Add foreign key constraint for surveillance_events.session_id
-	await db.schema
-		.alterTable("surveillance_events")
-		.addForeignKeyConstraint(
-			"fk_surveillance_events_session_id",
-			["session_id"],
-			"surveillance_sessions",
-			["id"],
-		)
-		.execute();
+	
 
 	// Add indexes for better query performance
 	await db.schema
@@ -73,9 +64,5 @@ export async function down(db: Kysely<any>): Promise<void> {
 	await db.schema.dropIndex("idx_tokens_user_id").execute();
 	await db.schema.dropIndex("idx_users_email").execute();
 
-	// Drop foreign key constraint
-	await db.schema
-		.alterTable("surveillance_events")
-		.dropConstraint("fk_surveillance_events_session_id")
-		.execute();
+	
 }

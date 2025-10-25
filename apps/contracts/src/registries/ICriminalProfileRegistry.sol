@@ -12,6 +12,7 @@ interface ICriminalProfileRegistry {
     function registerCriminalProfile(
         string memory _name,
         string[] memory _aliases,
+        string[] memory _offenses,
         string memory _cid
     ) external returns (uint);
 
@@ -19,6 +20,7 @@ interface ICriminalProfileRegistry {
         uint _criminalId,
         string memory _name,
         string[] memory _aliases,
+        string[] memory _offenses,
         string memory _cid
     ) external;
 }

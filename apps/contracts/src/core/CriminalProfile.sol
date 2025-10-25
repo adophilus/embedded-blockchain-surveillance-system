@@ -5,5 +5,6 @@ struct CriminalProfile {
     uint id;
     string name;
     string[] aliases;
-    string cid; // IPFS CID for mugshot and additional information
+    string[] offenses;
+    string cid;
 }

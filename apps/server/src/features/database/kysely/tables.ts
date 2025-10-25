@@ -53,7 +53,7 @@ type CriminalProfilesTable = TimestampModel & {
 	id: Id;
 	name: string;
 	aliases: string[];
-	offense: string | null;
+	offenses: string[];
 	mugshot: MediaDescription | null;
 };
 

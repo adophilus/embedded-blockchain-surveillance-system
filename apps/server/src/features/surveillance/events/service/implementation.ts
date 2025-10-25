@@ -45,12 +45,12 @@ export class SurveillanceEventServiceImpl implements SurveillanceEventService {
 		return this.repository.list();
 	}
 
-	public async update(
-		id: string,
-		updates: SurveillanceEvent.Updateable,
-	): Promise<Result<Unit, UpdateEventError>> {
-		return this.repository.updateById(id, updates);
-	}
+	// public async update(
+	// 	id: string,
+	// 	updates: SurveillanceEvent.Updateable,
+	// ): Promise<Result<Unit, UpdateEventError>> {
+	// 	return this.repository.updateById(id, updates);
+	// }
 
 	public async delete(id: string): Promise<Result<Unit, DeleteEventError>> {
 		return this.repository.deleteById(id);

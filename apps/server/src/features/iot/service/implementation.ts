@@ -7,6 +7,7 @@ import type {
 import type { IotDeviceRepository } from "../repository";
 import type { StorageService } from "@/features/storage/service";
 import { fileTypeFromBuffer } from "file-type";
+import type { MediaDescription } from "@/types";
 
 export class IotDeviceServiceImplementation implements IotDeviceService {
 	VALID_EXTS: string[] = ["png", "jpg", "jpeg"];
@@ -32,7 +33,7 @@ export class IotDeviceServiceImplementation implements IotDeviceService {
 	public async uploadStream(
 		deviceId: string,
 		stream: File,
-	): Promise<Result<string, UploadStreamError>> {
+	): Promise<Result<MediaDescription, UploadStreamError>> {
 		const findDeviceByIdResult =
 			await this.iotDeviceRepository.findById(deviceId);
 

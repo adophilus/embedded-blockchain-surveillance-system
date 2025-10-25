@@ -10,10 +10,9 @@ const ListEventsRoute = new Hono().get("/", middleware, async (c) => {
 	let statusCode: StatusCodes;
 
 	const path = c.req.valid("param");
-	const query = c.req.valid("query");
 
 	const useCase = Container.get(ListSurveillanceEventsUseCase);
-	const result = await useCase.execute({ ...path, ...query });
+	const result = await useCase.execute(path);
 
 	if (result.isErr) {
 		response = result.error;

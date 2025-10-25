@@ -24,7 +24,7 @@ export class KyselyCriminalProfileRepository
 	): Promise<Result<CriminalProfile.Selectable, CreateCriminalError>> {
 		try {
 			const inserted = await this.db
-				.insertInto("criminals")
+				.insertInto("criminal_profiles")
 				.values(payload)
 				.returningAll()
 				.executeTakeFirstOrThrow();
@@ -41,9 +41,9 @@ export class KyselyCriminalProfileRepository
 	): Promise<Result<CriminalProfile.Selectable | null, FindCriminalByIdError>> {
 		try {
 			const row = await this.db
-				.selectFrom("criminals")
+				.selectFrom("criminal_profiles")
 				.selectAll()
-				.where("criminals.id", "=", id)
+				.where("criminal_profiles.id", "=", id)
 				.executeTakeFirst();
 
 			return Result.ok(row ?? null);
@@ -59,9 +59,9 @@ export class KyselyCriminalProfileRepository
 	): Promise<Result<CriminalProfile.Selectable, UpdateCriminalByIdError>> {
 		try {
 			const updated = await this.db
-				.updateTable("criminals")
+				.updateTable("criminal_profiles")
 				.set(changes)
-				.where("criminals.id", "=", id)
+				.where("criminal_profiles.id", "=", id)
 				.returningAll()
 				.executeTakeFirst();
 
@@ -81,8 +81,8 @@ export class KyselyCriminalProfileRepository
 	): Promise<Result<Unit, DeleteCriminalByIdError>> {
 		try {
 			const deleted = await this.db
-				.deleteFrom("criminals")
-				.where("criminals.id", "=", id)
+				.deleteFrom("criminal_profiles")
+				.where("criminal_profiles.id", "=", id)
 				.returningAll()
 				.executeTakeFirst();
 
@@ -101,7 +101,10 @@ export class KyselyCriminalProfileRepository
 		Result<CriminalProfile.Selectable[], ListCriminalsError>
 	> {
 		try {
-			const rows = await this.db.selectFrom("criminals").selectAll().execute();
+			const rows = await this.db
+				.selectFrom("criminal_profiles")
+				.selectAll()
+				.execute();
 			return Result.ok(rows);
 		} catch (error) {
 			this.logger.error("Failed to list criminals", error);

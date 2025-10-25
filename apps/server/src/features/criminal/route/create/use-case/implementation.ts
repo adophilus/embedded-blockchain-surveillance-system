@@ -31,7 +31,8 @@ export class CreateCriminalProfileUseCaseImplementation
 		const result = await this.service.create({
 			..._restPayload,
 			id: ulid(),
-			aliases: JSON.stringify(payload.aliases ?? []),
+			aliases: payload.aliases ?? [],
+			offenses: payload.offenses ?? [],
 			mugshot: uploadedMugshot,
 		});
 

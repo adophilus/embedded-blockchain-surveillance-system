@@ -3,6 +3,6 @@ import type { Result } from "true-myth";
 
 export abstract class ListSurveillanceEventsUseCase {
 	public abstract execute(
-		payload: Request.Path & Request.Query,
+		payload: Request.Path,
 	): Promise<Result<Response.Success, Response.Error>>;
 }

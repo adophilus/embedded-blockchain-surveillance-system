@@ -40,7 +40,6 @@ namespace Api {
   enum Role {
     ADMIN,
     OFFICIAL,
-    SYSTEM,
   }
 
   model MediaDescription {
@@ -130,7 +129,7 @@ namespace Api {
       id: Id;
       name: CriminalName;
       aliases: string[];
-      offense: CriminalOffense | null;
+      offenses: CriminalOffense[];
       mugshot: MediaDescription | null;
       created_at: DateTime;
     }
@@ -140,7 +139,7 @@ namespace Api {
         model Body {
           name: HttpPart<CriminalName>;
           aliases?: HttpPart<string[]>;
-          offense?: HttpPart<CriminalOffense>;
+          offenses?: HttpPart<CriminalOffense[]>;
           mugshot?: HttpPart<ImageFile>;
         }
       }
@@ -350,14 +349,15 @@ namespace Api {
       updated_at: DateTime | null;
     }
 
+    model SurveillanceEventDetection {
+      criminal_profile_id: Id;
+    }
+
     model SurveillanceEvent {
       id: Id;
-      session_id: Id;
+      detections: SurveillanceEventDetection[];
       device_id: string;
-      timestamp: DateTime;
-      detected: boolean;
-      ipfs_cid: string | null;
-      ipfs_url: string | null;
+      session_id: Id;
       created_at: DateTime;
     }
 

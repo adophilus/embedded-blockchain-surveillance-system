@@ -1,3 +1,4 @@
+import type { MediaDescription } from "@/types";
 import type { Result, Unit } from "true-myth";
 
 export type UpdateHeartbeatError = "ERR_DEVICE_NOT_FOUND" | "ERR_UNEXPECTED";
@@ -29,5 +30,5 @@ export abstract class IotDeviceService {
 	public abstract uploadStream(
 		deviceId: string,
 		stream: File,
-	): Promise<Result<string, UploadStreamError>>;
+	): Promise<Result<MediaDescription, UploadStreamError>>;
 }

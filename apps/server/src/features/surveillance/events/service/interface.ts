@@ -35,16 +35,16 @@ export abstract class SurveillanceEventService {
 		Result<SurveillanceEvent.Selectable[], ListEventsError>
 	>;
 
-	/**
-	 * Update a surveillance event
-	 * @param id - The ID of the surveillance event to update
-	 * @param updates - The updates to apply
-	 * @returns Result indicating success or failure
-	 */
-	public abstract update(
-		id: string,
-		updates: SurveillanceEvent.Updateable,
-	): Promise<Result<Unit, UpdateEventError>>;
+	// /**
+	//  * Update a surveillance event
+	//  * @param id - The ID of the surveillance event to update
+	//  * @param updates - The updates to apply
+	//  * @returns Result indicating success or failure
+	//  */
+	// public abstract update(
+	// 	id: string,
+	// 	updates: SurveillanceEvent.Updateable,
+	// ): Promise<Result<Unit, UpdateEventError>>;
 
 	/**
 	 * Delete a surveillance event

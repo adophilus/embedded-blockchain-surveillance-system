@@ -38,24 +38,11 @@ export class KyselySurveillanceEventRepository
 
 			const newEvent = await this.db
 				.insertInto("surveillance_events")
-				.values({
-					id: crypto.randomUUID(),
-					session_id: event.session_id,
-					device_id: event.device_id,
-					timestamp: event.timestamp,
-					detected: event.detected ? 1 : 0,
-					media_source: event.media_source,
-					media_id: event.media_id,
-					media_url: event.media_url,
-					created_at: new Date().toISOString(),
-				})
+				.values(event)
 				.returningAll()
 				.executeTakeFirstOrThrow();
 
-			return Result.ok({
-				...newEvent,
-				detected: newEvent.detected === 1,
-			});
+			return Result.ok(newEvent);
 		} catch (error) {
 			this.logger.error("Failed to create surveillance event", error);
 			return Result.err("ERR_UNEXPECTED");
@@ -74,14 +61,7 @@ export class KyselySurveillanceEventRepository
 				.where("id", "=", id)
 				.executeTakeFirst();
 
-			if (!event) {
-				return Result.ok(null);
-			}
-
-			return Result.ok({
-				...event,
-				detected: event.detected === 1,
-			});
+			return Result.ok(event ?? null);
 		} catch (error) {
 			this.logger.error("Failed to find surveillance event by ID", error);
 			return Result.err("ERR_UNEXPECTED");
@@ -95,70 +75,65 @@ export class KyselySurveillanceEventRepository
 			const events = await this.db
 				.selectFrom("surveillance_events")
 				.selectAll()
-				.orderBy("timestamp", "desc")
+				.orderBy("created_at", "desc")
 				.execute();
 
-			return Result.ok(
-				events.map((event) => ({
-					...event,
-					detected: event.detected === 1,
-				})),
-			);
+			return Result.ok(events);
 		} catch (error) {
 			this.logger.error("Failed to list surveillance events", error);
 			return Result.err("ERR_UNEXPECTED");
 		}
 	}
 
-	public async updateById(
-		id: string,
-		updates: SurveillanceEvent.Updateable,
-	): Promise<Result<Unit, UpdateSurveillanceEventByIdError>> {
-		try {
-			const eventExists = await this.db
-				.selectFrom("surveillance_events")
-				.select("id")
-				.where("id", "=", id)
-				.executeTakeFirst();
-
-			if (!eventExists) {
-				return Result.err("ERR_UNEXPECTED");
-			}
-
-			const updateData: Record<string, any> = {};
-
-			if (updates.timestamp !== undefined) {
-				updateData.timestamp = updates.timestamp;
-			}
-
-			if (updates.detected !== undefined) {
-				updateData.detected = updates.detected ? 1 : 0;
-			}
-
-			if (updates.media_source !== undefined) {
-				updateData.media_source = updates.media_source;
-			}
-
-			if (updates.media_id !== undefined) {
-				updateData.media_id = updates.media_id;
-			}
-
-			if (updates.media_url !== undefined) {
-				updateData.media_url = updates.media_url;
-			}
-
-			await this.db
-				.updateTable("surveillance_events")
-				.set(updateData)
-				.where("id", "=", id)
-				.execute();
-
-			return Result.ok(Unit);
-		} catch (error) {
-			this.logger.error("Failed to update surveillance event", error);
-			return Result.err("ERR_UNEXPECTED");
-		}
-	}
+	// public async updateById(
+	// 	id: string,
+	// 	updates: SurveillanceEvent.Updateable,
+	// ): Promise<Result<Unit, UpdateSurveillanceEventByIdError>> {
+	// 	try {
+	// 		const eventExists = await this.db
+	// 			.selectFrom("surveillance_events")
+	// 			.select("id")
+	// 			.where("id", "=", id)
+	// 			.executeTakeFirst();
+	//
+	// 		if (!eventExists) {
+	// 			return Result.err("ERR_UNEXPECTED");
+	// 		}
+	//
+	// 		const updateData: Record<string, any> = {};
+	//
+	// 		if (updates.timestamp !== undefined) {
+	// 			updateData.timestamp = updates.timestamp;
+	// 		}
+	//
+	// 		if (updates.detected !== undefined) {
+	// 			updateData.detected = updates.detected ? 1 : 0;
+	// 		}
+	//
+	// 		if (updates.media_source !== undefined) {
+	// 			updateData.media_source = updates.media_source;
+	// 		}
+	//
+	// 		if (updates.media_id !== undefined) {
+	// 			updateData.media_id = updates.media_id;
+	// 		}
+	//
+	// 		if (updates.media_url !== undefined) {
+	// 			updateData.media_url = updates.media_url;
+	// 		}
+	//
+	// 		await this.db
+	// 			.updateTable("surveillance_events")
+	// 			.set(updateData)
+	// 			.where("id", "=", id)
+	// 			.execute();
+	//
+	// 		return Result.ok(Unit);
+	// 	} catch (error) {
+	// 		this.logger.error("Failed to update surveillance event", error);
+	// 		return Result.err("ERR_UNEXPECTED");
+	// 	}
+	// }
 
 	public async deleteById(
 		id: string,

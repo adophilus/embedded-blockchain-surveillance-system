@@ -1,16 +1,12 @@
-import {
-	schema as apiSchema,
-	type types,
-} from "@embedded-blockchain-surveillance-system/api";
-import type { z } from "zod";
+import type { types } from "@embedded-blockchain-surveillance-system/api";
+import { z } from "zod";
 
 export namespace Request {
-	export const path = apiSchema.schemas.Api_Surveillance_ById_Path;
-	export const query =
-		apiSchema.schemas.Api_Surveillance_ById_Event_List_Request_Query;
+	export const path = z.object({
+		sessionId: z.string(),
+	});
 
 	export type Path = z.infer<typeof path>;
-	export type Query = z.infer<typeof query>;
 }
 
 export namespace Response {

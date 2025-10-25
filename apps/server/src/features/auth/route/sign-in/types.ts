@@ -12,7 +12,7 @@ export namespace Request {
 }
 
 export namespace Response {
-	type Endpoint = "/auth/sign-in/email";
+	type Endpoint = "/auth/sign-in";
 
 	export type Response =
 		types.paths[Endpoint]["post"]["responses"][keyof types.paths[Endpoint]["post"]["responses"]]["content"]["application/json"];

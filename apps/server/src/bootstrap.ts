@@ -83,6 +83,10 @@ import {
 import {
 	CreateCriminalProfileUseCase,
 	CreateCriminalProfileUseCaseImplementation,
+	GetCriminalProfileByIdUseCase,
+	GetCriminalProfileByIdUseCaseImplementation,
+	ListCriminalProfilesUseCaseImplementation,
+	ListCriminalProfileUseCase,
 } from "@/features/criminal/use-case";
 
 export const bootstrap = async () => {
@@ -130,6 +134,10 @@ export const bootstrap = async () => {
 			criminalProfileService,
 			storageService,
 		);
+	const getCriminalProfileByIdUseCase =
+		new GetCriminalProfileByIdUseCaseImplementation(criminalProfileService);
+	const listCriminalProfileUseCase =
+		new ListCriminalProfilesUseCaseImplementation(criminalProfileService);
 
 	// IoT DI
 	const iotDeviceRepository = new KyselyIotDeviceRepository(
@@ -226,6 +234,8 @@ export const bootstrap = async () => {
 	Container.set(CriminalProfileRepository, criminalProfileRepository);
 	Container.set(CriminalProfileService, criminalProfileService);
 	Container.set(CreateCriminalProfileUseCase, createCriminalProfileUseCase);
+	Container.set(GetCriminalProfileByIdUseCase, getCriminalProfileByIdUseCase);
+	Container.set(ListCriminalProfileUseCase, listCriminalProfileUseCase);
 
 	// IoT DI
 	Container.set(IotDeviceRepository, iotDeviceRepository);

@@ -61,7 +61,9 @@ const CriminalDetailModal: FunctionComponent<CriminalDetailModalProps> = ({
 								<div>
 									<span className="text-sm text-slate-400">Known Aliases</span>
 									<p className="text-white">
-										{criminalProfile.aliases.join(", ")}
+										{criminalProfile.aliases.length > 0
+											? criminalProfile.aliases.join(", ")
+											: "nil"}
 									</p>
 								</div>
 							)}
@@ -70,7 +72,9 @@ const CriminalDetailModal: FunctionComponent<CriminalDetailModalProps> = ({
 								<div>
 									<span className="text-sm text-slate-400">Offense</span>
 									<p className="text-white">
-										{criminalProfile.offenses.join(", ")}
+										{criminalProfile.offenses.length > 0
+											? criminalProfile.offenses.join(", ")
+											: "nil"}
 									</p>
 								</div>
 							)}
@@ -85,7 +89,13 @@ const CriminalDetailModal: FunctionComponent<CriminalDetailModalProps> = ({
 							{criminalProfile.mugshot?.id && (
 								<div>
 									<p className="text-blue-400 text-sm break-all">
-										{criminalProfile.mugshot.id}
+										<a
+											target="_blank"
+											rel="noreferrer noopener"
+											href={criminalProfile.mugshot.url}
+										>
+											{criminalProfile.mugshot.id}
+										</a>
 									</p>
 								</div>
 							)}
@@ -153,7 +163,8 @@ export const InnerCriminalsGallery = () => {
 	const [searchQuery, setSearchQuery] = useState("");
 
 	const { data } = useListCriminals();
-	const criminalProfiles = data.data;
+	const criminalProfiles = data.data.data;
+	console.log(criminalProfiles);
 
 	// filter criminalProfiles by searchQuery (case-insensitive, matches name, aliases or offense)
 	const filteredCriminalProfiles = (criminalProfiles ?? []).filter(
@@ -227,9 +238,23 @@ export const CriminalsGallery = () => {
 				<ErrorBoundary
 					onReset={reset}
 					fallbackRender={({ resetErrorBoundary }) => (
-						<div>
-							There was an error!
-							<button onClick={() => resetErrorBoundary()}>Try again</button>
+						<div className="flex items-center justify-center min-h-[240px] p-6">
+							<div className="bg-slate-900 border border-slate-800 rounded-xl p-6 w-full max-w-md text-center">
+								<h3 className="text-xl font-bold text-white mb-2">
+									Unable to load records
+								</h3>
+								<p className="text-sm text-slate-400 mb-6">
+									There was an error loading the criminal records. You can retry
+									or contact an administrator if the problem persists.
+								</p>
+								<button
+									type="button"
+									onClick={() => resetErrorBoundary()}
+									className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+								>
+									Try again
+								</button>
+							</div>
 						</div>
 					)}
 				>

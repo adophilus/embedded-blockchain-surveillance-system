@@ -5,6 +5,7 @@ export type CreateCriminalProfileServiceError =
 	| "ERR_INVALID_PAYLOAD"
 	| "ERR_UNEXPECTED";
 export type FindCriminalProfileByIdServiceError = "ERR_UNEXPECTED";
+export type ListCriminalsServiceError = "ERR_UNEXPECTED";
 
 export type DetectCriminalsInStreamServiceSuccess = {
 	detected: boolean;
@@ -33,7 +34,9 @@ export abstract class CriminalProfileService {
 	 */
 	public abstract create(
 		payload: CriminalProfile.Insertable,
-	): Promise<Result<CriminalProfile.Selectable, CreateCriminalProfileServiceError>>;
+	): Promise<
+		Result<CriminalProfile.Selectable, CreateCriminalProfileServiceError>
+	>;
 
 	/**
 	 * Get a criminal profile by ID.
@@ -44,7 +47,20 @@ export abstract class CriminalProfileService {
 	public abstract findById(
 		id: string,
 	): Promise<
-		Result<CriminalProfile.Selectable | null, FindCriminalProfileByIdServiceError>
+		Result<
+			CriminalProfile.Selectable | null,
+			FindCriminalProfileByIdServiceError
+		>
+	>;
+
+	/**
+	 * List criminals. Implementations may support filtering/pagination in the future;
+	 * for now this returns all criminals.
+	 *
+	 * @returns Result containing an array of Criminal.Selectable on success, or an error code
+	 */
+	public abstract list(): Promise<
+		Result<CriminalProfile.Selectable[], ListCriminalsServiceError>
 	>;
 
 	/**

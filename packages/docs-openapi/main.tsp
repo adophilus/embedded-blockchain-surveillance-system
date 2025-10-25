@@ -166,14 +166,18 @@ namespace Api {
     }
 
     namespace List {
+      namespace Request {
+        alias Query = Pagination.Query;
+      }
+
       namespace Response {
         namespace Success {
-          model CriminalList {
-            code: "CRIMINAL_LIST";
-            data: CriminalProfile[];
+          model CriminalProfilesList {
+            code: "CRIMINAL_PROFILES_LIST";
+            data: Pagination.Paginated<CriminalProfile>;
           }
 
-          alias Success = CriminalList;
+          alias Success = CriminalProfilesList;
         }
 
         namespace Error {
@@ -185,7 +189,7 @@ namespace Api {
 
       @get
       @doc("List criminal profiles")
-      op listCriminals(): Response.Response;
+      op listCriminals(...Request.Query): Response.Response;
     }
 
     @route("/{criminalId}")
@@ -453,14 +457,7 @@ namespace Api {
             alias Path = ById.Path;
 
             model Query {
-              @query
-              @minValue(1)
-              page?: integer;
-
-              @query
-              @minValue(10)
-              @maxValue(100)
-              per_page?: integer;
+              ...Pagination.Query;
 
               @query
               start_date?: DateTime;

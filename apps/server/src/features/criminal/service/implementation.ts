@@ -5,6 +5,7 @@ import type {
 	FindCriminalProfileByIdServiceError,
 	DetectCriminalsInStreamServiceError,
 	DetectCriminalsInStreamServiceSuccess,
+	ListCriminalsServiceError,
 } from "./interface";
 import type { CriminalProfileRepository } from "../repository";
 import type { Logger } from "@/features/logger";
@@ -22,7 +23,9 @@ export class CriminalProfileServiceImplementation
 
 	public async create(
 		payload: CriminalProfile.Insertable,
-	): Promise<Result<CriminalProfile.Selectable, CreateCriminalProfileServiceError>> {
+	): Promise<
+		Result<CriminalProfile.Selectable, CreateCriminalProfileServiceError>
+	> {
 		const res = await this.repository.create(payload);
 		if (res.isErr) {
 			this.logger.error("Repository failed to create criminal", res.error);
@@ -34,7 +37,10 @@ export class CriminalProfileServiceImplementation
 	public async findById(
 		id: string,
 	): Promise<
-		Result<CriminalProfile.Selectable | null, FindCriminalProfileByIdServiceError>
+		Result<
+			CriminalProfile.Selectable | null,
+			FindCriminalProfileByIdServiceError
+		>
 	> {
 		try {
 			const res = await this.repository.findById(id);
@@ -50,6 +56,12 @@ export class CriminalProfileServiceImplementation
 			this.logger.error("Unexpected error finding criminal by id", error);
 			return Result.err("ERR_UNEXPECTED");
 		}
+	}
+
+	public async list(): Promise<
+		Result<CriminalProfile.Selectable[], ListCriminalsServiceError>
+	> {
+		return this.repository.list();
 	}
 
 	public async detectCriminalsInStream(

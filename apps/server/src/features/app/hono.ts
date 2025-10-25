@@ -6,9 +6,10 @@ import { StatusCodes } from "@/features/http";
 import type { Logger } from "@/features/logger";
 import AuthRouter from "@/features/auth/route";
 import type App from "./interface";
-import IotDeviceRouter from "../iot/route";
-import SurveillanceRouter from "../surveillance/route";
-import CriminalRouter from "../criminal/route";
+import IotDeviceRouter from "@/features/iot/route";
+import SurveillanceRouter from "@/features/surveillance/route";
+import CriminalRouter from "@/features/criminal/route";
+import StorageRouter from "@/features/storage/route";
 
 class HonoApp implements App {
 	constructor(private logger: Logger) {}
@@ -18,7 +19,8 @@ class HonoApp implements App {
 			.route("/auth", AuthRouter)
 			.route("/iot", IotDeviceRouter)
 			.route("/surveillance", SurveillanceRouter)
-			.route("/criminals", CriminalRouter);
+			.route("/criminals", CriminalRouter)
+			.route("/storage", StorageRouter);
 
 		return new Hono()
 			.use(compress())

@@ -7,7 +7,7 @@ struct Detection {
 
 struct SurveillanceEvent {
     string id;
-    Detection[] detections;
+    string[] criminal_profile_ids;
     string device_id;
     string session_id;
     uint created_at;

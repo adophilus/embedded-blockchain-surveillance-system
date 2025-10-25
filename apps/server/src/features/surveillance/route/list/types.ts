@@ -1,13 +1,9 @@
-import {
-	schema as apiSchema,
-	type types,
-} from "@embedded-blockchain-surveillance-system/api";
-import type { z } from "zod";
+import { Pagination } from "@/features/pagination";
+import type { types } from "@embedded-blockchain-surveillance-system/api";
 
 export namespace Request {
-	export const query = apiSchema.schemas.Api_Pagination_Query;
-
-	export type Query = z.infer<typeof query>;
+	export const query = Pagination.schema;
+	export type Query = Pagination.Schema;
 }
 
 export namespace Response {

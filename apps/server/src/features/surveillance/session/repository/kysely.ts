@@ -13,12 +13,11 @@ import type { SurveillanceSession } from "@/types";
 import { ulid } from "ulidx";
 
 export class KyselySurveillanceSessionRepository
-	implements SurveillanceSessionRepository
-{
+	implements SurveillanceSessionRepository {
 	constructor(
 		private readonly db: KyselyClient,
 		private readonly logger: Logger,
-	) {}
+	) { }
 
 	public async create(
 		session: SurveillanceSession.Insertable,
@@ -68,7 +67,7 @@ export class KyselySurveillanceSessionRepository
 		Result<SurveillanceSession.Selectable[], ListSurveillanceSessionsError>
 	> {
 		try {
-			const sessions = this.db
+			const sessions = await this.db
 				.selectFrom("surveillance_sessions")
 				.selectAll()
 				.orderBy("created_at", "desc")

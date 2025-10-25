@@ -6,13 +6,12 @@ import type { Logger } from "@/features/logger";
 import type { Response } from "../types";
 
 export class GetSurveillanceMetricsUseCaseImplementation
-	implements GetSurveillanceMetricsUseCase
-{
+	implements GetSurveillanceMetricsUseCase {
 	constructor(
 		private readonly surveillanceSessionService: SurveillanceSessionService,
 		private readonly surveillanceEventService: SurveillanceEventService,
 		private readonly logger: Logger,
-	) {}
+	) { }
 
 	async execute(): Promise<Result<Response.Success, Response.Error>> {
 		try {
@@ -54,7 +53,9 @@ export class GetSurveillanceMetricsUseCaseImplementation
 				(s) => s.status === "COMPLETED",
 			).length;
 			const totalEvents = events.length;
-			const totalDetections = events.filter((e) => e.detected).length;
+			const totalDetections = events
+				.map((e) => e.detections.length)
+				.reduce((p, c) => p + c, 0);
 
 			this.logger.info("Calculated surveillance metrics");
 

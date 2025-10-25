@@ -42,7 +42,7 @@ export namespace SurveillanceEvent {
 }
 
 export namespace CriminalProfile {
-	type T = GenerateTypes<KyselyDatabaseTables["criminals"]>;
+	type T = GenerateTypes<KyselyDatabaseTables["criminal_profiles"]>;
 	export type Selectable = T["Selectable"];
 	export type Insertable = T["Insertable"];
 	export type Updateable = T["Updateable"];

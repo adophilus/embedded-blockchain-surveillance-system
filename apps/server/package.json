@@ -6,8 +6,8 @@
 		"start": "pnpm db migrate:latest && tsx ./scripts/create-admin.ts && tsx ./scripts/dev.ts",
 		"dev": "tsx watch ./scripts/dev.ts",
 		"script:create-admin": "tsx ./scripts/create-admin.ts",
-		"build": "tsc && tsx ./scripts/build.ts",
-		"lint": "tsc && biome lint .",
+		"build": "tsc",
+		"lint": "biome lint .",
 		"test": "./scripts/test.sh",
 		"db": "kysely"
 	},

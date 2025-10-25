@@ -20,7 +20,7 @@ export abstract class SurveillanceSessionRepository {
 	public abstract create(
 		session: SurveillanceSession.Insertable,
 	): Promise<
-		Result<SurveillanceSession.Insertable, CreateSurveillanceSessionError>
+		Result<SurveillanceSession.Selectable, CreateSurveillanceSessionError>
 	>;
 
 	/**

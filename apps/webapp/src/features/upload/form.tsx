@@ -1,6 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import Auth from "@/features/auth";
-import { z } from "zod";
+import z from "zod";
 
 const schema = z.object({
 	email: z.string().email(),
@@ -29,6 +29,25 @@ export const LoginForm = () => {
 	});
 
 	const isLoading = status === "pending";
+
+	// MOCK LOGIC for front-end demonstration
+	// if (email === "test@police.gov" && password === "password") {
+	// const mockUser = {
+	//   full_name: "Officer Alex Murphy",
+	//   role: "Chief Security Officer",
+	//   id: "user-1",
+	// };
+	// // MOCK API success structure
+	// const response = {
+	//   code: "SIGN_IN_SUCCESSFUL",
+	//   data: {
+	//     tokens: {
+	//       access_token: "mock_token_123",
+	//       refresh_token: "mock_refresh_456",
+	//     },
+	//     user: mockUser,
+	//   },
+	// };
 
 	return (
 		<form

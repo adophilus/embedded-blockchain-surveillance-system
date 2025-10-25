@@ -1,22 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
-import {
-	Camera,
-	Shield,
-	Users,
-	Activity,
-	LogOut,
-	Upload,
-	Eye,
-	Search,
-	Filter,
-	AlertCircle,
-	CheckCircle,
-	Clock,
-	Database,
-	BarChart,
-	HardHat,
-} from "lucide-react";
+import { useState } from "react";
+import { Upload, AlertCircle, CheckCircle } from "lucide-react";
 
 export const Route = createFileRoute("/_dashboard/dashboard/upload")({
 	component: RouteComponent,

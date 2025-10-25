@@ -14,7 +14,7 @@ const defaultValues: { email: string; password: string } = import.meta.env.PROD
 			password: "super-secret-password",
 		};
 
-export const LoginForm = () => {
+export const UploadForm = () => {
 	const { mutate, status } = Auth.Hooks.useLoginMutation();
 
 	const form = useForm({
@@ -30,99 +30,112 @@ export const LoginForm = () => {
 
 	const isLoading = status === "pending";
 
-	// MOCK LOGIC for front-end demonstration
-	// if (email === "test@police.gov" && password === "password") {
-	// const mockUser = {
-	//   full_name: "Officer Alex Murphy",
-	//   role: "Chief Security Officer",
-	//   id: "user-1",
-	// };
-	// // MOCK API success structure
-	// const response = {
-	//   code: "SIGN_IN_SUCCESSFUL",
-	//   data: {
-	//     tokens: {
-	//       access_token: "mock_token_123",
-	//       refresh_token: "mock_refresh_456",
-	//     },
-	//     user: mockUser,
-	//   },
-	// };
-
 	return (
 		<form
-			className="space-y-6"
-			onSubmit={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-				form.handleSubmit();
-			}}
+			onSubmit={handleSubmit}
+			className="bg-slate-900 border border-slate-800 rounded-xl p-8 space-y-6"
 		>
-			<form.Field name="email">
-				{(field) => (
-					<div>
-						<label
-							htmlFor={field.name}
-							className="block text-sm font-medium text-slate-300 mb-2"
-						>
-							Email Address
-						</label>
-						<input
-							type="email"
-							className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-							placeholder="officer.johnson@police.gov"
-							required
-							id={field.name}
-							name={field.name}
-							value={field.state.value}
-							onBlur={field.handleBlur}
-							onChange={(e) => field.handleChange(e.target.value)}
-						/>
-						{!field.state.meta.isValid && (
-							<em className="text-sm text-red-500 mt-1 block">
-								{field.state.meta.errors.map((err) => err?.message).join(",")}
-							</em>
-						)}
-					</div>
-				)}
-			</form.Field>
+			<div>
+				<label className="block text-sm font-medium text-slate-300 mb-2">
+					Full Name *
+				</label>
+				<input
+					type="text"
+					value={formData.name}
+					onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+					className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+					placeholder="John Smith"
+					required
+				/>
+			</div>
 
-			<form.Field name="password">
-				{(field) => (
-					<div>
-						<label
-							htmlFor={field.name}
-							className="block text-sm font-medium text-slate-300 mb-2"
-						>
-							Password
+			<div>
+				<label className="block text-sm font-medium text-slate-300 mb-2">
+					Known Aliases
+				</label>
+				<input
+					type="text"
+					value={formData.aliases}
+					onChange={(e) =>
+						setFormData({ ...formData, aliases: e.target.value })
+					}
+					className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+					placeholder="Johnny, Slim Jim (comma separated)"
+				/>
+			</div>
+
+			<div>
+				<label className="block text-sm font-medium text-slate-300 mb-2">
+					Offense
+				</label>
+				<textarea
+					value={formData.offense}
+					onChange={(e) =>
+						setFormData({ ...formData, offense: e.target.value })
+					}
+					className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"
+					placeholder="Armed robbery, assault"
+				/>
+			</div>
+
+			<div>
+				<label className="block text-sm font-medium text-slate-300 mb-2">
+					Mugshot
+				</label>
+				<div className="border-2 border-dashed border-slate-700 rounded-lg p-8 text-center hover:border-blue-500 transition">
+					{preview ? (
+						<div className="space-y-4">
+							<img
+								src={preview}
+								alt="Preview"
+								className="w-48 h-48 object-cover rounded-lg mx-auto"
+							/>
+							<button
+								type="button"
+								onClick={() => {
+									setPreview(null);
+									setFormData({ ...formData, mugshot: null });
+								}}
+								className="text-red-400 hover:text-red-300 text-sm"
+							>
+								Remove Image
+							</button>
+						</div>
+					) : (
+						<label className="cursor-pointer">
+							<input
+								type="file"
+								accept="image/jpeg,image/png,image/webp"
+								onChange={handleFileChange}
+								className="hidden"
+							/>
+							<div className="space-y-2">
+								<Upload className="w-12 h-12 text-slate-600 mx-auto" />
+								<p className="text-slate-400">Click to upload mugshot</p>
+								<p className="text-xs text-slate-500">JPEG, PNG, or WebP</p>
+							</div>
 						</label>
-						<input
-							type="password"
-							className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-							placeholder="••••••••"
-							required
-							id={field.name}
-							name={field.name}
-							value={field.state.value}
-							onBlur={field.handleBlur}
-							onChange={(e) => field.handleChange(e.target.value)}
-						/>
-					</div>
-				)}
-			</form.Field>
+					)}
+				</div>
+			</div>
 
 			<button
 				type="submit"
-				disabled={isLoading}
+				disabled={uploading || success || !formData.name}
 				className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
 			>
-				{isLoading ? (
+				{uploading ? (
 					<>
 						<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-						Signing In...
+						Uploading...
+					</>
+				) : success ? (
+					<>
+						<CheckCircle className="w-5 h-5" />
+						Upload Complete!
 					</>
 				) : (
-					"Sign In"
+					"Submit to Blockchain"
 				)}
 			</button>
 		</form>

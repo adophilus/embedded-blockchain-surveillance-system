@@ -10,7 +10,7 @@ const schema = z.object({
 const defaultValues: { email: string; password: string } = import.meta.env.PROD
 	? { email: "", password: "" }
 	: {
-			email: "admin@surveillance.fudo.edu.ng",
+			email: "admin@surveillance.futo.edu.ng",
 			password: "super-secret-password",
 		};
 

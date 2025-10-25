@@ -8,7 +8,7 @@ import type {
 } from "./interface";
 import type { CriminalProfileRepository } from "../repository";
 import type { Logger } from "@/features/logger";
-import type { Criminal } from "@/types";
+import type { CriminalProfile } from "@/types";
 import * as faceapi from "@vladmandic/face-api";
 import { loadImage } from "canvas";
 
@@ -21,8 +21,8 @@ export class CriminalProfileServiceImplementation
 	) {}
 
 	public async create(
-		payload: Criminal.Insertable,
-	): Promise<Result<Criminal.Selectable, CreateCriminalProfileServiceError>> {
+		payload: CriminalProfile.Insertable,
+	): Promise<Result<CriminalProfile.Selectable, CreateCriminalProfileServiceError>> {
 		const res = await this.repository.create(payload);
 		if (res.isErr) {
 			this.logger.error("Repository failed to create criminal", res.error);
@@ -34,7 +34,7 @@ export class CriminalProfileServiceImplementation
 	public async findById(
 		id: string,
 	): Promise<
-		Result<Criminal.Selectable | null, FindCriminalProfileByIdServiceError>
+		Result<CriminalProfile.Selectable | null, FindCriminalProfileByIdServiceError>
 	> {
 		try {
 			const res = await this.repository.findById(id);
@@ -174,7 +174,7 @@ export class CriminalProfileServiceImplementation
 			// Create face matcher with confidence threshold
 			const faceMatcher = new faceapi.FaceMatcher(validDescriptors, 0.6);
 			const matches: Array<{
-				criminal: Criminal.Selectable;
+				criminal: CriminalProfile.Selectable;
 				confidence: number;
 				boundingBox?: {
 					x: number;

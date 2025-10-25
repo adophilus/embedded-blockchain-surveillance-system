@@ -49,23 +49,19 @@ export async function up(db: Kysely<any>): Promise<void> {
 	await db.schema
 		.createTable("surveillance_events")
 		.addColumn("id", "text", (col) => col.primaryKey())
+		.addColumn("detections", "text", (col) => col.notNull())
+		.addColumn("device_id", "text", (col) => col.notNull())
 		.addColumn("session_id", "text", (col) =>
 			col.notNull().references("surveillance_sessions.id"),
 		)
-		.addColumn("device_id", "text", (col) => col.notNull())
-		.addColumn("timestamp", "text", (col) => col.notNull())
-		.addColumn("detected", "boolean", (col) => col.notNull())
-		.addColumn("media_source", "text")
-		.addColumn("media_id", "text")
-		.addColumn("media_url", "text")
 		.addColumn("created_at", "integer", (col) =>
 			col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
 		)
 		.execute();
 
-	// Criminals table
+	// Criminal profiles table
 	await db.schema
-		.createTable("criminals")
+		.createTable("criminal_profiles")
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("name", "text", (col) => col.notNull())
 		.addColumn("aliases", "text", (col) => col.notNull()) // JSON stringified array
@@ -111,7 +107,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 export async function down(db: Kysely<any>): Promise<void> {
 	await db.schema.dropTable("files").execute();
 	await db.schema.dropTable("iot_devices").execute();
-	await db.schema.dropTable("criminals").execute();
+	await db.schema.dropTable("criminal_profiles").execute();
 	await db.schema.dropTable("surveillance_events").execute();
 	await db.schema.dropTable("surveillance_sessions").execute();
 	await db.schema.dropTable("tokens").execute();

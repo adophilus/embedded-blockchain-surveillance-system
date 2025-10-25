@@ -60,7 +60,7 @@ contract SurveillanceSession is ISurveillanceSession {
 
     function addDevice(address _device) external onlyAdmin {
         if (!sessionStarted) revert SessionNotStarted();
-        if (sessionEnded) revert SessionEnded();
+                if (sessionEnded) revert SessionAlreadyEnded();
         if (_device == address(0)) revert InvalidAddress();
 
         associatedDevices[_device] = true;

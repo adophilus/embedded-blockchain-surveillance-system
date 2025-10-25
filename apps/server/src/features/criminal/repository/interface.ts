@@ -1,5 +1,5 @@
 import type { Result, Unit } from "true-myth";
-import type { Criminal } from "@/types";
+import type { CriminalProfile } from "@/types";
 
 export type CreateCriminalError = "ERR_UNEXPECTED";
 export type FindCriminalByIdError = "ERR_UNEXPECTED";
@@ -19,8 +19,8 @@ export abstract class CriminalProfileRepository {
 	 * @returns Result containing the created Criminal.Selectable on success, or an error code
 	 */
 	public abstract create(
-		payload: Criminal.Insertable,
-	): Promise<Result<Criminal.Selectable, CreateCriminalError>>;
+		payload: CriminalProfile.Insertable,
+	): Promise<Result<CriminalProfile.Selectable, CreateCriminalError>>;
 
 	/**
 	 * Find a criminal by ID.
@@ -30,7 +30,7 @@ export abstract class CriminalProfileRepository {
 	 */
 	public abstract findById(
 		id: string,
-	): Promise<Result<Criminal.Selectable | null, FindCriminalByIdError>>;
+	): Promise<Result<CriminalProfile.Selectable | null, FindCriminalByIdError>>;
 
 	/**
 	 * Update an existing criminal record.
@@ -41,8 +41,8 @@ export abstract class CriminalProfileRepository {
 	 */
 	public abstract updateById(
 		id: string,
-		changes: Criminal.Updateable,
-	): Promise<Result<Criminal.Selectable, UpdateCriminalByIdError>>;
+		changes: CriminalProfile.Updateable,
+	): Promise<Result<CriminalProfile.Selectable, UpdateCriminalByIdError>>;
 
 	/**
 	 * Delete a criminal record by ID.
@@ -61,6 +61,6 @@ export abstract class CriminalProfileRepository {
 	 * @returns Result containing an array of Criminal.Selectable on success, or an error code
 	 */
 	public abstract list(): Promise<
-		Result<Criminal.Selectable[], ListCriminalsError>
+		Result<CriminalProfile.Selectable[], ListCriminalsError>
 	>;
 }

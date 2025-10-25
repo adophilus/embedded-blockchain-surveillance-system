@@ -41,7 +41,7 @@ export namespace SurveillanceEvent {
 	export type Updateable = T["Updateable"];
 }
 
-export namespace Criminal {
+export namespace CriminalProfile {
 	type T = GenerateTypes<KyselyDatabaseTables["criminals"]>;
 	export type Selectable = T["Selectable"];
 	export type Insertable = T["Insertable"];

@@ -20,7 +20,7 @@ type UsersTable = TimestampModel & {
 	full_name: string;
 	email: string;
 	password_hash: string;
-	role: "ADMIN" | "OFFICIAL"
+	role: "ADMIN" | "OFFICIAL";
 };
 
 type TokensTable = TimestampModel & {
@@ -49,7 +49,7 @@ type SurveillanceEventsTable = {
 	created_at: ColumnType<number, never, never>;
 };
 
-type CriminalsTable = TimestampModel & {
+type CriminalProfilesTable = TimestampModel & {
 	id: Id;
 	name: string;
 	aliases: string[];
@@ -78,7 +78,7 @@ export type KyselyDatabaseTables = {
 	tokens: TokensTable;
 	surveillance_sessions: SurveillanceSessionsTable;
 	surveillance_events: SurveillanceEventsTable;
-	criminals: CriminalsTable;
+	criminal_profiles: CriminalProfilesTable;
 	iot_devices: IoTDevicesTable;
 	files: FilesTable;
 };

@@ -1,5 +1,5 @@
 import type { Result } from "true-myth";
-import type { Criminal } from "@/types";
+import type { CriminalProfile } from "@/types";
 
 export type CreateCriminalProfileServiceError =
 	| "ERR_INVALID_PAYLOAD"
@@ -9,7 +9,7 @@ export type FindCriminalProfileByIdServiceError = "ERR_UNEXPECTED";
 export type DetectCriminalsInStreamServiceSuccess = {
 	detected: boolean;
 	matches: Array<{
-		criminal: Criminal.Selectable;
+		criminal: CriminalProfile.Selectable;
 		confidence: number;
 		boundingBox?: {
 			x: number;
@@ -32,8 +32,8 @@ export abstract class CriminalProfileService {
 	 * @returns Result containing the created Criminal.Selectable on success, or an error code
 	 */
 	public abstract create(
-		payload: Criminal.Insertable,
-	): Promise<Result<Criminal.Selectable, CreateCriminalProfileServiceError>>;
+		payload: CriminalProfile.Insertable,
+	): Promise<Result<CriminalProfile.Selectable, CreateCriminalProfileServiceError>>;
 
 	/**
 	 * Get a criminal profile by ID.
@@ -44,7 +44,7 @@ export abstract class CriminalProfileService {
 	public abstract findById(
 		id: string,
 	): Promise<
-		Result<Criminal.Selectable | null, FindCriminalProfileByIdServiceError>
+		Result<CriminalProfile.Selectable | null, FindCriminalProfileByIdServiceError>
 	>;
 
 	/**

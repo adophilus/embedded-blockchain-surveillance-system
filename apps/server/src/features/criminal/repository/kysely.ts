@@ -9,7 +9,7 @@ import type {
 } from "./interface";
 import type { KyselyClient } from "@/features/database/kysely";
 import type { Logger } from "@/features/logger";
-import type { Criminal } from "@/types";
+import type { CriminalProfile } from "@/types";
 
 export class KyselyCriminalProfileRepository
 	implements CriminalProfileRepository
@@ -20,8 +20,8 @@ export class KyselyCriminalProfileRepository
 	) {}
 
 	public async create(
-		payload: Criminal.Insertable,
-	): Promise<Result<Criminal.Selectable, CreateCriminalError>> {
+		payload: CriminalProfile.Insertable,
+	): Promise<Result<CriminalProfile.Selectable, CreateCriminalError>> {
 		try {
 			const inserted = await this.db
 				.insertInto("criminals")
@@ -38,7 +38,7 @@ export class KyselyCriminalProfileRepository
 
 	public async findById(
 		id: string,
-	): Promise<Result<Criminal.Selectable | null, FindCriminalByIdError>> {
+	): Promise<Result<CriminalProfile.Selectable | null, FindCriminalByIdError>> {
 		try {
 			const row = await this.db
 				.selectFrom("criminals")
@@ -55,8 +55,8 @@ export class KyselyCriminalProfileRepository
 
 	public async updateById(
 		id: string,
-		changes: Criminal.Updateable,
-	): Promise<Result<Criminal.Selectable, UpdateCriminalByIdError>> {
+		changes: CriminalProfile.Updateable,
+	): Promise<Result<CriminalProfile.Selectable, UpdateCriminalByIdError>> {
 		try {
 			const updated = await this.db
 				.updateTable("criminals")
@@ -98,7 +98,7 @@ export class KyselyCriminalProfileRepository
 	}
 
 	public async list(): Promise<
-		Result<Criminal.Selectable[], ListCriminalsError>
+		Result<CriminalProfile.Selectable[], ListCriminalsError>
 	> {
 		try {
 			const rows = await this.db.selectFrom("criminals").selectAll().execute();

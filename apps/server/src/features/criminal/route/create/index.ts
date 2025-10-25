@@ -12,7 +12,7 @@ const CreateCriminalProfileRoute = new Hono().post(
 		let response: Response.Response;
 		let statusCode: StatusCodes;
 
-		const body = c.req.valid("json");
+		const body = c.req.valid("form");
 
 		const useCase = Container.get(CreateCriminalProfileUseCase);
 		const result = await useCase.execute(body);

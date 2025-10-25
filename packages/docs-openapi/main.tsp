@@ -138,8 +138,8 @@ namespace Api {
       namespace Request {
         model Body {
           name: HttpPart<CriminalName>;
-          aliases?: HttpPart<string[]>;
-          offenses?: HttpPart<CriminalOffense[]>;
+          aliases: HttpPart<string[]>;
+          offenses: HttpPart<CriminalOffense[]>;
           mugshot?: HttpPart<ImageFile>;
         }
       }

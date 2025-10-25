@@ -23,9 +23,6 @@ export const LoginForm = () => {
 		validators: {
 			onSubmit: schema,
 		},
-		onSubmitInvalid: (v) => {
-			console.log(v);
-		},
 	});
 
 	const isLoading = status === "pending";
@@ -88,6 +85,11 @@ export const LoginForm = () => {
 							onBlur={field.handleBlur}
 							onChange={(e) => field.handleChange(e.target.value)}
 						/>
+						{!field.state.meta.isValid && (
+							<em className="text-sm text-red-500 mt-1 block">
+								{field.state.meta.errors.map((err) => err?.message).join(",")}
+							</em>
+						)}
 					</div>
 				)}
 			</form.Field>

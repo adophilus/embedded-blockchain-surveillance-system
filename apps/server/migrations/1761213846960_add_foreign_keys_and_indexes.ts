@@ -1,8 +1,6 @@
 import { Kysely } from "kysely";
 
 export async function up(db: Kysely<any>): Promise<void> {
-	
-
 	// Add indexes for better query performance
 	await db.schema
 		.createIndex("idx_users_email")
@@ -29,14 +27,14 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.execute();
 
 	await db.schema
-		.createIndex("idx_surveillance_events_timestamp")
+		.createIndex("idx_surveillance_events_created_at")
 		.on("surveillance_events")
-		.column("timestamp")
+		.column("created_at")
 		.execute();
 
 	await db.schema
-		.createIndex("idx_criminals_name")
-		.on("criminals")
+		.createIndex("idx_criminal_profiles_name")
+		.on("criminal_profiles")
 		.column("name")
 		.execute();
 
@@ -57,12 +55,10 @@ export async function down(db: Kysely<any>): Promise<void> {
 	// Drop indexes
 	await db.schema.dropIndex("idx_iot_devices_status").execute();
 	await db.schema.dropIndex("idx_iot_devices_device_code").execute();
-	await db.schema.dropIndex("idx_criminals_name").execute();
-	await db.schema.dropIndex("idx_surveillance_events_timestamp").execute();
+	await db.schema.dropIndex("idx_criminal_profiles_name").execute();
+	await db.schema.dropIndex("idx_surveillance_events_created_at").execute();
 	await db.schema.dropIndex("idx_surveillance_events_device_id").execute();
 	await db.schema.dropIndex("idx_surveillance_events_session_id").execute();
 	await db.schema.dropIndex("idx_tokens_user_id").execute();
 	await db.schema.dropIndex("idx_users_email").execute();
-
-	
 }

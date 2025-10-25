@@ -80,6 +80,10 @@ import {
 	IotDeviceHeartbeatUseCase,
 	IotDeviceHeartbeatUseCaseImplementation,
 } from "@/features/iot/route/heartbeat/use-case";
+import {
+	CreateCriminalProfileUseCase,
+	CreateCriminalProfileUseCaseImplementation,
+} from "@/features/criminal/use-case";
 
 export const bootstrap = async () => {
 	const logger = new Logger();
@@ -121,6 +125,11 @@ export const bootstrap = async () => {
 		criminalProfileRepository,
 		logger,
 	);
+	const createCriminalProfileUseCase =
+		new CreateCriminalProfileUseCaseImplementation(
+			criminalProfileService,
+			storageService,
+		);
 
 	// IoT DI
 	const iotDeviceRepository = new KyselyIotDeviceRepository(
@@ -216,6 +225,7 @@ export const bootstrap = async () => {
 	// Criminal DI
 	Container.set(CriminalProfileRepository, criminalProfileRepository);
 	Container.set(CriminalProfileService, criminalProfileService);
+	Container.set(CreateCriminalProfileUseCase, createCriminalProfileUseCase);
 
 	// IoT DI
 	Container.set(IotDeviceRepository, iotDeviceRepository);

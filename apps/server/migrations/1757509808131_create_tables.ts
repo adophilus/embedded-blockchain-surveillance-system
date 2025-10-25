@@ -49,15 +49,11 @@ export async function up(db: Kysely<any>): Promise<void> {
 	await db.schema
 		.createTable("surveillance_events")
 		.addColumn("id", "text", (col) => col.primaryKey())
+		.addColumn("detections", "text", (col) => col.notNull())
+		.addColumn("device_id", "text", (col) => col.notNull())
 		.addColumn("session_id", "text", (col) =>
 			col.notNull().references("surveillance_sessions.id"),
 		)
-		.addColumn("device_id", "text", (col) => col.notNull())
-		.addColumn("timestamp", "text", (col) => col.notNull())
-		.addColumn("detected", "integer", (col) => col.notNull()) // SQLite uses integer for boolean
-		.addColumn("media_source", "text")
-		.addColumn("media_id", "text")
-		.addColumn("media_url", "text")
 		.addColumn("created_at", "integer", (col) =>
 			col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
 		)
@@ -65,14 +61,12 @@ export async function up(db: Kysely<any>): Promise<void> {
 
 	// Criminals table
 	await db.schema
-		.createTable("criminals")
+		.createTable("criminal_profiles")
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("name", "text", (col) => col.notNull())
-		.addColumn("aliases", "text", (col) => col.notNull()) // JSON stringified array
-		.addColumn("offense", "text")
-		.addColumn("mugshot_source", "text") // 'ipfs' or other sources
-		.addColumn("mugshot_id", "text") // CID or other identifier
-		.addColumn("mugshot_url", "text") // Full URL to the mugshot
+		.addColumn("aliases", "text", (col) => col.notNull())
+		.addColumn("offenses", "text", (col) => col.notNull())
+		.addColumn("mugshot", "text")
 		.addColumn("created_at", "integer", (col) =>
 			col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
 		)

@@ -120,7 +120,7 @@ jobs:
           context: .
           file: ./apps/server/Dockerfile
           push: true
-          tags: adophilus/embedded-blockchain-surveillance-system:latest
+          tags: adophilus/embedded-blockchain-surveillance-system-server:latest
           build-args: |
             VITE_NODE_ENV=${{ env.VITE_NODE_ENV }}
             VITE_SERVER_URL=${{ env.VITE_SERVER_URL }}

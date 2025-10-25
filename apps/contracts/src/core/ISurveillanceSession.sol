@@ -23,6 +23,6 @@ interface ISurveillanceSession {
     function endSession() external;
     function addDevice(address _device) external;
     function recordEvent(uint _timestamp, bool _detected) external returns (uint);
-    function getEventCount(uint _eventId) external view returns (uint);
+    function getEventCount() external view returns (uint);
     function getSessionResults() external view returns (address[] memory devices, uint[] memory eventCounts, bool[] memory detectionStatus);
 }

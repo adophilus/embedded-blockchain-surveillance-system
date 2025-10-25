@@ -75,9 +75,8 @@ contract SurveillanceSession is ISurveillanceSession {
         return eventCount;
     }
 
-    function getEventCount(uint _eventId) external view returns (uint) {
-        if (_eventId == 0 || _eventId > eventCount) revert InvalidId();
-        return 1; // Placeholder
+    function getEventCount() external view returns (uint) {
+        return eventCount;
     }
 
     function getSessionResults() external view onlyAfterSession returns (address[] memory devices, uint[] memory eventCounts, bool[] memory detectionStatus) {

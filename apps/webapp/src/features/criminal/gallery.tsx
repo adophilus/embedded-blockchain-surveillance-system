@@ -1,11 +1,114 @@
 import { SearchIcon, UsersIcon } from "lucide-react";
 import { useListCriminals } from "./hooks";
-import { Suspense } from "react";
+import { Suspense, useState, type FunctionComponent } from "react";
+import type { types } from "@embedded-blockchain-surveillance-system/api";
+import { format } from "date-fns";
+import { QueryErrorResetBoundary } from "@tanstack/react-query";
+import { ErrorBoundary } from "react-error-boundary";
 
-const InnerCriminalsGallery = () => {
+type CriminalProfile =
+	types.components["schemas"]["Api.Criminal.ById.Response.Success.CriminalProfileDetails"]["data"];
+
+type CriminalDetailModalProps = {
+	criminalProfile: CriminalProfile;
+	onClose: () => void;
+};
+
+const formatDateTime = (timestamp: number) =>
+	format(timestamp, "dd/MM/yyyy HH:mm");
+
+const CriminalDetailModal: FunctionComponent<CriminalDetailModalProps> = ({
+	criminalProfile,
+	onClose,
+}) => {
+	return (
+		<div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+			<div className="bg-slate-900 rounded-xl max-w-2xl w-full">
+				<div className="p-6 border-b border-slate-800 flex items-center justify-between">
+					<h3 className="text-2xl font-bold text-white">Criminal Profile</h3>
+					<button
+						type="button"
+						onClick={onClose}
+						className="text-slate-400 hover:text-white transition text-2xl w-8 h-8 flex items-center justify-center"
+					>
+						✕
+					</button>
+				</div>
+
+				<div className="p-6">
+					<div className="flex gap-6">
+						{criminalProfile.mugshot?.url ? (
+							<img
+								src={criminalProfile.mugshot.url}
+								alt={criminalProfile.name}
+								className="w-48 h-48 object-cover rounded-lg"
+							/>
+						) : (
+							<div className="w-48 h-48 bg-slate-800 rounded-lg flex items-center justify-center">
+								<UsersIcon className="w-16 h-16 text-slate-600" />
+							</div>
+						)}
+
+						<div className="flex-1 space-y-4">
+							<div>
+								<span className="text-sm text-slate-400">Name</span>
+								<p className="text-xl font-bold text-white">
+									{criminalProfile.name}
+								</p>
+							</div>
+
+							{criminalProfile.aliases?.length > 0 && (
+								<div>
+									<span className="text-sm text-slate-400">Known Aliases</span>
+									<p className="text-white">
+										{criminalProfile.aliases.join(", ")}
+									</p>
+								</div>
+							)}
+
+							{criminalProfile.offenses && (
+								<div>
+									<span className="text-sm text-slate-400">Offense</span>
+									<p className="text-white">
+										{criminalProfile.offenses.join(", ")}
+									</p>
+								</div>
+							)}
+
+							<div>
+								<span className="text-sm text-slate-400">Record Created</span>
+								<p className="text-white">
+									{formatDateTime(criminalProfile.created_at)}
+								</p>
+							</div>
+
+							{criminalProfile.mugshot?.id && (
+								<div>
+									<p className="text-blue-400 text-sm break-all">
+										{criminalProfile.mugshot.id}
+									</p>
+								</div>
+							)}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+type CriminalsListProps = {
+	criminalProfiles: CriminalProfile[];
+	viewCriminal: (id: string) => void;
+};
+
+const CriminalsList: FunctionComponent<CriminalsListProps> = ({
+	criminalProfiles,
+	viewCriminal,
+}) => {
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-			{filteredCriminals.map((criminal) => (
+			{criminalProfiles.map((criminal) => (
 				<div
 					key={criminal.id}
 					onClick={() => viewCriminal(criminal.id)}
@@ -19,7 +122,7 @@ const InnerCriminalsGallery = () => {
 						/>
 					) : (
 						<div className="w-full h-48 bg-slate-800 flex items-center justify-center">
-							<Users className="w-12 h-12 text-slate-600" />
+							<UsersIcon className="w-12 h-12 text-slate-600" />
 						</div>
 					)}
 
@@ -27,14 +130,14 @@ const InnerCriminalsGallery = () => {
 						<h3 className="text-lg font-semibold text-white mb-1 group-hover:text-red-400 transition">
 							{criminal.name}
 						</h3>
-						{criminal.aliases?.length > 0 && (
+						{criminal.aliases.length > 0 && (
 							<p className="text-sm text-slate-400 mb-2">
 								AKA: {criminal.aliases.join(", ")}
 							</p>
 						)}
-						{criminal.offense && (
+						{criminal.offenses.length > 0 && (
 							<p className="text-xs text-slate-500 line-clamp-2">
-								{criminal.offense}
+								{criminal.offenses.join(", ")}
 							</p>
 						)}
 					</div>
@@ -44,82 +147,36 @@ const InnerCriminalsGallery = () => {
 	);
 };
 
-export const CriminalsGallery = () => {
-	const [selectedCriminal, setSelectedCriminal] = useState(null);
+export const InnerCriminalsGallery = () => {
+	const [selectedCriminalProfile, setSelectedCriminal] =
+		useState<CriminalProfile | null>(null);
 	const [searchQuery, setSearchQuery] = useState("");
 
 	const { data } = useListCriminals();
 	const criminalProfiles = data.data;
-	const filteredCriminalProfiles = // here
 
-	// // MOCK DATA for criminals
-	// const mockCriminalsData = [
-	// 	{
-	// 		id: "crim-1",
-	// 		name: "Al Capone",
-	// 		aliases: ["Scarface"],
-	// 		offense: "Racketeering, Tax Evasion",
-	// 		created_at: Date.now() / 1000 - 86400 * 5,
-	// 		mugshot: {
-	// 			id: "QmCaponeIPFS",
-	// 			url: "https://via.placeholder.com/192x192/8b0000/ffffff?text=Al+Capone",
-	// 		},
-	// 	},
-	// 	{
-	// 		id: "crim-2",
-	// 		name: "Bonnie Parker",
-	// 		aliases: ["Bonniewho"],
-	// 		offense: "Bank Robbery, Murder",
-	// 		created_at: Date.now() / 1000 - 86400 * 10,
-	// 		mugshot: {
-	// 			id: "QmBonnieIPFS",
-	// 			url: "https://via.placeholder.com/192x192/8b0000/ffffff?text=Bonnie+Parker",
-	// 		},
-	// 	},
-	// 	{
-	// 		id: "crim-3",
-	// 		name: "John Dillinger",
-	// 		aliases: ["Jack Rabbit"],
-	// 		offense: "Bank Robbery, Escape",
-	// 		created_at: Date.now() / 1000 - 86400 * 2,
-	// 		mugshot: {
-	// 			id: "QmDillingerIPFS",
-	// 			url: "https://via.placeholder.com/192x192/8b0000/ffffff?text=John+Dillinger",
-	// 		},
-	// 	},
-	// 	{
-	// 		id: "crim-4",
-	// 		name: "Jesse James",
-	// 		aliases: null,
-	// 		offense: "Train Robbery, Murder",
-	// 		created_at: Date.now() / 1000 - 86400 * 30,
-	// 		mugshot: null,
-	// 	},
-	// ];
+	// filter criminalProfiles by searchQuery (case-insensitive, matches name, aliases or offense)
+	const filteredCriminalProfiles = (criminalProfiles ?? []).filter(
+		(criminal) => {
+			const q = (searchQuery ?? "").trim().toLowerCase();
+			if (!q) return true;
+			if (criminal.name.toLowerCase().includes(q)) return true;
+			if (criminal.aliases.some((alias) => alias.toLowerCase().includes(q)))
+				return true;
+			if (
+				criminal.offenses.some((offense) => offense.toLowerCase().includes(q))
+			)
+				return true;
+			return false;
+		},
+	);
 
-	const viewCriminal = async (criminalId) => {
-		try {
-			// Placeholder - implement your criminal detail endpoint
-			// const response = await apiCall(`/criminals/${criminalId}`);
-			// setSelectedCriminal(response.data);
-
-			// MOCK DETAIL VIEW
-			const criminal = mockCriminalsData.find((c) => c.id === criminalId);
-			if (criminal) {
-				setSelectedCriminal(criminal);
-			}
-		} catch (err) {
-			console.error("Error loading criminal details:", err);
+	const viewCriminal = async (criminalId: string) => {
+		const criminal = criminalProfiles.find((c) => c.id === criminalId);
+		if (criminal) {
+			setSelectedCriminal(criminal);
 		}
 	};
-
-	const filteredCriminals = criminals.filter(
-		(criminal) =>
-			criminal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			criminal.aliases?.some((alias) =>
-				alias.toLowerCase().includes(searchQuery.toLowerCase()),
-			),
-	);
 
 	return (
 		<div className="space-y-6">
@@ -142,26 +199,51 @@ export const CriminalsGallery = () => {
 				/>
 			</div>
 
-			<Suspense
-				fallback={
-					<div className="flex items-center justify-center py-12">
-						<div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-					</div>
-				}
-			>
-				{criminalProfiles.length === 0 ? (
-					<div className="text-center py-12 text-slate-400">
-						No criminal records found
-					</div>
-				) : (
-					<InnerCriminalsGallery criminalProfiles={criminalProfiles} />
-				)}
-			</Suspense>
+			{criminalProfiles.length === 0 ? (
+				<div className="text-center py-12 text-slate-400">
+					No criminal records found
+				</div>
+			) : (
+				<CriminalsList
+					criminalProfiles={filteredCriminalProfiles}
+					viewCriminal={viewCriminal}
+				/>
+			)}
 
-			<CriminalDetailModal
-				criminal={selectedCriminal}
-				onClose={() => setSelectedCriminal(null)}
-			/>
+			{selectedCriminalProfile && (
+				<CriminalDetailModal
+					criminalProfile={selectedCriminalProfile}
+					onClose={() => setSelectedCriminal(null)}
+				/>
+			)}
 		</div>
+	);
+};
+
+export const CriminalsGallery = () => {
+	return (
+		<QueryErrorResetBoundary>
+			{({ reset }) => (
+				<ErrorBoundary
+					onReset={reset}
+					fallbackRender={({ resetErrorBoundary }) => (
+						<div>
+							There was an error!
+							<button onClick={() => resetErrorBoundary()}>Try again</button>
+						</div>
+					)}
+				>
+					<Suspense
+						fallback={
+							<div className="flex items-center justify-center py-12">
+								<div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+							</div>
+						}
+					>
+						<InnerCriminalsGallery />
+					</Suspense>
+				</ErrorBoundary>
+			)}
+		</QueryErrorResetBoundary>
 	);
 };

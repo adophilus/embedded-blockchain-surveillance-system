@@ -23,9 +23,11 @@
     "@tanstack/router-plugin": "^1.114.17",
     "@tanstack/store": "^0.7.0",
     "assertate": "^2.4.0",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.545.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-error-boundary": "^6.0.0",
     "sonner": "^2.0.7"
   },
   "devDependencies": {

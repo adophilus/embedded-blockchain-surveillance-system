@@ -18,8 +18,8 @@ export type DeploySystemError =
 	| InvalidDeployerAccountError
 	| UnknownDeployerError;
 
-abstract class VotingSystemDeployer {
+abstract class SurveillanceSystemDeployer {
 	public abstract deploySystem(): Promise<Result<Address, DeploySystemError>>;
 }
 
-export { VotingSystemDeployer };
+export { SurveillanceSystemDeployer };

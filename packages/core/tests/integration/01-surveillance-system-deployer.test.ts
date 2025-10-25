@@ -1,18 +1,18 @@
 import { describe, it, expect, beforeAll } from "vitest";
-import { BlockchainVotingSystemDeployer } from "../../src/voting-system-deployer/implementation";
+import { BlockchainSurveillanceSystemDeployer } from "../../src/surveillance-system-deployer/implementation";
 import { deployerWallet } from "../setup";
 import { assert } from "../../src/lib/assert";
 import { isAddress } from "viem";
 
-describe("BlockchainVotingSystemDeployer Integration Tests", () => {
-	let deployer: BlockchainVotingSystemDeployer;
+describe("BlockchainSurveillanceSystemDeployer Integration Tests", () => {
+	let deployer: BlockchainSurveillanceSystemDeployer;
 	let deployedAddress: string;
 
 	beforeAll(() => {
-		deployer = new BlockchainVotingSystemDeployer(deployerWallet);
+		deployer = new BlockchainSurveillanceSystemDeployer(deployerWallet);
 	});
 
-	it("should deploy all voting system contracts successfully", async () => {
+	it("should deploy all surveillance system contracts successfully", async () => {
 		const result = await deployer.deploySystem();
 
 		expect(result.isOk).toBe(true);

@@ -1,5 +1,5 @@
-export * from "./voting-system";
-export * from "./voting-system-deployer";
+export * from "./surveillance-system";
+export * from "./surveillance-system-deployer";
 export * from "./wallet";
 export * from "./wallet-store";
 export * from "./ipfs";

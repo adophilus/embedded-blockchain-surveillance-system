@@ -6,7 +6,8 @@
 				"^build"
 			],
 			"outputs": [
-				"{projectRoot}/build"
+				"{projectRoot}/build",
+				"{projectRoot}/out"
 			],
 			"cache": true
 		},

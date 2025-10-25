@@ -1,12 +1,29 @@
-FROM oven/bun:alpine AS base
+# FROM oven/bun:alpine AS base
+FROM node:22-slim AS base
 
 ARG NODE_ENV
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN apk add --no-cache python3 make g++ bash nodejs pkgconf cairo-dev pango-dev libpng libjpeg librsvg pixman-dev giflib-dev
+# RUN apk add --no-cache python3 make g++ bash nodejs pkgconf cairo-dev pango-dev libpng libjpeg librsvg pixman-dev giflib-dev
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    bash \
+    pkg-config \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg62-turbo-dev \
+    librsvg2-dev \
+    libpixman-1-dev \
+    libgif-dev \
+    curl \
+    ca-certificates \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN bun add -g pnpm
+# RUN bash bun add -g pnpm
+RUN npm add -g pnpm bun
 
 
 FROM base AS build

@@ -4,7 +4,8 @@ ARG NODE_ENV
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN apk add --no-cache python3 make g++ bash nodejs curl
+RUN apk add --no-cache python3 make g++ bash nodejs curl pkg-config cairo pango libpng jpeg giflib librsvg
+
 RUN bun add -g pnpm
 
 

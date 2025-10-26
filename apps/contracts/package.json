@@ -2,7 +2,7 @@
 	"$schema": "https://json.schemastore.org/package.json",
 	"name": "@embedded-blockchain-surveillance-system/contracts",
 	"version": "1.0.0",
-	"description": "Smart contracts for the blockchain voting system",
+	"description": "Smart contracts for the embedded blockchain surveillance system",
 	"exports": {
 		"./types": "./build/types.ts",
 		"./*": "./out/*"
@@ -15,12 +15,10 @@
 	},
 	"keywords": [
 		"blockchain",
-		"voting",
+		"surveillance",
 		"ethereum",
 		"solidity"
 	],
-	"author": "Blockchain Voting System Team",
-	"license": "MIT",
 	"dependencies": {
 		"@embedded-blockchain-surveillance-system/contracts": "workspace:^",
 		"@wagmi/cli": "^2.6.0",

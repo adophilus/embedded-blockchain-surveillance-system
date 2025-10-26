@@ -6,7 +6,6 @@ error EmptyName();
 error InvalidId();
 error NotInSession();
 error NotRegistered();
-error AlreadyVoted();
 error SessionNotEnded();
 error SessionAlreadyStarted();
 error StartTimeNotInFuture();

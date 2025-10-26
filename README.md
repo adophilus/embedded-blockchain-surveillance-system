@@ -1,6 +1,6 @@
-# Blockchain Voting System
+# Embedded Blockchain Surveillance System
 
-A decentralized voting system built on blockchain technology.
+A decentralized surveillance system built on blockchain technology.
 
 ## Development Environment
 
@@ -21,7 +21,7 @@ This project uses Process Compose to manage the local development environment. I
 1. Clone the repository:
    ```bash
    git clone <repository-url>
-   cd blockchain-voting-system
+   cd embedded-blockchain-surveillance-system
    ```
 
 2. Enable direnv:
@@ -31,7 +31,7 @@ This project uses Process Compose to manage the local development environment. I
 
 3. Install dependencies:
    ```bash
-   ./scripts/install.sh
+   pnpm install
    ```
 
 ### Running the Development Environment
@@ -109,7 +109,7 @@ $ anvil
 ### Deploy
 
 ```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
+$ forge script script/DeploySurveillanceSystem.s.sol:DeploySurveillanceSystemScript --rpc-url <your_rpc_url> --private-key <your_private_key>
 ```
 
 ### Cast

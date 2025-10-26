@@ -14,7 +14,7 @@ import type {
 	RestoreWalletError,
 } from "../interface";
 
-const WALLET_STORE_KEY = "blockchain-voting-system:wallets";
+const WALLET_STORE_KEY = "embedded-blockchain-surveillance-system:wallets";
 
 class LocalStorageWalletStore implements WalletStore {
 	constructor(private readonly chain: Chain) {}

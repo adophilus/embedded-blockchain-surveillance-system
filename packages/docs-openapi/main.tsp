@@ -542,7 +542,8 @@ namespace Api {
             }
 
             model Body {
-              image: HttpPart<ImageFile>;
+              @doc("Base64 encoded image captured by the IoT device")
+              image: string;
             }
           }
 
@@ -566,7 +567,7 @@ namespace Api {
           op uploadStream(
             ...Request.Path,
             ...Request.Headers,
-            @multipartBody body: Request.Body,
+            @body body: Request.Body,
           ): Response.Response;
         }
 

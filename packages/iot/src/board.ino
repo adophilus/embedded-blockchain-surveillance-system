@@ -11,7 +11,7 @@ const char* ssid = "EBSS";
 const char* password = "EBSSRocks123";
 
 // Server URL
-const char* serverURL = "https://api.ebss.magicstudios.fun/stream";
+const char* serverURL = "https://api.ebss.magicstudios.fun/iot/stream/ESP32_CAM/upload";
 int httpResponseCode;
 
 // Camera pin configuration

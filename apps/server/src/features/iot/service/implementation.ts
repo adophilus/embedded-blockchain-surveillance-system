@@ -1,21 +1,33 @@
 import { Result, type Unit } from "true-myth";
 import type {
+	CreateError,
 	IotDeviceService,
+	ListError,
 	UpdateHeartbeatError,
 	UploadStreamError,
 } from "./interface";
 import type { IotDeviceRepository } from "../repository";
 import type { StorageService } from "@/features/storage/service";
 import { fileTypeFromBuffer } from "file-type";
-import type { MediaDescription } from "@/types";
+import type { IotDevice, MediaDescription } from "@/types";
 
 export class IotDeviceServiceImplementation implements IotDeviceService {
 	VALID_EXTS: string[] = ["png", "jpg", "jpeg"];
 
 	constructor(
-		private readonly iotDeviceRepository: IotDeviceRepository,
-		private readonly storageService: StorageService,
+		private readonly repository: IotDeviceRepository,
+		private readonly storage: StorageService,
 	) {}
+
+	public async create(
+		payload: IotDevice.Insertable,
+	): Promise<Result<Unit, CreateError>> {
+		return this.repository.create(payload);
+	}
+
+	public async list(): Promise<Result<IotDevice.Selectable[], ListError>> {
+		return this.repository.list();
+	}
 
 	private async isStreamValid(stream: File): Promise<boolean> {
 		const result = await fileTypeFromBuffer(await stream.arrayBuffer());
@@ -34,8 +46,7 @@ export class IotDeviceServiceImplementation implements IotDeviceService {
 		deviceId: string,
 		stream: File,
 	): Promise<Result<MediaDescription, UploadStreamError>> {
-		const findDeviceByIdResult =
-			await this.iotDeviceRepository.findById(deviceId);
+		const findDeviceByIdResult = await this.repository.findById(deviceId);
 
 		if (findDeviceByIdResult.isErr) {
 			return Result.err("ERR_DEVICE_NOT_FOUND");
@@ -45,7 +56,7 @@ export class IotDeviceServiceImplementation implements IotDeviceService {
 			return Result.err("ERR_INVALID_STREAM");
 		}
 
-		const uploadResult = await this.storageService.upload(stream);
+		const uploadResult = await this.storage.upload(stream);
 
 		if (uploadResult.isErr) {
 			return Result.err("ERR_UNEXPECTED");
@@ -60,6 +71,6 @@ export class IotDeviceServiceImplementation implements IotDeviceService {
 		deviceId: string,
 		timestamp: Date,
 	): Promise<Result<Unit, UpdateHeartbeatError>> {
-		return this.iotDeviceRepository.updateHeartbeat(deviceId, timestamp);
+		return this.repository.updateHeartbeat(deviceId, timestamp);
 	}
 }

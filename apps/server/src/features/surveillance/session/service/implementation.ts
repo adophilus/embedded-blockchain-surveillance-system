@@ -83,7 +83,8 @@ export class SurveillanceSessionServiceImpl
 
 		const newSessionResult = await this.repository.create({
 			id: ulid(),
-			title: "Routine surveillance focusing on known organized crime areas.",
+			title: "Daily Surveillance",
+			description: "Routine surveillance session for the day",
 			end_timestamp: this.getNextDayMidnightTimestamp(startTimestamp),
 			start_timestamp: startTimestamp,
 			status: "ACTIVE",

@@ -3,6 +3,8 @@ import type {
 	IotDeviceRepository,
 	UpdateHeartbeatError,
 	FindByIdError,
+	ListError,
+	CreateError,
 } from "./interface";
 import type { KyselyClient } from "@/features/database/kysely";
 import type { Logger } from "@/features/logger";
@@ -13,6 +15,33 @@ export class KyselyIotDeviceRepository implements IotDeviceRepository {
 		private readonly db: KyselyClient,
 		private readonly logger: Logger,
 	) {}
+
+	public async create(
+		payload: IotDevice.Insertable,
+	): Promise<Result<Unit, CreateError>> {
+		try {
+			await this.db.insertInto("iot_devices").values(payload).execute();
+
+			return Result.ok();
+		} catch (error) {
+			this.logger.error("Failed to create IoT device", error);
+			return Result.err("ERR_UNEXPECTED");
+		}
+	}
+
+	public async list(): Promise<Result<IotDevice.Selectable[], ListError>> {
+		try {
+			const devices = await this.db
+				.selectFrom("iot_devices")
+				.selectAll()
+				.execute();
+
+			return Result.ok(devices);
+		} catch (error) {
+			this.logger.error("Failed to list IoT devices", error);
+			return Result.err("ERR_UNEXPECTED");
+		}
+	}
 
 	public async updateHeartbeat(
 		deviceId: string,

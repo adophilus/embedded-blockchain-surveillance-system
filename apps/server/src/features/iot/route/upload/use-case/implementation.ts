@@ -20,6 +20,12 @@ export class IotDeviceUploadUseCaseImplementation
 		private readonly logger: Logger,
 	) {}
 
+	private convertImageBase64ToFile(base64String: string): File {
+		const buffer = Buffer.from(base64String, "base64");
+		const file = new File([buffer], "upload.jpg", { type: "image/jpeg" });
+		return file;
+	}
+
 	async execute(
 		payload: Request.Path & Request.Body,
 	): Promise<Result<Response.Success, Response.Error>> {
@@ -27,10 +33,12 @@ export class IotDeviceUploadUseCaseImplementation
 			`Processing IoT stream upload from device: ${payload.deviceId}`,
 		);
 
+		const imageFile = this.convertImageBase64ToFile(payload.image);
+
 		// Upload the stream to storage
 		const uploadResult = await this.service.uploadStream(
 			payload.deviceId,
-			payload.image,
+			imageFile,
 		);
 
 		if (uploadResult.isErr) {
@@ -84,7 +92,7 @@ export class IotDeviceUploadUseCaseImplementation
 		this.logger.info("Starting criminal detection");
 
 		// Convert image to ArrayBuffer for criminal detection
-		const imageArrayBuffer = await payload.image.arrayBuffer();
+		const imageArrayBuffer = await imageFile.arrayBuffer();
 
 		// Detect criminals in the stream
 		const criminalDetectionResult =

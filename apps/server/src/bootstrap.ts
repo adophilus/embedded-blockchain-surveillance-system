@@ -21,7 +21,10 @@ import {
 	StorageService,
 	SqliteStorageService,
 } from "@/features/storage/service";
-import { CronService } from "@/features/cron/service";
+import {
+	CronService,
+	CronServiceImplementation,
+} from "@/features/cron/service";
 import { GetFileUseCase } from "@/features/storage/route/get/use-case";
 import { KyselyStorageRepository } from "@/features/storage/repository";
 import {
@@ -155,7 +158,7 @@ export const bootstrap = async () => {
 	const signUpUseCase = new SignUpUseCaseImplementation(authUserRepository);
 
 	// Cron Service
-	const cronService = new CronService([], logger);
+	const cronService = new CronServiceImplementation([], logger);
 
 	// Surveillance Use Cases
 	const listSurveillanceSessionsUseCase =

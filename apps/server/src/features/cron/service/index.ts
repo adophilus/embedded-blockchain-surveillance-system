@@ -1,2 +1,2 @@
-export { CronJob } from './interface'
-export { CronService } from './impl'
+export * from "./interface";
+export * from "./implementation";

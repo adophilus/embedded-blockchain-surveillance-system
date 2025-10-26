@@ -38,6 +38,17 @@ export abstract class SurveillanceSessionRepository {
 	>;
 
 	/**
+	 * Find the active surveillance session
+	 * @returns Result containing the session or error
+	 */
+	public abstract findActiveSession(): Promise<
+		Result<
+			SurveillanceSession.Selectable | null,
+			FindSurveillanceSessionByIdError
+		>
+	>;
+
+	/**
 	 * List surveillance sessions with optional filtering
 	 * @param filters - Optional filters for the sessions
 	 * @returns Result containing array of sessions or error

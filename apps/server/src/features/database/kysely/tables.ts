@@ -36,8 +36,8 @@ type SurveillanceSessionsTable = TimestampModel & {
 	id: Id;
 	title: string;
 	description: string | null;
-	start_timestamp: string;
-	end_timestamp: string;
+	start_timestamp: number;
+	end_timestamp: number;
 	status: "UPCOMING" | "ACTIVE" | "COMPLETED";
 };
 

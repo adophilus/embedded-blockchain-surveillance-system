@@ -5,7 +5,8 @@
 	"scripts": {
 		"start": "pnpm db migrate:latest && tsx ./scripts/create-admin.ts && tsx ./scripts/dev.ts",
 		"dev": "tsx watch ./scripts/dev.ts",
-		"script:create-admin": "tsx ./scripts/create-admin.ts",
+		"script:create-first-admin": "tsx ./scripts/create-first-admin.ts",
+		"script:create-first-surveillance-session": "tsx ./scripts/create-first-surveillance-session.ts",
 		"build": "tsc",
 		"lint": "biome lint .",
 		"test": "./scripts/test.sh",

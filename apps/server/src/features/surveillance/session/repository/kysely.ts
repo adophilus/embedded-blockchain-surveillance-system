@@ -13,11 +13,31 @@ import type { SurveillanceSession } from "@/types";
 import { ulid } from "ulidx";
 
 export class KyselySurveillanceSessionRepository
-	implements SurveillanceSessionRepository {
+	implements SurveillanceSessionRepository
+{
 	constructor(
 		private readonly db: KyselyClient,
 		private readonly logger: Logger,
-	) { }
+	) {}
+	public async findActiveSession(): Promise<
+		Result<
+			SurveillanceSession.Selectable | null,
+			FindSurveillanceSessionByIdError
+		>
+	> {
+		try {
+			const activeSession = await this.db
+				.selectFrom("surveillance_sessions")
+				.selectAll()
+				.where("status", "=", "ACTIVE")
+				.executeTakeFirst();
+
+			return Result.ok(activeSession || null);
+		} catch (error) {
+			this.logger.error("Failed to find active surveillance session", error);
+			return Result.err("ERR_UNEXPECTED");
+		}
+	}
 
 	public async create(
 		session: SurveillanceSession.Insertable,

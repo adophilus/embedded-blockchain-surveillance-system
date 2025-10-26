@@ -16,8 +16,6 @@ export class ListSurveillanceSessionsUseCaseImplementation
 		payload: Request.Query,
 	): Promise<Result<Response.Success, Response.Error>> {
 		try {
-			this.logger.info("Listing surveillance sessions");
-
 			const sessionsResult = await this.surveillanceSessionService.list();
 			if (sessionsResult.isErr) {
 				this.logger.error(
@@ -30,22 +28,14 @@ export class ListSurveillanceSessionsUseCaseImplementation
 			}
 
 			const sessions = sessionsResult.value;
-			const page = payload.page || 1;
-			const perPage = payload.per_page || 10;
-			const startIndex = (page - 1) * perPage;
-			const endIndex = startIndex + perPage;
-
-			const paginatedSessions = sessions.slice(startIndex, endIndex);
-
-			this.logger.info(`Found ${sessions.length} surveillance sessions`);
 
 			return Result.ok({
 				code: "SESSIONS_LIST",
 				data: {
-					data: paginatedSessions,
+					data: sessions,
 					meta: {
-						page,
-						per_page: perPage,
+						page: 1,
+						per_page: sessions.length,
 						total: sessions.length,
 					},
 				},

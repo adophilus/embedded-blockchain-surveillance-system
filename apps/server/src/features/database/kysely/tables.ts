@@ -35,7 +35,7 @@ type TokensTable = TimestampModel & {
 type SurveillanceSessionsTable = TimestampModel & {
 	id: Id;
 	title: string;
-	description: string | null;
+	description: string;
 	start_timestamp: number;
 	end_timestamp: number;
 	status: "UPCOMING" | "ACTIVE" | "COMPLETED";
@@ -44,6 +44,7 @@ type SurveillanceSessionsTable = TimestampModel & {
 type SurveillanceEventsTable = {
 	id: Id;
 	detections: Detection[];
+	media: MediaDescription;
 	device_id: string;
 	session_id: string;
 	created_at: ColumnType<number, never, never>;

@@ -40,17 +40,14 @@ export class KyselySurveillanceSessionRepository
 	}
 
 	public async create(
-		session: SurveillanceSession.Insertable,
+		payload: SurveillanceSession.Insertable,
 	): Promise<
 		Result<SurveillanceSession.Selectable, CreateSurveillanceSessionError>
 	> {
 		try {
 			const newSession = await this.db
 				.insertInto("surveillance_sessions")
-				.values({
-					...session,
-					id: ulid(),
-				})
+				.values(payload)
 				.returningAll()
 				.executeTakeFirstOrThrow();
 

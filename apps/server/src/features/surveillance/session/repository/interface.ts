@@ -14,11 +14,11 @@ export type DeleteSurveillanceSessionByIdError =
 export abstract class SurveillanceSessionRepository {
 	/**
 	 * Create a new surveillance session
-	 * @param session - The surveillance session data
+	 * @param payload - The surveillance session data
 	 * @returns Result containing the created session or error
 	 */
 	public abstract create(
-		session: SurveillanceSession.Insertable,
+		payload: SurveillanceSession.Insertable,
 	): Promise<
 		Result<SurveillanceSession.Selectable, CreateSurveillanceSessionError>
 	>;

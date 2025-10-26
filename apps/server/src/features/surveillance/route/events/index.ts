@@ -5,24 +5,30 @@ import middleware from "./middleware";
 import type { Response } from "./types";
 import { ListSurveillanceEventsUseCase } from "./use-case";
 
-const ListEventsRoute = new Hono().get("/", middleware, async (c) => {
-	let response: Response.Response;
-	let statusCode: StatusCodes;
+const ListSurveillanceEventsRoute = new Hono().get(
+	"/",
+	middleware,
+	async (c) => {
+		let response: Response.Response;
+		let statusCode: StatusCodes;
 
-	const path = c.req.valid("param");
+		console.log("got here?");
 
-	const useCase = Container.get(ListSurveillanceEventsUseCase);
-	const result = await useCase.execute(path);
+		const path = c.req.valid("param");
 
-	if (result.isErr) {
-		response = result.error;
-		statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
-	} else {
-		response = result.value;
-		statusCode = StatusCodes.OK;
-	}
+		const useCase = Container.get(ListSurveillanceEventsUseCase);
+		const result = await useCase.execute(path);
 
-	return c.json(response, statusCode);
-});
+		if (result.isErr) {
+			response = result.error;
+			statusCode = StatusCodes.INTERNAL_SERVER_ERROR;
+		} else {
+			response = result.value;
+			statusCode = StatusCodes.OK;
+		}
 
-export default ListEventsRoute;
+		return c.json(response, statusCode);
+	},
+);
+
+export default ListSurveillanceEventsRoute;

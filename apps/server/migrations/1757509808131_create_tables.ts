@@ -35,9 +35,9 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.createTable("surveillance_sessions")
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("title", "text", (col) => col.notNull())
-		.addColumn("description", "text")
-		.addColumn("start_timestamp", "text", (col) => col.notNull())
-		.addColumn("end_timestamp", "text", (col) => col.notNull())
+		.addColumn("description", "text", (col) => col.notNull())
+		.addColumn("start_timestamp", "integer", (col) => col.notNull())
+		.addColumn("end_timestamp", "integer", (col) => col.notNull())
 		.addColumn("status", "text", (col) => col.notNull())
 		.addColumn("created_at", "integer", (col) =>
 			col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
@@ -50,6 +50,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.createTable("surveillance_events")
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("detections", "text", (col) => col.notNull())
+		.addColumn("media", "text", (col) => col.notNull())
 		.addColumn("device_id", "text", (col) => col.notNull())
 		.addColumn("session_id", "text", (col) =>
 			col.notNull().references("surveillance_sessions.id"),

@@ -17,7 +17,8 @@ const startTimestamp = getUnixTime(new Date());
 
 const surveillanceSessionPayload: SurveillanceSession.Insertable = {
 	id: ulid(),
-	title: "Routine surveillance focusing on known organized crime areas.",
+	title: "Daily Surveillance",
+	description: "Routine surveillance session for the day",
 	end_timestamp: getNextDayMidnightTimestamp(startTimestamp),
 	start_timestamp: startTimestamp,
 	status: "ACTIVE",

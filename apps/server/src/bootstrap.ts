@@ -91,6 +91,7 @@ import {
 	ListCriminalProfilesUseCaseImplementation,
 	ListCriminalProfileUseCase,
 } from "@/features/criminal/use-case";
+import { SurveillanceSessionCronJob } from "./features/surveillance/session/cron";
 
 export const bootstrap = async () => {
 	const logger = new Logger();
@@ -120,6 +121,10 @@ export const bootstrap = async () => {
 	);
 	const surveillanceEventService = new SurveillanceEventServiceImpl(
 		surveillanceEventRepository,
+		logger,
+	);
+	const surveillanceSessionCronJob = new SurveillanceSessionCronJob(
+		surveillanceSessionService,
 		logger,
 	);
 
@@ -158,7 +163,10 @@ export const bootstrap = async () => {
 	const signUpUseCase = new SignUpUseCaseImplementation(authUserRepository);
 
 	// Cron Service
-	const cronService = new CronServiceImplementation([], logger);
+	const cronService = new CronServiceImplementation(
+		[surveillanceSessionCronJob],
+		logger,
+	);
 
 	// Surveillance Use Cases
 	const listSurveillanceSessionsUseCase =

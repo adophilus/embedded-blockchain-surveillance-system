@@ -369,8 +369,8 @@ namespace Api {
       id: Id;
       title: SessionTitle;
       description: SessionDescription | null;
-      start_timestamp: SessionStartDate;
-      end_timestamp: SessionEndDate;
+      start_timestamp: DateTime;
+      end_timestamp: DateTime;
       status: "UPCOMING" | "ACTIVE" | "COMPLETED";
       created_at: DateTime;
       updated_at: DateTime | null;
@@ -382,6 +382,7 @@ namespace Api {
 
     model SurveillanceEvent {
       id: Id;
+      media: MediaDescription;
       detections: SurveillanceEventDetection[];
       device_id: string;
       session_id: Id;

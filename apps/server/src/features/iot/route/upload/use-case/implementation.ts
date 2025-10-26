@@ -28,13 +28,13 @@ export class IotDeviceUploadUseCaseImplementation
 		);
 
 		// Upload the stream to storage
-		const result = await this.service.uploadStream(
+		const uploadResult = await this.service.uploadStream(
 			payload.deviceId,
 			payload.image,
 		);
 
-		if (result.isErr) {
-			switch (result.error) {
+		if (uploadResult.isErr) {
+			switch (uploadResult.error) {
 				case "ERR_DEVICE_NOT_FOUND": {
 					return Result.err({
 						code: "ERR_DEVICE_NOT_FOUND",
@@ -47,6 +47,8 @@ export class IotDeviceUploadUseCaseImplementation
 				}
 			}
 		}
+
+		const uploadedMedia = uploadResult.value;
 
 		this.logger.info("Stream uploaded successfully");
 
@@ -139,6 +141,7 @@ export class IotDeviceUploadUseCaseImplementation
 		this.logger.info("Creating surveillance event");
 		const surveillanceEvent: SurveillanceEvent.Insertable = {
 			id: ulid(),
+			media: uploadedMedia,
 			session_id: activeSession.id,
 			device_id: payload.deviceId,
 			detections: criminalDetections,

@@ -1,13 +1,13 @@
 import { Hono } from "hono";
 import ListSessionsRoute from "./list";
 import GetSessionByIdRoute from "./get";
-import ListEventsRoute from "./events";
+import ListSurveillanceEventsRoute from "./events";
 import GetMetricsRoute from "./metrics";
 
 const SurveillanceRouter = new Hono()
-	.route("/", ListSessionsRoute)
-	.route("/{sessionId}", GetSessionByIdRoute)
-	.route("/{sessionId}/events", ListEventsRoute)
-	.route("/metrics", GetMetricsRoute);
+	.route("/metrics", GetMetricsRoute)
+	.route("/:sessionId", GetSessionByIdRoute)
+	.route("/:sessionId/events", ListSurveillanceEventsRoute)
+	.route("/", ListSessionsRoute);
 
 export default SurveillanceRouter;

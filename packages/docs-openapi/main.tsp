@@ -617,6 +617,48 @@ namespace Api {
     }
   }
 
+  @useAuth(BearerAuth)
+  @tag("Notification")
+  @route("/notification")
+  namespace Notification {
+    @route("/token")
+    namespace Token {
+      @route("/register")
+      namespace Register {
+        namespace Request {
+          model Body {
+            subscription_id: string;
+            endpoint: string;
+            keys: {
+              p256dh: string;
+              auth: string;
+            };
+            supported_content_encodings: string[];
+          }
+        }
+
+        namespace Response {
+          namespace Success {
+            model TokenRegistered {
+              code: "TOKEN_REGISTERED";
+            }
+            alias Success = TokenRegistered;
+          }
+
+          namespace Error {
+            alias Error = BadRequestError | UnauthorizedError | UnexpectedError;
+          }
+
+          alias Response = Success.Success | Error.Error;
+        }
+
+        @post
+        @doc("Register a new push notification token for the authenticated user.")
+        op registerToken(@body body: Request.Body): Response.Response;
+      }
+    }
+  }
+
   namespace Pagination {
     model Options {
       page: int64;

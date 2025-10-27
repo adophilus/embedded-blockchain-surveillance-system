@@ -8,6 +8,7 @@
 		"script:create-first-admin": "tsx ./scripts/create-first-admin.ts",
 		"script:create-first-surveillance-session": "tsx ./scripts/create-first-surveillance-session.ts",
 		"script:create-first-iot-device": "tsx ./scripts/create-first-iot-device.ts",
+		"script:generate-vapid-keys": "tsx ./scripts/generate-vapid-keys.ts",
 		"script:all": "./scripts/all.sh",
 		"build": "tsc",
 		"lint": "biome lint .",

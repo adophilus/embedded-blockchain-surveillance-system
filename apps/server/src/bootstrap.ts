@@ -133,10 +133,11 @@ export const bootstrap = async () => {
 		kyselyClient,
 		logger,
 	);
-	const criminalProfileService = new CriminalProfileServiceImplementation(
-		criminalProfileRepository,
-		logger,
-	);
+	const criminalProfileService =
+		await CriminalProfileServiceImplementation.init(
+			criminalProfileRepository,
+			logger,
+		);
 	const createCriminalProfileUseCase =
 		new CreateCriminalProfileUseCaseImplementation(
 			criminalProfileService,

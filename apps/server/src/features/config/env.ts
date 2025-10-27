@@ -10,6 +10,7 @@ export const env = createEnv({
 		SERVER_URL: z.string().url(),
 		DATABASE_URL: z.string(),
 		AUTH_TOKEN_SECRET: z.string().min(32),
+		AI_MODEL_PATH: z.string().min(1),
 	},
 	runtimeEnv: process.env,
 });

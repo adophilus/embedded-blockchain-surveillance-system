@@ -1,11 +1,13 @@
-import AuthConfig from './auth'
-import DatabaseConfig from './database'
-import EnvironmentConfig from './environment'
-import ServerConfig from './server'
+import AuthConfig from "./auth";
+import AiConfig from "./ai";
+import DatabaseConfig from "./database";
+import EnvironmentConfig from "./environment";
+import ServerConfig from "./server";
 
 export default {
-  auth: AuthConfig,
-  db: DatabaseConfig,
-  environment: EnvironmentConfig,
-  server: ServerConfig,
-}
+	auth: AuthConfig,
+	ai: AiConfig,
+	db: DatabaseConfig,
+	environment: EnvironmentConfig,
+	server: ServerConfig,
+};

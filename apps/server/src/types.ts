@@ -61,3 +61,10 @@ export namespace File {
 	export type Insertable = T["Insertable"];
 	export type Updateable = T["Updateable"];
 }
+
+export namespace NotificationToken {
+	type T = GenerateTypes<KyselyDatabaseTables["notification_tokens"]>;
+	export type Selectable = T["Selectable"];
+	export type Insertable = T["Insertable"];
+	export type Updateable = T["Updateable"];
+}

@@ -98,6 +98,8 @@ export class CriminalProfileServiceImplementation
 				.withFaceLandmarks()
 				.withFaceDescriptors();
 
+			this.logger.info('Ran face detections');
+
 			if (detections.length === 0) {
 				this.logger.info("No faces detected in the image");
 				return Result.ok({

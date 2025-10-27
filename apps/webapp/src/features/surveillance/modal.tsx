@@ -3,7 +3,7 @@ import type { SurveillanceEvent, SurveillanceSession } from "@/lib/types";
 import { AlertCircleIcon, CheckCircleIcon } from "lucide-react";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
-import { useListSurveillanceEvents } from "./hooks";
+import { useLiveListSurveillanceEvents } from "./hooks";
 import { formatTimestamp } from "@/lib/utils";
 
 type SurveillanceEventModalLayoutProps = SurveillanceEventModalProps & {
@@ -125,7 +125,7 @@ type SurveillanceEventModalProps = {
 const InnerSurveillanceEventModal: FunctionComponent<
 	SurveillanceEventModalProps
 > = ({ session, onClose }) => {
-	const { data } = useListSurveillanceEvents(session.id);
+	const { data } = useLiveListSurveillanceEvents(session.id);
 	const events = data.data.data;
 
 	return (

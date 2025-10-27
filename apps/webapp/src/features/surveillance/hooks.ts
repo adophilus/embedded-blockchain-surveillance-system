@@ -15,7 +15,7 @@ export const useListSurveillanceSessions = () =>
 		},
 	});
 
-export const useListSurveillanceEvents = (surveillanceSessionId: string) =>
+export const useLiveListSurveillanceEvents = (surveillanceSessionId: string) =>
 	useSuspenseQuery({
 		queryKey: [
 			"SURVEILLANCE",
@@ -43,4 +43,5 @@ export const useListSurveillanceEvents = (surveillanceSessionId: string) =>
 
 			return res.data;
 		},
+		refetchInterval: 1000,
 	});

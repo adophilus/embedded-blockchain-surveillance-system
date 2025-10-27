@@ -39,10 +39,13 @@ export class CriminalProfileServiceImplementation
 			ImageData: canvas.ImageData,
 		} as any);
 
+		// @ts-ignore
 		await faceapi.tf.setBackend("tensorflow");
+		// @ts-ignore
 		await faceapi.tf.ready();
 
 		logger.info(
+			// @ts-ignore
 			`Version: FaceAPI ${faceapi.version} TensorFlow/JS ${tf.version_core} Backend: ${faceapi.tf?.getBackend()}`,
 		);
 
@@ -292,6 +295,7 @@ export class CriminalProfileServiceImplementation
 
 		// Detect all faces in the image
 		const detections = await faceapi
+			// @ts-ignore
 			.detectAllFaces(c)
 			.withFaceLandmarks()
 			.withFaceDescriptors();

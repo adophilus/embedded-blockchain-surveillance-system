@@ -60,7 +60,8 @@
 		"tslog": "^4.9.3",
 		"tsyringe": "^4.10.0",
 		"type-fest": "^5.1.0",
-		"ulidx": "^2.4.1"
+		"ulidx": "^2.4.1",
+		"web-push": "^3.6.7"
 	},
 	"devDependencies": {
 		"@effect/cli": "^0.61.8",
@@ -72,6 +73,7 @@
 		"@types/nodemailer": "^6.4.17",
 		"@types/pg": "^8.15.4",
 		"@types/react": "^18.3.23",
+		"@types/web-push": "^3.6.4",
 		"effect": "^3.16.5",
 		"kysely-ctl": "^0.13.1",
 		"kysely-migration-cli": "^0.4.2",

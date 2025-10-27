@@ -74,6 +74,25 @@ type FilesTable = TimestampModel & {
 	mime_type: string;
 };
 
+type NotificationMeta = {
+	type: "web-push";
+	data: {
+		subscription_id: string;
+		endpoint: string;
+		keys: {
+			p256dh: string;
+			auth: string;
+		};
+		supported_content_encodings: string[];
+	};
+};
+
+type NotificationTokensTable = TimestampModel & {
+	id: Id;
+	user_id: string;
+	meta: NotificationMeta;
+};
+
 export type KyselyDatabaseTables = {
 	users: UsersTable;
 	tokens: TokensTable;
@@ -82,4 +101,5 @@ export type KyselyDatabaseTables = {
 	criminal_profiles: CriminalProfilesTable;
 	iot_devices: IoTDevicesTable;
 	files: FilesTable;
+	notification_tokens: NotificationTokensTable;
 };

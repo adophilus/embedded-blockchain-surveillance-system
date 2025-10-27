@@ -89,8 +89,8 @@ type NotificationMeta = {
 
 type NotificationTokensTable = TimestampModel & {
 	id: Id;
-	user_id: string;
 	meta: NotificationMeta;
+	user_id: string;
 };
 
 export type KyselyDatabaseTables = {

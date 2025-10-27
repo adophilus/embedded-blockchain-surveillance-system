@@ -101,9 +101,22 @@ export async function up(db: Kysely<any>): Promise<void> {
 		)
 		.addColumn("updated_at", "integer")
 		.execute();
+
+	// Notification Tokens table
+	await db.schema
+		.createTable("notification_tokens")
+		.addColumn("id", "text", (col) => col.primaryKey())
+		.addColumn("meta", "text", (col) => col.notNull())
+		.addColumn("user_id", "text", (col) => col.notNull().references("users.id"))
+		.addColumn("created_at", "integer", (col) =>
+			col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),
+		)
+		.addColumn("updated_at", "integer")
+		.execute();
 }
 
 export async function down(db: Kysely<any>): Promise<void> {
+	await db.schema.dropTable("notification_tokens").execute();
 	await db.schema.dropTable("files").execute();
 	await db.schema.dropTable("iot_devices").execute();
 	await db.schema.dropTable("criminal_profiles").execute();

@@ -92,6 +92,7 @@ import {
 	ListCriminalProfileUseCase,
 } from "@/features/criminal/use-case";
 import { SurveillanceSessionCronJob } from "./features/surveillance/session/cron";
+import { KyselyNotificationTokenRepository, NotificationTokenRepository, NotificationTokenService, NotificationTokenServiceImpl } from "./features/notification/token";
 
 export const bootstrap = async () => {
 	const logger = new Logger();
@@ -147,6 +148,16 @@ export const bootstrap = async () => {
 		new GetCriminalProfileByIdUseCaseImplementation(criminalProfileService);
 	const listCriminalProfileUseCase =
 		new ListCriminalProfilesUseCaseImplementation(criminalProfileService);
+
+	// Notification DI
+	const notificationTokenRepository = new KyselyNotificationTokenRepository(
+		kyselyClient,
+		logger,
+	);
+	const notificationTokenService = new NotificationTokenServiceImpl(
+		notificationTokenRepository,
+		logger,
+	);
 
 	// IoT DI
 	const iotDeviceRepository = new KyselyIotDeviceRepository(
@@ -252,6 +263,10 @@ export const bootstrap = async () => {
 	// IoT DI
 	Container.set(IotDeviceRepository, iotDeviceRepository);
 	Container.set(IotDeviceService, iotDeviceService);
+
+	// Notification DI
+	Container.set(NotificationTokenRepository, notificationTokenRepository);
+	Container.set(NotificationTokenService, notificationTokenService);
 
 	// Surveillance Use Cases
 	Container.set(

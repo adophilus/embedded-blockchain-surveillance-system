@@ -60,8 +60,7 @@
 		"tslog": "^4.9.3",
 		"tsyringe": "^4.10.0",
 		"type-fest": "^5.1.0",
-		"ulidx": "^2.4.1",
-		"web-push": "^3.6.7"
+		"ulidx": "^2.4.1"
 	},
 	"devDependencies": {
 		"@effect/cli": "^0.61.8",
@@ -79,6 +78,7 @@
 		"kysely-migration-cli": "^0.4.2",
 		"tsx": "^4.20.2",
 		"typescript": "^5.8.3",
-		"vite-tsconfig-paths": "^5.1.4"
+		"vite-tsconfig-paths": "^5.1.4",
+		"web-push": "^3.6.7"
 	}
 }

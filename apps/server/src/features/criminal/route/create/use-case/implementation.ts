@@ -19,8 +19,6 @@ export class CreateCriminalProfileUseCaseImplementation
 	): Promise<Result<Response.Success, Response.Error>> {
 		let uploadedMugshot: MediaDescription | null = null;
 
-		console.log(payload);
-
 		const { mugshot, ..._restPayload } = payload;
 		if (mugshot) {
 			const uploadResult = await this.storage.upload(mugshot);

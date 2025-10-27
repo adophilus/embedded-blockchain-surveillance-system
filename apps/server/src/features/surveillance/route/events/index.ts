@@ -12,8 +12,6 @@ const ListSurveillanceEventsRoute = new Hono().get(
 		let response: Response.Response;
 		let statusCode: StatusCodes;
 
-		console.log("got here?");
-
 		const path = c.req.valid("param");
 
 		const useCase = Container.get(ListSurveillanceEventsUseCase);

@@ -1,21 +1,15 @@
 import { SearchIcon, UsersIcon } from "lucide-react";
 import { useListCriminals } from "./hooks";
 import { Suspense, useState, type FunctionComponent } from "react";
-import type { types } from "@embedded-blockchain-surveillance-system/api";
-import { format } from "date-fns";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
-
-type CriminalProfile =
-	types.components["schemas"]["Api.Criminal.ById.Response.Success.CriminalProfileDetails"]["data"];
+import type { CriminalProfile } from "@/lib/types";
+import { formatTimestamp } from "@/lib/utils";
 
 type CriminalDetailModalProps = {
 	criminalProfile: CriminalProfile;
 	onClose: () => void;
 };
-
-const formatDateTime = (timestamp: number) =>
-	format(timestamp, "dd/MM/yyyy HH:mm");
 
 const CriminalDetailModal: FunctionComponent<CriminalDetailModalProps> = ({
 	criminalProfile,
@@ -82,7 +76,7 @@ const CriminalDetailModal: FunctionComponent<CriminalDetailModalProps> = ({
 							<div>
 								<span className="text-sm text-slate-400">Record Created</span>
 								<p className="text-white">
-									{formatDateTime(criminalProfile.created_at)}
+									{formatTimestamp(criminalProfile.created_at)}
 								</p>
 							</div>
 

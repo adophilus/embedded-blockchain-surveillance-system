@@ -1,13 +1,10 @@
 import { Suspense, type FunctionComponent, type ReactNode } from "react";
-import type { SurveillanceEvent, SurveillanceSession } from "./types";
+import type { SurveillanceSession } from "@/lib/types";
 import { AlertCircleIcon, CheckCircleIcon } from "lucide-react";
-import { format } from "date-fns";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 import { useListSurveillanceEvents } from "./hooks";
-
-const formatDateTime = (timestamp: number) =>
-	format(timestamp, "dd/MM/yyyy HH:mm");
+import { formatTimestamp } from "@/lib/utils";
 
 type SurveillanceEventModalLayoutProps = SurveillanceEventModalProps & {
 	children: ReactNode;
@@ -133,7 +130,7 @@ const InnerSurveillanceEventModal: FunctionComponent<
 									)}
 								</div>
 								<p className="text-xs text-slate-400">
-									{formatDateTime(event.created_at)}
+									{formatTimestamp(event.created_at)}
 								</p>
 								<p className="text-xs text-blue-400 mt-2 truncate">
 									{event.media.id}

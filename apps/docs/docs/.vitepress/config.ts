@@ -17,7 +17,10 @@ export default defineConfig({
 		],
 
 		socialLinks: [
-			{ icon: 'github', link: 'https://github.com/adophilus/embedded-blockchain-surveillance-system' }
+			{
+				icon: "github",
+				link: "https://github.com/adophilus/embedded-blockchain-surveillance-system",
+			},
 		],
 
 		sidebar: [
@@ -57,13 +60,13 @@ export default defineConfig({
 			{
 				text: "Project Report Materials",
 				items: [
-					{ 
+					{
 						text: "Materials",
 						items: [
 							{ text: "Overview", link: "/project-report/materials-overview" },
 							{ text: "Software", link: "/project-report/materials-software" },
 							{ text: "Hardware", link: "/project-report/materials-hardware" },
-						]
+						],
 					},
 					{ text: "System Images", link: "/project-report/images" },
 					{ text: "Methods", link: "/project-report/methods" },

@@ -1,5 +1,5 @@
 import { Suspense, type FunctionComponent, type ReactNode } from "react";
-import type { SurveillanceSession } from "@/lib/types";
+import type { SurveillanceEvent, SurveillanceSession } from "@/lib/types";
 import { AlertCircleIcon, CheckCircleIcon } from "lucide-react";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
@@ -82,6 +82,41 @@ const SurveillanceEventModalFallback: FunctionComponent<
 	</SurveillanceEventModalFallbackLayout>
 );
 
+const SurveillanceEventTile: FunctionComponent<{
+	event: SurveillanceEvent;
+}> = ({ event }) => (
+	<div className="bg-slate-800 rounded-lg overflow-hidden border border-slate-700">
+		<img
+			src={event.media.url}
+			alt="Surveillance capture"
+			className="w-full h-48 object-cover"
+		/>
+
+		<div className="p-4">
+			<div className="flex items-center justify-between mb-2">
+				<span className="text-xs text-slate-500">
+					Device: {event.device_id}
+				</span>
+				{event.detections.length > 0 ? (
+					<span className="flex items-center gap-1 text-xs font-semibold text-red-400">
+						<AlertCircleIcon className="w-3 h-3" />
+						Detected
+					</span>
+				) : (
+					<span className="flex items-center gap-1 text-xs text-green-400">
+						<CheckCircleIcon className="w-3 h-3" />
+						Clear
+					</span>
+				)}
+			</div>
+			<p className="text-xs text-slate-400">
+				{formatTimestamp(event.created_at)}
+			</p>
+			<p className="text-xs text-blue-400 mt-2 truncate">{event.media.id}</p>
+		</div>
+	</div>
+);
+
 type SurveillanceEventModalProps = {
 	session: SurveillanceSession;
 	onClose: () => void;
@@ -102,41 +137,7 @@ const InnerSurveillanceEventModal: FunctionComponent<
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 					{events.map((event) => (
-						<div
-							key={event.id}
-							className="bg-slate-800 rounded-lg overflow-hidden border border-slate-700"
-						>
-							<img
-								src={event.media.url}
-								alt="Surveillance capture"
-								className="w-full h-48 object-cover"
-							/>
-
-							<div className="p-4">
-								<div className="flex items-center justify-between mb-2">
-									<span className="text-xs text-slate-500">
-										Device: {event.device_id}
-									</span>
-									{event.detections.length > 0 ? (
-										<span className="flex items-center gap-1 text-xs font-semibold text-red-400">
-											<AlertCircleIcon className="w-3 h-3" />
-											Detected
-										</span>
-									) : (
-										<span className="flex items-center gap-1 text-xs text-green-400">
-											<CheckCircleIcon className="w-3 h-3" />
-											Clear
-										</span>
-									)}
-								</div>
-								<p className="text-xs text-slate-400">
-									{formatTimestamp(event.created_at)}
-								</p>
-								<p className="text-xs text-blue-400 mt-2 truncate">
-									{event.media.id}
-								</p>
-							</div>
-						</div>
+						<SurveillanceEventTile key={event.id} event={event} />
 					))}
 				</div>
 			)}

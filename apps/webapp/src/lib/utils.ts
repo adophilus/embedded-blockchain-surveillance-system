@@ -6,6 +6,9 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
-export function formatTimestamp(timestamp: number) {
-	return format(fromUnixTime(timestamp), "dd/MM/yyyy HH:mm");
+export function formatTimestamp(timestamp: string | number) {
+	return format(
+		typeof timestamp === "string" ? timestamp : fromUnixTime(timestamp),
+		"dd/MM/yyyy HH:mm",
+	);
 }

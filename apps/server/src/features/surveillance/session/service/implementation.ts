@@ -13,7 +13,7 @@ import type { SurveillanceSessionRepository } from "../repository";
 import type { Logger } from "@/features/logger";
 import type { SurveillanceSession } from "@/types";
 import { ulid } from "ulidx";
-import { addDays, getUnixTime, startOfDay } from "date-fns";
+import { endOfDay, fromUnixTime, getUnixTime } from "date-fns";
 
 export class SurveillanceSessionServiceImpl
 	implements SurveillanceSessionService
@@ -23,10 +23,9 @@ export class SurveillanceSessionServiceImpl
 		private readonly logger: Logger,
 	) {}
 
-	private getNextDayMidnightTimestamp(timestamp: number): number {
-		const nextDay = addDays(timestamp, 1);
-		const midnightNextDay = startOfDay(nextDay);
-		return getUnixTime(midnightNextDay);
+	private getEndOfDayTimestamp(timestamp: number): number {
+		const eod = endOfDay(fromUnixTime(timestamp));
+		return getUnixTime(eod);
 	}
 
 	public async getActiveSession(): Promise<
@@ -85,7 +84,7 @@ export class SurveillanceSessionServiceImpl
 			id: ulid(),
 			title: "Daily Surveillance",
 			description: "Routine surveillance session for the day",
-			end_timestamp: this.getNextDayMidnightTimestamp(startTimestamp),
+			end_timestamp: this.getEndOfDayTimestamp(startTimestamp),
 			start_timestamp: startTimestamp,
 			status: "ACTIVE",
 		});

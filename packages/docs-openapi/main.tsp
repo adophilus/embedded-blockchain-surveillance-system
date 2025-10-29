@@ -657,6 +657,31 @@ namespace Api {
         op registerToken(@body body: Request.Body): Response.Response;
       }
     }
+
+    @route("/vapid")
+    namespace Vapid {
+      namespace Response {
+        namespace Success {
+          model VapidPublicKey {
+            code: "VAPID_PUBLIC_KEY";
+            data: {
+              publicKey: string;
+            };
+          }
+          alias Success = VapidPublicKey;
+        }
+
+        namespace Error {
+          alias Error = UnexpectedError;
+        }
+
+        alias Response = Success.Success | Error.Error;
+      }
+
+      @get
+      @doc("Get the server's VAPID public key for push notification subscription.")
+      op getVapidPublicKey(): Response.Response;
+    }
   }
 
   namespace Pagination {

@@ -10,6 +10,7 @@ import IotDeviceRouter from "@/features/iot/route";
 import SurveillanceRouter from "@/features/surveillance/route";
 import CriminalRouter from "@/features/criminal/route";
 import StorageRouter from "@/features/storage/route";
+import NotificationRouter from "@/features/notification/route";
 
 class HonoApp implements App {
 	constructor(private logger: Logger) {}

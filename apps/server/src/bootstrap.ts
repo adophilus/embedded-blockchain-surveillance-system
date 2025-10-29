@@ -83,14 +83,8 @@ import {
 	IotDeviceHeartbeatUseCase,
 	IotDeviceHeartbeatUseCaseImplementation,
 } from "@/features/iot/route/heartbeat/use-case";
-import {
-	CreateCriminalProfileUseCase,
-	CreateCriminalProfileUseCaseImplementation,
-	GetCriminalProfileByIdUseCase,
-	GetCriminalProfileByIdUseCaseImplementation,
-	ListCriminalProfilesUseCaseImplementation,
-	ListCriminalProfileUseCase,
-} from "@/features/criminal/use-case";
+import { CreateCriminalProfileUseCase, CreateCriminalProfileUseCaseImplementation, GetCriminalProfileByIdUseCase, GetCriminalProfileByIdUseCaseImplementation, ListCriminalProfilesUseCaseImplementation, ListCriminalProfileUseCase } from "@/features/criminal/use-case";
+import { RegisterNotificationTokenUseCase, RegisterNotificationTokenUseCaseImplementation } from "@/features/notification/token/use-case";
 import { SurveillanceSessionCronJob } from "./features/surveillance/session/cron";
 import { KyselyNotificationTokenRepository, NotificationTokenRepository, NotificationTokenService, NotificationTokenServiceImpl } from "./features/notification/token";
 
@@ -148,6 +142,13 @@ export const bootstrap = async () => {
 		new GetCriminalProfileByIdUseCaseImplementation(criminalProfileService);
 	const listCriminalProfileUseCase =
 		new ListCriminalProfilesUseCaseImplementation(criminalProfileService);
+
+	// Notification Use Cases
+	const registerNotificationTokenUseCase =
+		new RegisterNotificationTokenUseCaseImplementation(
+			notificationTokenService,
+			logger,
+		);
 
 	// Notification DI
 	const notificationTokenRepository = new KyselyNotificationTokenRepository(
@@ -267,6 +268,7 @@ export const bootstrap = async () => {
 	// Notification DI
 	Container.set(NotificationTokenRepository, notificationTokenRepository);
 	Container.set(NotificationTokenService, notificationTokenService);
+	Container.set(RegisterNotificationTokenUseCase, registerNotificationTokenUseCase);
 
 	// Surveillance Use Cases
 	Container.set(

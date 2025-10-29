@@ -21,7 +21,8 @@ class HonoApp implements App {
 			.route("/iot", IotDeviceRouter)
 			.route("/surveillance", SurveillanceRouter)
 			.route("/criminals", CriminalRouter)
-			.route("/storage", StorageRouter);
+			.route("/storage", StorageRouter)
+			.route("/notification", NotificationRouter);
 
 		return new Hono()
 			.use(compress())

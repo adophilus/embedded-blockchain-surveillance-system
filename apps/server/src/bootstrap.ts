@@ -83,10 +83,27 @@ import {
 	IotDeviceHeartbeatUseCase,
 	IotDeviceHeartbeatUseCaseImplementation,
 } from "@/features/iot/route/heartbeat/use-case";
-import { CreateCriminalProfileUseCase, CreateCriminalProfileUseCaseImplementation, GetCriminalProfileByIdUseCase, GetCriminalProfileByIdUseCaseImplementation, ListCriminalProfilesUseCaseImplementation, ListCriminalProfileUseCase } from "@/features/criminal/use-case";
-import { RegisterNotificationTokenUseCase, RegisterNotificationTokenUseCaseImplementation } from "@/features/notification/token/use-case";
+import {
+	CreateCriminalProfileUseCase,
+	CreateCriminalProfileUseCaseImplementation,
+	GetCriminalProfileByIdUseCase,
+	GetCriminalProfileByIdUseCaseImplementation,
+	ListCriminalProfilesUseCaseImplementation,
+	ListCriminalProfileUseCase,
+} from "@/features/criminal/use-case";
+import {
+	RegisterNotificationTokenUseCase,
+	RegisterNotificationTokenUseCaseImplementation,
+} from "@/features/notification/token/use-case";
 import { SurveillanceSessionCronJob } from "./features/surveillance/session/cron";
-import { KyselyNotificationTokenRepository, NotificationTokenRepository, NotificationTokenService, NotificationTokenServiceImpl } from "./features/notification/token";
+import {
+	KyselyNotificationTokenRepository,
+	NotificationTokenRepository,
+} from "@/features/notification/token/repository";
+import {
+	NotificationTokenService,
+	NotificationTokenServiceImpl,
+} from "@/features/notification/token/service";
 
 export const bootstrap = async () => {
 	const logger = new Logger();
@@ -143,13 +160,6 @@ export const bootstrap = async () => {
 	const listCriminalProfileUseCase =
 		new ListCriminalProfilesUseCaseImplementation(criminalProfileService);
 
-	// Notification Use Cases
-	const registerNotificationTokenUseCase =
-		new RegisterNotificationTokenUseCaseImplementation(
-			notificationTokenService,
-			logger,
-		);
-
 	// Notification DI
 	const notificationTokenRepository = new KyselyNotificationTokenRepository(
 		kyselyClient,
@@ -159,6 +169,11 @@ export const bootstrap = async () => {
 		notificationTokenRepository,
 		logger,
 	);
+	const registerNotificationTokenUseCase =
+		new RegisterNotificationTokenUseCaseImplementation(
+			notificationTokenService,
+			logger,
+		);
 
 	// IoT DI
 	const iotDeviceRepository = new KyselyIotDeviceRepository(
@@ -268,7 +283,10 @@ export const bootstrap = async () => {
 	// Notification DI
 	Container.set(NotificationTokenRepository, notificationTokenRepository);
 	Container.set(NotificationTokenService, notificationTokenService);
-	Container.set(RegisterNotificationTokenUseCase, registerNotificationTokenUseCase);
+	Container.set(
+		RegisterNotificationTokenUseCase,
+		registerNotificationTokenUseCase,
+	);
 
 	// Surveillance Use Cases
 	Container.set(

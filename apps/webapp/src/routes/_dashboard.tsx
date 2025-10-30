@@ -1,4 +1,9 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Navigate,
+	Outlet,
+	redirect,
+} from "@tanstack/react-router";
 import Auth from "@/features/auth";
 import { DashboardLayout } from "@/features/dashboard/layout";
 
@@ -22,6 +27,12 @@ export const Route = createFileRoute("/_dashboard")({
 });
 
 function DashboardLayoutPage() {
+	const { status } = Auth.Hooks.use();
+
+	if (status === "unauthenticated") {
+		return <Navigate to="/login" replace />;
+	}
+
 	return (
 		<DashboardLayout>
 			<Outlet />

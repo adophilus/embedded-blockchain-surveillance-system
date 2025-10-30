@@ -158,7 +158,6 @@ export const InnerCriminalsGallery = () => {
 
 	const { data } = useListCriminals();
 	const criminalProfiles = data.data.data;
-	console.log(criminalProfiles);
 
 	// filter criminalProfiles by searchQuery (case-insensitive, matches name, aliases or offense)
 	const filteredCriminalProfiles = (criminalProfiles ?? []).filter(

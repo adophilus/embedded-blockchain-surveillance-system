@@ -11,8 +11,6 @@ const SurveillanceSessionTile: FunctionComponent<{
 	session: SurveillanceSession;
 	onClick: () => void;
 }> = ({ session, onClick }) => {
-	console.log('...')
-
 	const getStatusColor = (status: SurveillanceSession["status"]) => {
 		switch (status) {
 			case "ACTIVE":

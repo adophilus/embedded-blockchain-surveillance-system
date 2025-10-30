@@ -4,6 +4,10 @@ import { StatusCodes } from "@/features/http";
 import middleware from "./middleware";
 import type { Response } from "./types";
 import { SignInUseCase } from "./use-case";
+import { setCookie } from "hono/cookie";
+import { COOKIE_KEY } from "@/types";
+import { serializeTokens } from "../../utils/token";
+import { config } from "@/features/config";
 
 const SignInRoute = new Hono().post("/", middleware, async (c) => {
 	let response: Response.Response;
@@ -38,6 +42,15 @@ const SignInRoute = new Hono().post("/", middleware, async (c) => {
 			}
 		}
 	} else {
+		const tokens = serializeTokens(result.value.data.tokens);
+		setCookie(c, COOKIE_KEY, tokens, {
+			httpOnly: true,
+			secure: config.environment.PRODUCTION,
+			sameSite: "lax",
+			maxAge: 60 * 60 * 24,
+			path: "/",
+		});
+
 		response = result.value;
 		statusCode = StatusCodes.OK;
 	}

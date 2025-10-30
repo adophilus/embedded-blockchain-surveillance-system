@@ -28,7 +28,12 @@ namespace BackendClient {
 		return fd;
 	};
 
-	export const client = createClient(env.VITE_SERVER_URL);
+	export const client = createClient({
+		baseUrl: env.VITE_SERVER_URL,
+		fetch: (req: Request): Promise<Response> => {
+			return fetch(req, { credentials: "include" });
+		},
+	});
 	export const $api = createReactQueryClient(client);
 
 	export const serializers = {

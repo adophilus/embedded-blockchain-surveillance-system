@@ -42,7 +42,6 @@ const tabs: Tab[] = [
 
 export const Header = () => {
 	const { user } = Auth.Hooks.useAuthenticated();
-	const activeTab = "surveillance";
 
 	return (
 		<header className="bg-slate-900 border-b border-slate-800 sticky top-0 z-50">

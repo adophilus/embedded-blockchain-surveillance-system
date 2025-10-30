@@ -11,11 +11,11 @@ export default defineConfig({
 		outDir: "./build",
 	},
 	plugins: [
-		VitePWA({
-			injectRegister: "auto",
-			srcDir: "src",
-			filename: "sw.ts",
-		}),
+		// VitePWA({
+		// 	injectRegister: "auto",
+		// 	srcDir: "src",
+		// 	filename: "sw.ts",
+		// }),
 		tanstackRouter({
 			// target: "react",
 			autoCodeSplitting: true,

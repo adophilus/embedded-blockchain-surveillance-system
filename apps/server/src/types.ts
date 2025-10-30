@@ -68,3 +68,5 @@ export namespace NotificationToken {
 	export type Insertable = T["Insertable"];
 	export type Updateable = T["Updateable"];
 }
+
+export const COOKIE_KEY = "EBSS_SESSION"

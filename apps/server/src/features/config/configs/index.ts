@@ -3,8 +3,8 @@ import AiConfig from "./ai";
 import DatabaseConfig from "./database";
 import EnvironmentConfig from "./environment";
 import ServerConfig from "./server";
-
 import NotificationConfig from "./notification";
+import WebappConfig from "./webapp";
 
 export default {
 	auth: AuthConfig,
@@ -13,4 +13,5 @@ export default {
 	environment: EnvironmentConfig,
 	server: ServerConfig,
 	notification: NotificationConfig,
+	webapp: WebappConfig,
 };

@@ -6,6 +6,7 @@ import Auth from ".";
 import { useStore } from "@tanstack/react-store";
 import { router } from "@/router";
 import AuthStore from "./store";
+import NotificationService from "../notification";
 
 namespace AuthHooks {
 	export type UseLoginMutationPayload =
@@ -31,10 +32,10 @@ namespace AuthHooks {
 			onError: (err) => {
 				toast.error(err.message);
 			},
-			onSuccess: (data) => {
-				console.log(data);
-
+			onSuccess: async (data) => {
 				Auth.Store.login(data.data);
+
+				NotificationService.register();
 
 				router.navigate({
 					to: "/dashboard",

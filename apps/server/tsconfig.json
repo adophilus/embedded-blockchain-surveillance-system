@@ -27,9 +27,9 @@
 	},
 	"exclude": ["scripts/scratchpad.ts"],
 	"include": [
-		"scripts/**/*.ts",
-		"src/**/*.ts",
-		// "tests/**/*.ts",
-		"migrations/**/*.ts"
+		"scripts",
+		"src",
+		"tests",
+		"migrations",
 	]
 }

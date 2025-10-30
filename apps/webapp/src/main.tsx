@@ -3,11 +3,6 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { Router } from "./router";
 import { Provider } from "@/components/provider";
-import NotificationService from "./features/notification";
-
-window.addEventListener("load", () => {
-	NotificationService.register();
-});
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>

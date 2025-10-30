@@ -2,10 +2,11 @@ import type { types } from "@embedded-blockchain-surveillance-system/api";
 import { Container } from "@n8n/di";
 import type { MiddlewareHandler } from "hono";
 import { StatusCodes } from "@/features/http";
-import type { User } from "@/types";
+import { COOKIE_KEY, type User } from "@/types";
 import { AuthUserRepository } from "./repository";
-import { verifyToken } from "./utils/token";
+import { deserializeTokens, verifyToken } from "./utils/token";
 import type { Merge } from "type-fest";
+import { getCookie } from "hono/cookie";
 
 export type Response =
 	| types.components["schemas"]["Api.UnauthorizedError"]
@@ -38,21 +39,23 @@ namespace AuthMiddleware {
 	}> = async (c, next) => {
 		let response: Response;
 
-		const authHeader = c.req.header("authorization");
-		if (!authHeader) {
+		const cookie = getCookie(c, COOKIE_KEY);
+		if (!cookie) {
 			response = {
 				code: "ERR_UNAUTHORIZED",
 			};
 			return c.json(response, StatusCodes.UNAUTHORIZED);
 		}
 
-		const [, accessToken] = authHeader.split(" ");
-		if (!accessToken) {
+		const deserializeTokensResult = deserializeTokens(cookie);
+		if (deserializeTokensResult.isErr) {
 			response = {
 				code: "ERR_UNAUTHORIZED",
 			};
 			return c.json(response, StatusCodes.UNAUTHORIZED);
 		}
+
+		const accessToken = deserializeTokensResult.value.access_token;
 
 		const tokenVerificationResult = await verifyToken(accessToken);
 		if (tokenVerificationResult.isErr) {

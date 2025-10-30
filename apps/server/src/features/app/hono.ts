@@ -11,6 +11,7 @@ import SurveillanceRouter from "@/features/surveillance/route";
 import CriminalRouter from "@/features/criminal/route";
 import StorageRouter from "@/features/storage/route";
 import NotificationRouter from "@/features/notification/route";
+import { config } from "@/features/config";
 
 class HonoApp implements App {
 	constructor(private logger: Logger) {}
@@ -26,10 +27,12 @@ class HonoApp implements App {
 
 		return new Hono()
 			.use(compress())
-			.use(cors())
+			.use(cors({ origin: [config.webapp.url], credentials: true }))
 			.use(honoLogger())
 			.route("/", ApiRouter)
-			.get("/", (c) => c.json({ message: "Welcome to the API" }))
+			.get("/", (c) =>
+				c.json({ message: "Welcome to the API" }, StatusCodes.OK),
+			)
 			.notFound((c) => c.json({ error: "NOT_FOUND" }, StatusCodes.NOT_FOUND))
 			.onError((err, c) => {
 				this.logger.error("An unexpected error occurred:", err);

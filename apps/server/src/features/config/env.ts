@@ -12,7 +12,9 @@ export const env = createEnv({
 		AUTH_TOKEN_SECRET: z.string().min(32),
 		VAPID_PUBLIC_KEY: z.string(),
 		VAPID_PRIVATE_KEY: z.string(),
+		VAPID_SUBJECT: z.string(),
 		AI_MODEL_PATH: z.string().min(1),
+		WEBAPP_URL: z.string().url(),
 	},
 	runtimeEnv: process.env,
 });

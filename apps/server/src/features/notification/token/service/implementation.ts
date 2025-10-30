@@ -7,16 +7,54 @@ import type {
 	ListNotificationTokensError,
 	UpdateNotificationTokenByIdError,
 	DeleteNotificationTokenByIdError,
+	BroadcastNotificationError,
+	BroadcastPayload,
 } from "./interface";
 import type { NotificationTokenRepository } from "../repository";
 import type { Logger } from "@/features/logger";
 import type { NotificationToken } from "@/types";
+import webpush from "web-push";
+import { config } from "@/features/config";
 
 export class NotificationTokenServiceImpl implements NotificationTokenService {
 	constructor(
 		private readonly repository: NotificationTokenRepository,
 		private readonly logger: Logger,
-	) {}
+	) {
+		webpush.setVapidDetails(
+			config.notification.vapid.subject,
+			config.notification.vapid.publicKey,
+			config.notification.vapid.privateKey,
+		);
+	}
+
+	public async broadcast(
+		payload: BroadcastPayload,
+	): Promise<Result<Unit, BroadcastNotificationError>> {
+		const listNotificationTokensResult = await this.repository.list();
+		if (listNotificationTokensResult.isErr) return Result.err("ERR_UNEXPECTED");
+
+		const notificationTokens = listNotificationTokensResult.value;
+
+		for (const notificationToken of notificationTokens) {
+			try {
+				await webpush.sendNotification(
+					{
+						endpoint: notificationToken.meta.data.endpoint,
+						keys: notificationToken.meta.data.keys,
+					},
+					JSON.stringify(payload),
+				);
+			} catch (err) {
+				this.logger.error(
+					`Failed to send push notification to ${notificationToken.user_id}:`,
+					err,
+				);
+			}
+		}
+
+		return Result.ok();
+	}
 
 	public async create(
 		payload: NotificationToken.Insertable,
@@ -29,10 +67,7 @@ export class NotificationTokenServiceImpl implements NotificationTokenService {
 	public async findById(
 		id: string,
 	): Promise<
-		Result<
-			NotificationToken.Selectable | null,
-			FindNotificationTokenByIdError
-		>
+		Result<NotificationToken.Selectable | null, FindNotificationTokenByIdError>
 	> {
 		return this.repository.findById(id);
 	}
@@ -40,10 +75,7 @@ export class NotificationTokenServiceImpl implements NotificationTokenService {
 	public async findByUserId(
 		userId: string,
 	): Promise<
-		Result<
-			NotificationToken.Selectable[],
-			FindNotificationTokenByUserIdError
-		>
+		Result<NotificationToken.Selectable[], FindNotificationTokenByUserIdError>
 	> {
 		return this.repository.findByUserId(userId);
 	}

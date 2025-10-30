@@ -5,7 +5,6 @@ import openapiTS, { astToString } from "openapi-typescript";
 import { generateZodClientFromOpenAPI } from "openapi-zod-client";
 import type { oas30 } from "openapi3-ts";
 import ts from "typescript";
-import { build } from "tsup";
 
 const BLOB = ts.factory.createTypeReferenceNode(
 	ts.factory.createIdentifier("Blob"),
@@ -42,16 +41,6 @@ await generateZodClientFromOpenAPI({
 		withDocs: true,
 		// additionalPropertiesDefaultValue: false
 	},
-});
-
-await build({
-	entry: ["src/index.ts"],
-	outDir: "build",
-	splitting: false,
-	sourcemap: true,
-	format: ["esm"],
-	dts: true,
-	clean: true,
 });
 
 console.log("✅ Generated types");

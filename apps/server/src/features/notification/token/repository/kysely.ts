@@ -42,10 +42,7 @@ export class KyselyNotificationTokenRepository
 	public async findById(
 		id: string,
 	): Promise<
-		Result<
-			NotificationToken.Selectable | null,
-			FindNotificationTokenByIdError
-		>
+		Result<NotificationToken.Selectable | null, FindNotificationTokenByIdError>
 	> {
 		try {
 			const token = await this.db
@@ -64,10 +61,7 @@ export class KyselyNotificationTokenRepository
 	public async findByUserId(
 		userId: string,
 	): Promise<
-		Result<
-			NotificationToken.Selectable[],
-			FindNotificationTokenByUserIdError
-		>
+		Result<NotificationToken.Selectable[], FindNotificationTokenByUserIdError>
 	> {
 		try {
 			const tokens = await this.db

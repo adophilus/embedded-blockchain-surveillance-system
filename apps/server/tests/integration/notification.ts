@@ -14,7 +14,7 @@ describe("Notification", () => {
 				tag: "test",
 			});
 
-			assert(res.isErr === false, "Failed to broadcast push notification");
+			assert(res.isOk, "Failed to broadcast push notification");
 		});
 	});
 });

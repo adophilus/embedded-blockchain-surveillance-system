@@ -44,12 +44,6 @@ export class CriminalProfileServiceImplementation
 		// @ts-ignore
 		await faceapi.tf.ready();
 
-		logger.info(
-			// @ts-ignore
-			`Version: FaceAPI ${faceapi.version} TensorFlow/JS ${tf.version_core} Backend: ${faceapi.tf?.getBackend()}`,
-		);
-
-		logger.info("Loading FaceAPI models");
 		const modelPath = config.ai.modelPath;
 		await faceapi.nets.ssdMobilenetv1.loadFromDisk(modelPath);
 		await faceapi.nets.ageGenderNet.loadFromDisk(modelPath);

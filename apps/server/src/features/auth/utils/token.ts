@@ -72,7 +72,6 @@ export const deserializeTokens = (
 ): Result<Tokens, "INVALID_SERIALIZED_TOKENS"> => {
 	const tokens = decode(encodedTokens);
 	const splitTokens = tokens.split(":");
-	console.log({ splitTokens });
 
 	if (splitTokens.length !== 2) return Result.err("INVALID_SERIALIZED_TOKENS");
 

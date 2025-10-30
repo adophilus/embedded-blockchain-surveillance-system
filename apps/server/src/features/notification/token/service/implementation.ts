@@ -31,20 +31,21 @@ export class NotificationTokenServiceImpl implements NotificationTokenService {
 	public async broadcast(
 		payload: BroadcastPayload,
 	): Promise<Result<Unit, BroadcastNotificationError>> {
-		const listNotificationTokensResult = await this.repository.list();
+		const listNotificationTokensResult = await this.list();
 		if (listNotificationTokensResult.isErr) return Result.err("ERR_UNEXPECTED");
 
 		const notificationTokens = listNotificationTokensResult.value;
 
 		for (const notificationToken of notificationTokens) {
 			try {
-				await webpush.sendNotification(
+				const res = await webpush.sendNotification(
 					{
 						endpoint: notificationToken.meta.data.endpoint,
 						keys: notificationToken.meta.data.keys,
 					},
 					JSON.stringify(payload),
 				);
+				this.logger.debug(res);
 			} catch (err) {
 				this.logger.error(
 					`Failed to send push notification to ${notificationToken.user_id}:`,

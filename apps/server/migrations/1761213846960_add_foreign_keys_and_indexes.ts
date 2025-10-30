@@ -51,6 +51,13 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.execute();
 
 	await db.schema
+		.createIndex("idx_notification_tokens_subscription_id")
+		.unique()
+		.on("notification_tokens")
+		.column("subscription_id")
+		.execute();
+
+	await db.schema
 		.createIndex("idx_notification_tokens_user_id")
 		.on("notification_tokens")
 		.column("user_id")
@@ -60,6 +67,9 @@ export async function up(db: Kysely<any>): Promise<void> {
 export async function down(db: Kysely<any>): Promise<void> {
 	// Drop indexes
 	await db.schema.dropIndex("idx_notification_tokens_user_id").execute();
+	await db.schema
+		.dropIndex("idx_notification_tokens_subscription_id")
+		.execute();
 	await db.schema.dropIndex("idx_iot_devices_status").execute();
 	await db.schema.dropIndex("idx_iot_devices_device_code").execute();
 	await db.schema.dropIndex("idx_criminal_profiles_name").execute();

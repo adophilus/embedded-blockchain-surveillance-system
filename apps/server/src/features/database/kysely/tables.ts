@@ -88,6 +88,7 @@ type NotificationMeta = {
 
 type NotificationTokensTable = TimestampModel & {
 	id: Id;
+	subscription_id: string;
 	meta: NotificationMeta;
 	user_id: string;
 };

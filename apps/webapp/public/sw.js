@@ -11,7 +11,11 @@ self.addEventListener("push", (event) => {
 
 	const { title, body, tag } = data;
 	const icon = "https://app.ebss.magicstudios.fun/vite.svg";
-	const notification = new self.Notification(title, { body, icon, tag });
+	const notification = self.registration.showNotification(title, {
+		body,
+		icon,
+		tag,
+	});
 
 	event.waitUntil(notification);
 });
@@ -24,4 +28,8 @@ self.addEventListener("notificationclick", (event) => {
 	);
 
 	event.waitUntil(clickResponsePromise);
+});
+
+self.addEventListener("install", (event) => {
+	event.waitUntil(self.skipWaiting());
 });

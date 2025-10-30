@@ -107,6 +107,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.createTable("notification_tokens")
 		.addColumn("id", "text", (col) => col.primaryKey())
 		.addColumn("meta", "text", (col) => col.notNull())
+		.addColumn("subscription_id", "text", (col) => col.notNull())
 		.addColumn("user_id", "text", (col) => col.notNull().references("users.id"))
 		.addColumn("created_at", "integer", (col) =>
 			col.notNull().defaultTo(sql`CURRENT_TIMESTAMP`),

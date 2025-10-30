@@ -5,14 +5,12 @@ import AuthMiddleware from "@/features/auth/middleware";
 import type { Response } from "./types";
 import { LogoutUseCase } from "./use-case";
 
-const LogoutRoute = new Hono().get(
+const LogoutRoute = new Hono().post(
 	"/",
 	AuthMiddleware.middleware,
 	async (c) => {
 		let response: Response.Response;
 		let statusCode: StatusCodes;
-
-		const user = c.get("user");
 
 		const useCase = Container.get(LogoutUseCase);
 		const result = await useCase.execute(c);

@@ -1,12 +1,10 @@
-import { types } from "@embedded-blockchain-surveillance-system/api";
+import type { types } from "@embedded-blockchain-surveillance-system/api";
 
-export namespace Request {
-	// No request body for this endpoint
-}
+export namespace Request {}
 
 export namespace Response {
 	type Endpoint = "/auth/logout";
-	type Method = "get";
+	type Method = "post";
 
 	export type Response =
 		types.paths[Endpoint][Method]["responses"][keyof types.paths[Endpoint][Method]["responses"]]["content"]["application/json"];

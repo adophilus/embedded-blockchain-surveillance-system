@@ -8,6 +8,7 @@ import type { SurveillanceEventService } from "@/features/surveillance/events/se
 import type { Logger } from "@/features/logger";
 import type { SurveillanceEvent } from "@/types";
 import { ulid } from "ulidx";
+import type { NotificationTokenService } from "@/features/notification/token/service";
 
 export class IotDeviceUploadUseCaseImplementation
 	implements IotDeviceUploadUseCase
@@ -17,6 +18,7 @@ export class IotDeviceUploadUseCaseImplementation
 		private readonly criminalService: CriminalProfileService,
 		private readonly surveillanceSessionService: SurveillanceSessionService,
 		private readonly surveillanceEventService: SurveillanceEventService,
+		private readonly notificationService: NotificationTokenService,
 		private readonly logger: Logger,
 	) {}
 
@@ -35,7 +37,6 @@ export class IotDeviceUploadUseCaseImplementation
 
 		const imageFile = this.convertImageBase64ToFile(payload.image);
 
-		// Upload the stream to storage
 		const uploadResult = await this.service.uploadStream(
 			payload.deviceId,
 			imageFile,
@@ -60,7 +61,6 @@ export class IotDeviceUploadUseCaseImplementation
 
 		this.logger.info("Stream uploaded successfully");
 
-		// Get current/active surveillance session
 		this.logger.info("Getting current/active surveillance session");
 		const sessionsResult = await this.surveillanceSessionService.list();
 
@@ -91,10 +91,8 @@ export class IotDeviceUploadUseCaseImplementation
 
 		this.logger.info("Starting criminal detection");
 
-		// Convert image to ArrayBuffer for criminal detection
 		const imageArrayBuffer = await imageFile.arrayBuffer();
 
-		// Detect criminals in the stream
 		const criminalDetectionResult =
 			await this.criminalService.detectCriminalsInStream(imageArrayBuffer);
 
@@ -114,7 +112,7 @@ export class IotDeviceUploadUseCaseImplementation
 				);
 
 				// Log details of detected criminals
-				detection.matches.forEach((match, index) => {
+				for (const [index, match] of detection.matches.entries()) {
 					this.logger.warn(
 						`Criminal ${index + 1}: ${match.criminal.name} (ID: ${match.criminal.id}) - Confidence: ${(match.confidence * 100).toFixed(1)}%`,
 					);
@@ -129,23 +127,18 @@ export class IotDeviceUploadUseCaseImplementation
 					criminalDetections.push({
 						criminal_profile_id: match.criminal.id,
 					});
-				});
 
-				// Notify officials about criminal detection
-				this.logger.warn(
-					"ALERT: Criminal detection requires immediate attention!",
-				);
-				this.logger.warn(`Session: ${activeSession.title}`);
-				this.logger.warn(`Device: ${payload.deviceId}`);
-				this.logger.warn(
-					`Criminals detected: ${detection.matches.map((m) => m.criminal.name).join(", ")}`,
-				);
+					await this.notificationService.broadcast({
+						title: "Criminal Detected!",
+						body: `Detected ${match.criminal.name} with ${(match.confidence * 100).toFixed(1)}% confidence.`,
+						tag: `CRIMINAL_DETECTED_${match.criminal.id}`,
+					});
+				}
 			} else {
 				this.logger.info("No criminals detected in the stream");
 			}
 		}
 
-		// Create surveillance event
 		this.logger.info("Creating surveillance event");
 		const surveillanceEvent: SurveillanceEvent.Insertable = {
 			id: ulid(),
@@ -163,7 +156,6 @@ export class IotDeviceUploadUseCaseImplementation
 				"Failed to create surveillance event",
 				eventResult.error,
 			);
-			// Continue with success response even if event creation fails
 		} else {
 			this.logger.info(`Surveillance event created: ${eventResult.value.id}`);
 		}

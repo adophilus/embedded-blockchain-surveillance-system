@@ -1,3 +1,4 @@
+import "../utils";
 import { NotificationTokenService } from "@/features/notification/token/service";
 import { Container } from "@n8n/di";
 import { describe, it, assert } from "vitest";

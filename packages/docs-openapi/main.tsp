@@ -359,6 +359,29 @@ namespace Api {
       @doc("Create a new user. Requires ADMIN role.")
       op signUp(@multipartBody body: Request.Body): Response.Response;
     }
+
+    @useAuth(BearerAuth)
+    @route("/logout")
+    namespace Logout {
+      namespace Response {
+        namespace Success {
+          model LogoutSuccess {
+            code: "LOGOUT_SUCCESSFUL";
+          }
+          alias Success = LogoutSuccess;
+        }
+
+        namespace Error {
+          alias Error = UnauthorizedError | UnexpectedError;
+        }
+
+        alias Response = Success.Success | Error.Error;
+      }
+
+      @post
+      @doc("Logs out the authenticated user by invalidating their session/token.")
+      op logout(): Response.Response;
+    }
   }
 
   @useAuth(BearerAuth)

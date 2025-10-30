@@ -49,11 +49,6 @@ namespace NotificationService {
 			scope: "/",
 		});
 
-		register.showNotification("EBSS Notification", {
-			body: "You have a new notification from EBSS.",
-			tag: "ebss-notification",
-		});
-
 		const subscription = await register.pushManager.subscribe({
 			userVisibleOnly: true,
 			applicationServerKey: vapidPublicKey,

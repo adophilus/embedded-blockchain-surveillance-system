@@ -65,14 +65,15 @@ export const Header = () => {
 						<p className="text-sm font-medium text-white">{user.full_name}</p>
 						<p className="text-xs text-slate-400">{user.role}</p>
 					</div>
-					<button
-						type="button"
-						onClick={Auth.Store.logout}
-						className="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-lg transition"
-						title="Logout"
-					>
-						<LogOut className="w-5 h-5" />
-					</button>
+					<Link to="/logout">
+						<button
+							type="button"
+							className="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2 rounded-lg transition"
+							title="Logout"
+						>
+							<LogOut className="w-5 h-5" />
+						</button>
+					</Link>
 				</div>
 			</div>
 

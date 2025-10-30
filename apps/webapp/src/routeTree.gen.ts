@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LogoutRouteImport } from './routes/logout'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as IndexRouteImport } from './routes/index'
@@ -18,6 +19,11 @@ import { Route as DashboardDashboardSurveillanceRouteImport } from './routes/_da
 import { Route as DashboardDashboardMetricsRouteImport } from './routes/_dashboard/dashboard/metrics'
 import { Route as DashboardDashboardCriminalsRouteImport } from './routes/_dashboard/dashboard/criminals'
 
+const LogoutRoute = LogoutRouteImport.update({
+  id: '/logout',
+  path: '/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -65,6 +71,7 @@ const DashboardDashboardCriminalsRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
   '/dashboard/criminals': typeof DashboardDashboardCriminalsRoute
   '/dashboard/metrics': typeof DashboardDashboardMetricsRoute
   '/dashboard/surveillance': typeof DashboardDashboardSurveillanceRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
   '/dashboard/criminals': typeof DashboardDashboardCriminalsRoute
   '/dashboard/metrics': typeof DashboardDashboardMetricsRoute
   '/dashboard/surveillance': typeof DashboardDashboardSurveillanceRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_dashboard': typeof DashboardRouteWithChildren
   '/login': typeof LoginRoute
+  '/logout': typeof LogoutRoute
   '/_dashboard/dashboard/criminals': typeof DashboardDashboardCriminalsRoute
   '/_dashboard/dashboard/metrics': typeof DashboardDashboardMetricsRoute
   '/_dashboard/dashboard/surveillance': typeof DashboardDashboardSurveillanceRoute
@@ -96,6 +105,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/logout'
     | '/dashboard/criminals'
     | '/dashboard/metrics'
     | '/dashboard/surveillance'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/logout'
     | '/dashboard/criminals'
     | '/dashboard/metrics'
     | '/dashboard/surveillance'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_dashboard'
     | '/login'
+    | '/logout'
     | '/_dashboard/dashboard/criminals'
     | '/_dashboard/dashboard/metrics'
     | '/_dashboard/dashboard/surveillance'
@@ -126,10 +138,18 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   LoginRoute: typeof LoginRoute
+  LogoutRoute: typeof LogoutRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/logout': {
+      id: '/logout'
+      path: '/logout'
+      fullPath: '/logout'
+      preLoaderRoute: typeof LogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -213,6 +233,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRouteWithChildren,
   LoginRoute: LoginRoute,
+  LogoutRoute: LogoutRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

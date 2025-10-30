@@ -1,19 +1,32 @@
 import "reflect-metadata";
 
 import { Container } from "@n8n/di";
-import { HonoApp } from "@/features/app";
+import { App, HonoApp } from "@/features/app";
 import {
-	AuthTokenRepository,
 	AuthUserRepository,
-	KyselyAuthTokenRepository,
 	KyselyAuthUserRepository,
 } from "@/features/auth/repository";
+import {
+	SignInUseCase,
+	SignUpUseCase,
+	GetUserProfileUseCase,
+	SignInUseCaseImplementation,
+	SignUpUseCaseImplementation,
+} from "@/features/auth/use-case";
 import { config } from "@/features/config";
 import { KyselyClient } from "@/features/database/kysely";
-import { createKyselySqliteTestClient } from "@/features/database/kysely/sqlite";
+import { createKyselySqliteClient } from "@/features/database/kysely/sqlite";
 import { Logger } from "@/features/logger";
-import { Mailer, MockMailer } from "@/features/mailer";
-import { MockStorageService, StorageService } from "@/features/storage/service";
+import {
+	StorageService,
+	SqliteStorageService,
+} from "@/features/storage/service";
+import {
+	CronService,
+	CronServiceImplementation,
+} from "@/features/cron/service";
+import { GetFileUseCase } from "@/features/storage/route/get/use-case";
+import { KyselyStorageRepository } from "@/features/storage/repository";
 import {
 	SurveillanceSessionService,
 	SurveillanceSessionServiceImpl,
@@ -46,26 +59,68 @@ import {
 	IotDeviceRepository,
 	KyselyIotDeviceRepository,
 } from "@/features/iot/repository";
+import {
+	ListSurveillanceSessionsUseCase,
+	ListSurveillanceSessionsUseCaseImplementation,
+} from "@/features/surveillance/route/list/use-case";
+import {
+	GetSurveillanceSessionByIdUseCase,
+	GetSurveillanceSessionByIdUseCaseImplementation,
+} from "@/features/surveillance/route/get/use-case";
+import {
+	ListSurveillanceEventsUseCase,
+	ListSurveillanceEventsUseCaseImplementation,
+} from "@/features/surveillance/route/events/use-case";
+import {
+	GetSurveillanceMetricsUseCase,
+	GetSurveillanceMetricsUseCaseImplementation,
+} from "@/features/surveillance/route/metrics/use-case";
+import {
+	IotDeviceUploadUseCase,
+	IotDeviceUploadUseCaseImplementation,
+} from "@/features/iot/route/upload/use-case";
+import {
+	IotDeviceHeartbeatUseCase,
+	IotDeviceHeartbeatUseCaseImplementation,
+} from "@/features/iot/route/heartbeat/use-case";
+import {
+	CreateCriminalProfileUseCase,
+	CreateCriminalProfileUseCaseImplementation,
+	GetCriminalProfileByIdUseCase,
+	GetCriminalProfileByIdUseCaseImplementation,
+	ListCriminalProfilesUseCaseImplementation,
+	ListCriminalProfileUseCase,
+} from "@/features/criminal/use-case";
+import {
+	RegisterNotificationTokenUseCase,
+	RegisterNotificationTokenUseCaseImplementation,
+} from "@/features/notification/token/use-case";
+import { SurveillanceSessionCronJob } from "@/features/surveillance/session/cron";
+import {
+	KyselyNotificationTokenRepository,
+	NotificationTokenRepository,
+} from "@/features/notification/token/repository";
+import {
+	NotificationTokenService,
+	NotificationTokenServiceImpl,
+} from "@/features/notification/token/service";
+import {
+	GetVapidPublicKeyUseCase,
+	GetVapidPublicKeyUseCaseImplementation,
+} from "@/features/notification/vapid/use-case";
 
 export const bootstrap = async () => {
-	// Logger
-	const logger = new Logger({ name: "App" });
+	const logger = new Logger();
 
 	// Database
-	const kyselyClient = await createKyselySqliteTestClient();
+	const kyselyClient = await createKyselySqliteClient();
 
 	// Storage DI
-	const storageService = new MockStorageService();
-
-	// Mailer DI
-	const mailer = new MockMailer();
+	const storageRepository = new KyselyStorageRepository(kyselyClient, logger);
+	const storageService = new SqliteStorageService(storageRepository);
 
 	// Auth DI
 	const authUserRepository = new KyselyAuthUserRepository(kyselyClient, logger);
-	const authTokenRepository = new KyselyAuthTokenRepository(
-		kyselyClient,
-		logger,
-	);
 
 	// Surveillance DI
 	const surveillanceSessionRepository = new KyselySurveillanceSessionRepository(
@@ -84,16 +139,46 @@ export const bootstrap = async () => {
 		surveillanceEventRepository,
 		logger,
 	);
+	const surveillanceSessionCronJob = new SurveillanceSessionCronJob(
+		surveillanceSessionService,
+		logger,
+	);
 
 	// Criminal DI
 	const criminalProfileRepository = new KyselyCriminalProfileRepository(
 		kyselyClient,
 		logger,
 	);
-	const criminalProfileService = new CriminalProfileServiceImplementation(
-		criminalProfileRepository,
+	const criminalProfileService =
+		await CriminalProfileServiceImplementation.init(
+			criminalProfileRepository,
+			logger,
+		);
+	const createCriminalProfileUseCase =
+		new CreateCriminalProfileUseCaseImplementation(
+			criminalProfileService,
+			storageService,
+		);
+	const getCriminalProfileByIdUseCase =
+		new GetCriminalProfileByIdUseCaseImplementation(criminalProfileService);
+	const listCriminalProfileUseCase =
+		new ListCriminalProfilesUseCaseImplementation(criminalProfileService);
+
+	// Notification DI
+	const notificationTokenRepository = new KyselyNotificationTokenRepository(
+		kyselyClient,
 		logger,
 	);
+	const notificationTokenService = new NotificationTokenServiceImpl(
+		notificationTokenRepository,
+		logger,
+	);
+	const registerNotificationTokenUseCase =
+		new RegisterNotificationTokenUseCaseImplementation(
+			notificationTokenService,
+			logger,
+		);
+	const getVapidPublicKeyUseCase = new GetVapidPublicKeyUseCaseImplementation();
 
 	// IoT DI
 	const iotDeviceRepository = new KyselyIotDeviceRepository(
@@ -102,26 +187,86 @@ export const bootstrap = async () => {
 	);
 	const iotDeviceService = new IotDeviceServiceImplementation(
 		iotDeviceRepository,
+		storageService,
+	);
+
+	// Auth Use Cases
+	const getUserProfileUseCase = new GetUserProfileUseCase();
+	const signInUseCase = new SignInUseCaseImplementation(authUserRepository);
+	const signUpUseCase = new SignUpUseCaseImplementation(authUserRepository);
+
+	// Cron Service
+	const cronService = new CronServiceImplementation(
+		[surveillanceSessionCronJob],
 		logger,
+	);
+
+	// Surveillance Use Cases
+	const listSurveillanceSessionsUseCase =
+		new ListSurveillanceSessionsUseCaseImplementation(
+			surveillanceSessionService,
+			logger,
+		);
+	const getSurveillanceSessionByIdUseCase =
+		new GetSurveillanceSessionByIdUseCaseImplementation(
+			surveillanceSessionService,
+			surveillanceEventService,
+			logger,
+		);
+	const listSurveillanceEventsUseCase =
+		new ListSurveillanceEventsUseCaseImplementation(
+			surveillanceEventService,
+			logger,
+		);
+	const getSurveillanceMetricsUseCase =
+		new GetSurveillanceMetricsUseCaseImplementation(
+			surveillanceSessionService,
+			surveillanceEventService,
+			logger,
+		);
+
+	// Storage Use Cases
+	const getFileUseCase = new GetFileUseCase(storageRepository, logger);
+
+	// IoT Use Cases
+	const iotDeviceUploadUseCase = new IotDeviceUploadUseCaseImplementation(
+		iotDeviceService,
+		criminalProfileService,
+		surveillanceSessionService,
+		surveillanceEventService,
+		logger,
+	);
+	const iotDeviceHeartbeatUseCase = new IotDeviceHeartbeatUseCaseImplementation(
+		iotDeviceService,
 	);
 
 	const app = new HonoApp(logger);
 
-	// Logger DI
-	Container.set(Logger, logger);
+	// App
+	Container.set(App, app);
 
-	// Database DI
+	// Database
 	Container.set(KyselyClient, kyselyClient);
 
 	// Storage DI
 	Container.set(StorageService, storageService);
 
-	// Mailer DI
-	Container.set(Mailer, mailer);
+	// OpenTelemetry DI
+	Container.set(Logger, logger);
 
 	// Auth DI
 	Container.set(AuthUserRepository, authUserRepository);
-	Container.set(AuthTokenRepository, authTokenRepository);
+
+	// Auth Use Cases
+	Container.set(GetUserProfileUseCase, getUserProfileUseCase);
+	Container.set(SignInUseCase, signInUseCase);
+	Container.set(SignUpUseCase, signUpUseCase);
+
+	// Cron Service DI
+	Container.set(CronService, cronService);
+
+	// Storage Service DI
+	Container.set(GetFileUseCase, getFileUseCase);
 
 	// Surveillance DI
 	Container.set(SurveillanceSessionRepository, surveillanceSessionRepository);
@@ -132,16 +277,38 @@ export const bootstrap = async () => {
 	// Criminal DI
 	Container.set(CriminalProfileRepository, criminalProfileRepository);
 	Container.set(CriminalProfileService, criminalProfileService);
+	Container.set(CreateCriminalProfileUseCase, createCriminalProfileUseCase);
+	Container.set(GetCriminalProfileByIdUseCase, getCriminalProfileByIdUseCase);
+	Container.set(ListCriminalProfileUseCase, listCriminalProfileUseCase);
 
 	// IoT DI
 	Container.set(IotDeviceRepository, iotDeviceRepository);
 	Container.set(IotDeviceService, iotDeviceService);
 
-	return { app, logger, config };
+	// Notification DI
+	Container.set(NotificationTokenRepository, notificationTokenRepository);
+	Container.set(NotificationTokenService, notificationTokenService);
+	Container.set(
+		RegisterNotificationTokenUseCase,
+		registerNotificationTokenUseCase,
+	);
+	Container.set(GetVapidPublicKeyUseCase, getVapidPublicKeyUseCase);
+
+	// Surveillance Use Cases
+	Container.set(
+		ListSurveillanceSessionsUseCase,
+		listSurveillanceSessionsUseCase,
+	);
+	Container.set(
+		GetSurveillanceSessionByIdUseCase,
+		getSurveillanceSessionByIdUseCase,
+	);
+	Container.set(ListSurveillanceEventsUseCase, listSurveillanceEventsUseCase);
+	Container.set(GetSurveillanceMetricsUseCase, getSurveillanceMetricsUseCase);
+
+	// IoT Use Cases
+	Container.set(IotDeviceUploadUseCase, iotDeviceUploadUseCase);
+	Container.set(IotDeviceHeartbeatUseCase, iotDeviceHeartbeatUseCase);
+
+	return { app, logger, config, cronService };
 };
-
-const { app: appClass, logger } = await bootstrap();
-
-const app = appClass.create();
-
-export { app, logger };

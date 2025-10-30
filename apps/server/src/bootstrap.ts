@@ -95,7 +95,7 @@ import {
 	RegisterNotificationTokenUseCase,
 	RegisterNotificationTokenUseCaseImplementation,
 } from "@/features/notification/token/use-case";
-import { SurveillanceSessionCronJob } from "./features/surveillance/session/cron";
+import { SurveillanceSessionCronJob } from "@/features/surveillance/session/cron";
 import {
 	KyselyNotificationTokenRepository,
 	NotificationTokenRepository,

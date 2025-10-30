@@ -26,6 +26,7 @@ export class RegisterNotificationTokenUseCaseImplementation
 		try {
 			const result = await this.service.create({
 				id: ulid(),
+				subscription_id: payload.endpoint,
 				user_id: userId,
 				meta: {
 					type: "web-push",

@@ -627,7 +627,6 @@ namespace Api {
       namespace Register {
         namespace Request {
           model Body {
-            subscription_id: string;
             endpoint: string;
             keys: {
               p256dh: string;

@@ -77,7 +77,6 @@ type FilesTable = TimestampModel & {
 type NotificationMeta = {
 	type: "web-push";
 	data: {
-		subscription_id: string;
 		endpoint: string;
 		keys: {
 			p256dh: string;

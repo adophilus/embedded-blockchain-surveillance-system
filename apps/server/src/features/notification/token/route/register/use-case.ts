@@ -1,4 +1,4 @@
-import type { Result } from "true-myth";
+import { Result } from "true-myth";
 import type { Request, Response } from "./types";
 import type { NotificationTokenService } from "../../service";
 import type { Logger } from "@/features/logger";
@@ -34,7 +34,10 @@ export class RegisterNotificationTokenUseCaseImplementation
 			});
 
 			if (result.isErr) {
-				this.logger.error("Failed to register notification token", result.error);
+				this.logger.error(
+					"Failed to register notification token",
+					result.error,
+				);
 				return Result.err({ code: "ERR_UNEXPECTED" });
 			}
 

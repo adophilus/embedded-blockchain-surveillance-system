@@ -7,28 +7,22 @@
 				"{projectRoot}/build",
 				"{projectRoot}/out",
 				"{projectRoot}/.vitepress/dist"
-			],
-			"cache": true
+			]
 		},
 		"test": {
-			"dependsOn": ["^test"],
-			"cache": true
+			"dependsOn": ["^test"]
 		},
 		"dev": {
-			"dependsOn": ["^dev"],
-			"cache": true
+			"dependsOn": ["^dev"]
 		},
 		"lint": {
-			"dependsOn": ["^lint"],
-			"cache": true
+			"dependsOn": ["^lint"]
 		},
 		"preview": {
-			"dependsOn": ["^preview"],
-			"cache": true
+			"dependsOn": ["^preview"]
 		},
 		"start": {
-			"dependsOn": ["^start"],
-			"cache": true
+			"dependsOn": ["^start"]
 		}
 	},
 	"plugins": [

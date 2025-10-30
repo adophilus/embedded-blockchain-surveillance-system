@@ -104,6 +104,10 @@ import {
 	NotificationTokenService,
 	NotificationTokenServiceImpl,
 } from "@/features/notification/token/service";
+import {
+	GetVapidPublicKeyUseCase,
+	GetVapidPublicKeyUseCaseImplementation,
+} from "@/features/notification/vapid/use-case";
 
 export const bootstrap = async () => {
 	const logger = new Logger();
@@ -174,6 +178,7 @@ export const bootstrap = async () => {
 			notificationTokenService,
 			logger,
 		);
+	const getVapidPublicKeyUseCase = new GetVapidPublicKeyUseCaseImplementation();
 
 	// IoT DI
 	const iotDeviceRepository = new KyselyIotDeviceRepository(
@@ -287,6 +292,7 @@ export const bootstrap = async () => {
 		RegisterNotificationTokenUseCase,
 		registerNotificationTokenUseCase,
 	);
+	Container.set(GetVapidPublicKeyUseCase, getVapidPublicKeyUseCase);
 
 	// Surveillance Use Cases
 	Container.set(

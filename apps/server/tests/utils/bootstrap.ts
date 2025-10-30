@@ -312,3 +312,9 @@ export const bootstrap = async () => {
 
 	return { app, logger, config, cronService };
 };
+
+const { app: appClass, logger } = await bootstrap();
+
+const app = appClass.create();
+
+export { app, logger };

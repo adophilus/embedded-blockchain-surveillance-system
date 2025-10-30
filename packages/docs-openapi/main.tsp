@@ -116,7 +116,7 @@ namespace Api {
   @example("John Smith")
   scalar CriminalName extends string;
 
-  @example("Armed robbery, assault")
+  @example("Armed robbery")
   scalar CriminalOffense extends string;
 
   @example("CRIMINAL001")

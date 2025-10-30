@@ -12,6 +12,8 @@ import {
 	GetUserProfileUseCase,
 	SignInUseCaseImplementation,
 	SignUpUseCaseImplementation,
+	LogoutUseCase,
+	LogoutUseCaseImplementation,
 } from "@/features/auth/use-case";
 import { config } from "@/features/config";
 import { KyselyClient } from "@/features/database/kysely";
@@ -194,6 +196,7 @@ export const bootstrap = async () => {
 	const getUserProfileUseCase = new GetUserProfileUseCase();
 	const signInUseCase = new SignInUseCaseImplementation(authUserRepository);
 	const signUpUseCase = new SignUpUseCaseImplementation(authUserRepository);
+	const logoutUseCase = new LogoutUseCaseImplementation(logger);
 
 	// Cron Service
 	const cronService = new CronServiceImplementation(
@@ -261,6 +264,7 @@ export const bootstrap = async () => {
 	Container.set(GetUserProfileUseCase, getUserProfileUseCase);
 	Container.set(SignInUseCase, signInUseCase);
 	Container.set(SignUpUseCase, signUpUseCase);
+	Container.set(LogoutUseCase, logoutUseCase);
 
 	// Cron Service DI
 	Container.set(CronService, cronService);

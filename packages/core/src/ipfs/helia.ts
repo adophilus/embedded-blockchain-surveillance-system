@@ -1,6 +1,6 @@
 import { Result } from "true-myth";
-import type { IpfsClient, IpfsUploadFileError } from "./interface";
-import { type Helia } from "helia";
+import type { IpfsClient, IpfsUploadFileError, ResolveUriError } from "./interface";
+import type { Helia } from "helia";
 import { unixfs, type UnixFS } from "@helia/unixfs";
 import { createHeliaHTTP } from "@helia/http";
 import {
@@ -44,6 +44,12 @@ class HeliaIpfsClient implements IpfsClient {
 				message: e.message || "Failed to upload file to IPFS",
 			});
 		}
+	}
+
+	public async resolveUri(
+		uri: string,
+	): Promise<Result<string, ResolveUriError>> {
+		return Result.ok(uri);
 	}
 }
 

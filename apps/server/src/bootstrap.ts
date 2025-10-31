@@ -21,6 +21,7 @@ import { createKyselySqliteClient } from "@/features/database/kysely/sqlite";
 import { Logger } from "@/features/logger";
 import {
 	StorageService,
+	IpfsStorageService,
 	SqliteStorageService,
 } from "@/features/storage/service";
 import {
@@ -114,6 +115,8 @@ import {
 	GetVapidPublicKeyUseCase,
 	GetVapidPublicKeyUseCaseImplementation,
 } from "@/features/notification/vapid/use-case";
+import c from "@embedded-blockchain-surveillance-system/core";
+console.log(c);
 
 export const bootstrap = async () => {
 	const logger = new Logger();
@@ -121,9 +124,12 @@ export const bootstrap = async () => {
 	// Database
 	const kyselyClient = await createKyselySqliteClient();
 
+	// IPFS DI
+	const ipfsClient = await createHeliaIpfsClient();
+
 	// Storage DI
 	const storageRepository = new KyselyStorageRepository(kyselyClient, logger);
-	const storageService = new SqliteStorageService(storageRepository);
+	const storageService = new IpfsStorageService(ipfsClient);
 
 	// Auth DI
 	const authUserRepository = new KyselyAuthUserRepository(kyselyClient, logger);

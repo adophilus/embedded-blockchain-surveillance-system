@@ -2,6 +2,6 @@
 	"$schema": "https://json.schemastore.org/package.json",
 	"name": "@embedded-blockchain-surveillance-system/ipfs",
 	"scripts": {
-		"dev": "ipfs daemon --offline"
+		"dev": "ipfs daemon"
 	}
 }

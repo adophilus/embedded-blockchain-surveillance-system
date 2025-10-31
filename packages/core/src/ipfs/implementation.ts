@@ -2,11 +2,17 @@ import { Result } from "true-myth";
 import type { IpfsClient, IpfsUploadFileError } from "./interface";
 import type { Helia } from "helia";
 import { dagCbor, type DAGCBOR } from "@helia/dag-cbor";
+import { createHelia } from "helia";
+
+export const createHeliaIpfsClient = async (): Promise<HeliaIpfsClient> => {
+	const helia = await createHelia();
+	return new HeliaIpfsClient(helia);
+};
 
 class HeliaIpfsClient implements IpfsClient {
 	private declare dag: DAGCBOR;
 
-	constructor(private readonly helia: Helia) {
+	constructor(helia: Helia) {
 		this.dag = dagCbor(helia);
 	}
 

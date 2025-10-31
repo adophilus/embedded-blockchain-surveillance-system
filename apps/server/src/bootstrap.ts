@@ -115,8 +115,7 @@ import {
 	GetVapidPublicKeyUseCase,
 	GetVapidPublicKeyUseCaseImplementation,
 } from "@/features/notification/vapid/use-case";
-import c from "@embedded-blockchain-surveillance-system/core";
-console.log(c);
+import {createHeliaIpfsClient} from "@embedded-blockchain-surveillance-system/core";
 
 export const bootstrap = async () => {
 	const logger = new Logger();
@@ -125,11 +124,12 @@ export const bootstrap = async () => {
 	const kyselyClient = await createKyselySqliteClient();
 
 	// IPFS DI
-	const ipfsClient = await createHeliaIpfsClient();
+	// const ipfsClient = await createHeliaIpfsClient();
 
 	// Storage DI
 	const storageRepository = new KyselyStorageRepository(kyselyClient, logger);
-	const storageService = new IpfsStorageService(ipfsClient);
+	// const storageService = new IpfsStorageService(ipfsClient);
+	const storageService = new SqliteStorageService(storageRepository);
 
 	// Auth DI
 	const authUserRepository = new KyselyAuthUserRepository(kyselyClient, logger);

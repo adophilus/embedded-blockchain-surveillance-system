@@ -1,7 +1,7 @@
 import { Result } from "true-myth";
 import type { IpfsClient, IpfsUploadFileError } from "./interface";
 import type { Helia } from "helia";
-import { dagCbor, type DAGCBOR } from "@helia/dag-cbor";
+import { unixfs, type UnixFS } from '@helia/unixfs'
 import { createHelia } from "helia";
 
 export const createHeliaIpfsClient = async (): Promise<HeliaIpfsClient> => {
@@ -10,10 +10,10 @@ export const createHeliaIpfsClient = async (): Promise<HeliaIpfsClient> => {
 };
 
 class HeliaIpfsClient implements IpfsClient {
-	private declare dag: DAGCBOR;
+	private declare fs: UnixFS;
 
 	constructor(helia: Helia) {
-		this.dag = dagCbor(helia);
+		this.fs = unixfs(helia);
 	}
 
 	public async uploadFile(
@@ -23,7 +23,7 @@ class HeliaIpfsClient implements IpfsClient {
 			const arrayBuffer = await file.arrayBuffer();
 			const content = new Uint8Array(arrayBuffer);
 
-			const result = await this.dag.add(content);
+			const result = await this.fs.addFile({content, path: file.name});
 			console.log("IPFS upload result:", result);
 			return Result.ok(result.toString());
 		} catch (e: any) {

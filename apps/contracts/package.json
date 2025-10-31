@@ -3,6 +3,7 @@
 	"name": "@embedded-blockchain-surveillance-system/contracts",
 	"version": "1.0.0",
 	"description": "Smart contracts for the embedded blockchain surveillance system",
+	"type": "module",
 	"exports": {
 		"./types": "./build/types.ts",
 		"./*": "./out/*"

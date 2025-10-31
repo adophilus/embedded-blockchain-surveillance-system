@@ -8,7 +8,7 @@ import type { SurveillanceEventService } from "@/features/surveillance/events/se
 import type { Logger } from "@/features/logger";
 import type { SurveillanceEvent } from "@/types";
 import { ulid } from "ulidx";
-import type { NotificationTokenService } from "@/features/notification/token/service";
+import type { NotificationService } from "@/features/notification/service";
 
 export class IotDeviceUploadUseCaseImplementation
 	implements IotDeviceUploadUseCase
@@ -18,7 +18,7 @@ export class IotDeviceUploadUseCaseImplementation
 		private readonly criminalService: CriminalProfileService,
 		private readonly surveillanceSessionService: SurveillanceSessionService,
 		private readonly surveillanceEventService: SurveillanceEventService,
-		private readonly notificationService: NotificationTokenService,
+		private readonly notificationService: NotificationService,
 		private readonly logger: Logger,
 	) {}
 

@@ -107,6 +107,10 @@ import {
 	NotificationTokenServiceImpl,
 } from "@/features/notification/token/service";
 import {
+	NotificationService,
+	NotificationServiceImpl,
+} from "@/features/notification/service";
+import {
 	GetVapidPublicKeyUseCase,
 	GetVapidPublicKeyUseCaseImplementation,
 } from "@/features/notification/vapid/use-case";
@@ -173,6 +177,10 @@ export const bootstrap = async () => {
 	);
 	const notificationTokenService = new NotificationTokenServiceImpl(
 		notificationTokenRepository,
+		logger,
+	);
+	const notificationService = new NotificationServiceImpl(
+		notificationTokenService,
 		logger,
 	);
 	const registerNotificationTokenUseCase =
@@ -292,6 +300,7 @@ export const bootstrap = async () => {
 	// Notification DI
 	Container.set(NotificationTokenRepository, notificationTokenRepository);
 	Container.set(NotificationTokenService, notificationTokenService);
+	Container.set(NotificationService, notificationService);
 	Container.set(
 		RegisterNotificationTokenUseCase,
 		registerNotificationTokenUseCase,

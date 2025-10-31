@@ -7,13 +7,6 @@ export type FindNotificationTokenByUserIdError = "ERR_UNEXPECTED";
 export type ListNotificationTokensError = "ERR_UNEXPECTED";
 export type UpdateNotificationTokenByIdError = "ERR_UNEXPECTED";
 export type DeleteNotificationTokenByIdError = "ERR_UNEXPECTED";
-export type BroadcastNotificationError = "ERR_UNEXPECTED";
-
-export type BroadcastPayload = {
-	title: string;
-	body: string;
-	tag: string;
-};
 
 export abstract class NotificationTokenService {
 	public abstract create(
@@ -46,8 +39,4 @@ export abstract class NotificationTokenService {
 	public abstract deleteById(
 		id: string,
 	): Promise<Result<Unit, DeleteNotificationTokenByIdError>>;
-
-	public abstract broadcast(
-		payload: BroadcastPayload,
-	): Promise<Result<Unit, BroadcastNotificationError>>;
 }

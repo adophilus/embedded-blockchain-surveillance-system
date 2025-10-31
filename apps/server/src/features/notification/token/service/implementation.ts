@@ -1,4 +1,4 @@
-import { Result, Unit } from "true-myth";
+import { Result, type Unit } from "true-myth";
 import type {
 	NotificationTokenService,
 	CreateNotificationTokenError,
@@ -7,8 +7,6 @@ import type {
 	ListNotificationTokensError,
 	UpdateNotificationTokenByIdError,
 	DeleteNotificationTokenByIdError,
-	BroadcastNotificationError,
-	BroadcastPayload,
 } from "./interface";
 import type { NotificationTokenRepository } from "../repository";
 import type { Logger } from "@/features/logger";
@@ -26,35 +24,6 @@ export class NotificationTokenServiceImpl implements NotificationTokenService {
 			config.notification.vapid.publicKey,
 			config.notification.vapid.privateKey,
 		);
-	}
-
-	public async broadcast(
-		payload: BroadcastPayload,
-	): Promise<Result<Unit, BroadcastNotificationError>> {
-		const listNotificationTokensResult = await this.list();
-		if (listNotificationTokensResult.isErr) return Result.err("ERR_UNEXPECTED");
-
-		const notificationTokens = listNotificationTokensResult.value;
-
-		for (const notificationToken of notificationTokens) {
-			try {
-				const res = await webpush.sendNotification(
-					{
-						endpoint: notificationToken.meta.data.endpoint,
-						keys: notificationToken.meta.data.keys,
-					},
-					JSON.stringify(payload),
-				);
-				this.logger.debug(res);
-			} catch (err) {
-				this.logger.error(
-					`Failed to send push notification to ${notificationToken.user_id}:`,
-					err,
-				);
-			}
-		}
-
-		return Result.ok();
 	}
 
 	public async create(

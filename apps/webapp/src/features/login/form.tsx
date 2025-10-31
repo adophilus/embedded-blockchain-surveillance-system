@@ -7,7 +7,9 @@ const schema = z.object({
 	password: z.string(),
 });
 
-const defaultValues: { email: string; password: string } = import.meta.env.PROD
+type Schema = z.infer<typeof schema>;
+
+const defaultValues: Schema = import.meta.env.PROD
 	? { email: "", password: "" }
 	: {
 			email: "admin@surveillance.futo.edu.ng",

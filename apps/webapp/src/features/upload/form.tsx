@@ -13,12 +13,18 @@ const schema = z.object({
 
 type Schema = z.infer<typeof schema>;
 
-const defaultValues: Schema = {
-	name: "",
-	aliases: "",
-	offenses: "",
-	mugshot: undefined,
-};
+const defaultValues: Schema = import.meta.env.PROD
+	? {
+			name: "",
+			aliases: "",
+			offenses: "",
+			mugshot: undefined,
+		}
+	: {
+			name: "Adophilus",
+			aliases: "Adophilus, The Pundit",
+			offenses: "Armed Robbery, Theft",
+		};
 
 export const UploadForm = () => {
 	const [preview, setPreview] = useState<string | null>(null);
@@ -100,7 +106,7 @@ export const UploadForm = () => {
 							type="text"
 							id={field.name}
 							name={field.name}
-							value={field.state.value ?? ""}
+							value={field.state.value}
 							onChange={(e) => field.handleChange(e.target.value)}
 							className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
 							placeholder="Johnny, Slim Jim (comma separated)"
@@ -126,7 +132,7 @@ export const UploadForm = () => {
 						<textarea
 							id={field.name}
 							name={field.name}
-							value={field.state.value ?? ""}
+							value={field.state.value}
 							onChange={(e) => field.handleChange(e.target.value)}
 							className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"
 							placeholder="Armed robbery, assault"

@@ -15,3 +15,4 @@ onlyBuiltDependencies:
   - '@tensorflow/tfjs-node'
   - better-sqlite3
   - canvas
+  - node-datachannel

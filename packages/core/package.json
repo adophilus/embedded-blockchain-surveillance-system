@@ -14,6 +14,8 @@
 	"dependencies": {
 		"@embedded-blockchain-surveillance-system/contracts": "workspace:^",
 		"@helia/dag-cbor": "^5.0.3",
+		"@helia/http": "^3.0.8",
+		"@helia/routers": "^4.0.3",
 		"@helia/unixfs": "^6.0.3",
 		"@t3-oss/env-core": "^0.12.0",
 		"assertate": "^2.4.0",

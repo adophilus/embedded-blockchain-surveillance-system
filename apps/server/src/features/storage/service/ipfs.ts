@@ -16,11 +16,18 @@ export class IpfsStorageService implements StorageService {
 		}
 
 		const cid = uploadResult.value;
+		const uriResult = await this.client.cidToUri(cid);
+
+		if (uriResult.isErr) {
+			return Result.err("ERR_UNEXPECTED");
+		}
+
+		const uri = uriResult.value;
 
 		return Result.ok({
 			id: cid,
 			source: "ipfs",
-			url: `ipfs://${cid}`,
+			url: uri,
 		});
 	}
 }

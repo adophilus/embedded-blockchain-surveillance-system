@@ -5,6 +5,7 @@ import EnvironmentConfig from "./environment";
 import ServerConfig from "./server";
 import NotificationConfig from "./notification";
 import WebappConfig from "./webapp";
+import IpfsConfig from "./ipfs";
 
 export default {
 	auth: AuthConfig,
@@ -14,4 +15,5 @@ export default {
 	server: ServerConfig,
 	notification: NotificationConfig,
 	webapp: WebappConfig,
+	ipfs: IpfsConfig,
 };

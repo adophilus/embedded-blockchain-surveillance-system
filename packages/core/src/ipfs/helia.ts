@@ -1,5 +1,11 @@
 import { Result } from "true-myth";
-import type { IpfsClient, IpfsUploadFileError, ResolveUriError } from "./interface";
+import type {
+	Cid,
+	IpfsClient,
+	IpfsUploadFileError,
+	ResolveUriError,
+	Uri,
+} from "./interface";
 import type { Helia } from "helia";
 import { unixfs, type UnixFS } from "@helia/unixfs";
 import { createHeliaHTTP } from "@helia/http";
@@ -46,10 +52,8 @@ class HeliaIpfsClient implements IpfsClient {
 		}
 	}
 
-	public async resolveUri(
-		uri: string,
-	): Promise<Result<string, ResolveUriError>> {
-		return Result.ok(uri);
+	public async cidToUri(cid: Cid): Promise<Result<Uri, ResolveUriError>> {
+		return Result.ok(cid);
 	}
 }
 

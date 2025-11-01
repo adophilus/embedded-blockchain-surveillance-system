@@ -116,7 +116,7 @@ import {
 	GetVapidPublicKeyUseCaseImplementation,
 } from "@/features/notification/vapid/use-case";
 import {
-	createThirdwebClient,
+	createPinataClient,
 	ThirdwebIpfsClient,
 } from "@embedded-blockchain-surveillance-system/core";
 
@@ -127,7 +127,10 @@ export const bootstrap = async () => {
 	const kyselyClient = await createKyselySqliteClient();
 
 	// IPFS DI
-	const thirdwebClient = await createThirdwebClient("");
+	const thirdwebClient = await createPinataClient(
+		config.ipfs.pinata.apiSecretJwt,
+		config.ipfs.pinata.apiGateway,
+	);
 	const ipfsClient = new ThirdwebIpfsClient(thirdwebClient);
 
 	// Storage DI

@@ -6,12 +6,13 @@ export type UriNotFoundError = { type: "URINotFoundError" };
 export type IpfsUploadFileError = IpfsUploadError | UnknownIpfsError;
 export type ResolveUriError = UriNotFoundError | UnknownIpfsError;
 
+export type Cid = string;
+export type Uri = string;
+
 export abstract class IpfsClient {
 	public abstract uploadFile(
 		file: File,
-	): Promise<Result<string, IpfsUploadError | UnknownIpfsError>>;
+	): Promise<Result<Cid, IpfsUploadError | UnknownIpfsError>>;
 
-	public abstract resolveUri(
-		uri: string,
-	): Promise<Result<string, ResolveUriError>>;
+	public abstract cidToUri(cid: Cid): Promise<Result<Uri, ResolveUriError>>;
 }

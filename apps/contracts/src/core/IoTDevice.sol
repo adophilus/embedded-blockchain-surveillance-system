@@ -1,30 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "./IIoTDevice.sol";
+import {IIoTDevice} from "./IIoTDevice.sol";
 import "../common/Errors.sol";
 
 contract IoTDevice is IIoTDevice {
-    string public id;
-    string public device_code;
-    string public location;
-    string public cid;
-    address public admin;
-    uint public eventCount;
-    mapping(uint => SurveillanceEvent) private events;
-    bool public active;
+    string private id;
+    string private device_code;
+    string private location;
+    Status private status;
+    string private ip_address;
+    uint private last_heartbeat;
 
-    modifier onlyAdmin() {
-        if (msg.sender != admin) revert NotAdmin();
-        _;
-    }
-
-    constructor(string memory _id, string memory _device_code, string memory _location, string memory _cid, address _admin) {
+    constructor(string memory _id, string memory _device_code, string memory _location, IIoTDevice.Status _status, string memory _ip_address, uint _last_heartbeat) {
         id = _id;
         device_code = _device_code;
         location = _location;
-        cid = _cid;
-        admin = _admin;
-        active = true;
+        status = _status;
+        ip_address = _ip_address;
+        last_heartbeat = _last_heartbeat;
+    }
+
+    function get() external view returns (string memory, string memory, string memory, Status, string memory, uint) {
+        return (id, device_code, location, status, ip_address, last_heartbeat);
     }
 }

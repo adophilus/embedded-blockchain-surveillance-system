@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "../core/IoTDevice.sol";
+import {IoTDevice} from "../core/IoTDevice.sol";
 import "../common/Errors.sol";
 import "./IIoTDeviceRegistry.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract IoTDeviceRegistry is IIoTDeviceRegistry {
     address public admin;
     uint public deviceCount;
-            mapping(uint => address) public devices;
-    mapping(address => bool) public isDevice;
+            mapping(string => address) public devices;
 
     modifier onlyAdmin() {
         if (msg.sender != admin) revert NotAdmin();
@@ -20,23 +20,23 @@ contract IoTDeviceRegistry is IIoTDeviceRegistry {
         admin = _admin;
     }
 
-    function registerDevice(
+    function register(
         string memory _device_code,
         string memory _location,
-        string memory _cid
-    ) external onlyAdmin returns (uint device_code, address deviceAddress) {
+        IoTDevice.Status _status,
+        string memory _ip_address,
+        uint _last_heartbeat
+    ) external onlyAdmin returns (string memory _id, address _addr) {
         deviceCount++;
-        string memory id = string(abi.encodePacked(_device_code, block.timestamp));
-        IoTDevice newDevice = new IoTDevice(id, _device_code, _location, _cid, msg.sender);
-        devices[deviceCount] = address(newDevice);
-        isDevice[address(newDevice)] = true;
+        string memory id = Strings.toString(deviceCount);
+        IoTDevice newDevice = new IoTDevice(id, _device_code, _location, _status, _ip_address, _last_heartbeat);
+        devices[id] = address(newDevice);
 
-        emit DeviceRegistered(deviceCount, address(newDevice));
-        return (deviceCount, address(newDevice));
+        emit DeviceRegistered(id, address(newDevice));
+        return (id, address(newDevice));
     }
 
-    function getDevice(uint _device_code) external view returns (address) {
-        if (_device_code == 0 || _device_code > deviceCount) revert InvalidId();
-        return devices[_device_code];
+    function findById(string memory _id) external view returns (address) {
+        return devices[_id];
     }
 }

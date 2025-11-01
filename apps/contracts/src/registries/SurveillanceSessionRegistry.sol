@@ -22,20 +22,18 @@ contract SurveillanceSessionRegistry is ISurveillanceSessionRegistry {
         admin = _admin;
     }
 
-    function create(string memory _title, string memory _description, uint start_timestamp, uint end_timestamp, SessionStatus status) external onlyAdmin returns (string memory id, address addr) {
-        nextSessionId++;
-        id = Strings.toString(nextSessionId);
-        SurveillanceSession newSession = new SurveillanceSession(admin, id, _title, _description, start_timestamp, end_timestamp, status);
+    function create(string memory _id, string memory _title, string memory _description, uint start_timestamp, uint end_timestamp, SessionStatus status) external onlyAdmin returns (address addr) {
+        SurveillanceSession newSession = new SurveillanceSession(admin, _id, _title, _description, start_timestamp, end_timestamp, status);
         addr = address(newSession);
-        sessions[id] = addr;
-        sessionIds.push(id);
+        sessions[_id] = addr;
+        sessionIds.push(_id);
 
         if (status == SessionStatus.ACTIVE) {
-            activeSessionId = id;
+            activeSessionId = _id;
         }
 
-        emit SessionCreated(id, addr);
-        return (id, addr);
+        emit SessionCreated(_id, addr);
+        return addr;
     }
 
     function findById(string memory _id) external view returns (address) {

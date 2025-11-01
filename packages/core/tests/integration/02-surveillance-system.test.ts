@@ -44,8 +44,9 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 		const startTimestamp = getUnixTime(new Date());
 		const endTimestamp = startTimestamp + 3600;
 
+		const id = "1";
 		const result = await surveillanceSystem.createSurveillanceSession(
-			"1",
+			id,
 			"Test Title",
 			"Test description",
 			BigInt(startTimestamp),
@@ -53,13 +54,15 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 			"ACTIVE",
 		);
 		assert(result.isOk, "ERR_OPERATION_FAILED");
-		expect(result.value).toBe(1);
+		expect(result.value).toBe(id);
+		// TODO: add in more expect checks here
 	});
 
 	it("should get the active surveillance session", async () => {
 		const result = await surveillanceSystem.getActiveSurveillanceSession();
 		assert(result.isOk, "ERR_OPERATION_FAILED");
 		expect(result.value.id).toBe("1");
+		// TODO: add in more expect checks here
 	});
 
 	it.skip("should register an IoT device", async () => {

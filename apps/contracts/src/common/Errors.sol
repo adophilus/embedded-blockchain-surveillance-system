@@ -11,6 +11,7 @@ error StartTimeNotInFuture();
 error EndTimeBeforeStartTime();
 error SessionNotStarted();
 error SessionAlreadyEnded();
+error SessionNotActive();
 error InvalidAddress();
 error AlreadyRegistered();
 error EmptyName();

@@ -7,9 +7,9 @@ import "./ISurveillanceSessionRegistry.sol";
 
 contract SurveillanceSessionRegistry is ISurveillanceSessionRegistry {
     address public admin;
-    uint public sessionCount;
-            mapping(uint => address) public sessions;
-    mapping(address => bool) public isSession;
+    string[] public sessionIds;
+    mapping(string => address) public sessions;
+    string public activeSessionId;
 
     modifier onlyAdmin() {
         if (msg.sender != admin) revert NotAdmin();
@@ -20,20 +20,34 @@ contract SurveillanceSessionRegistry is ISurveillanceSessionRegistry {
         admin = _admin;
     }
 
-    function createSession(
-        string memory _cid
-    ) external onlyAdmin returns (uint sessionId, address sessionAddress) {
-        sessionCount++;
-        SurveillanceSession newSession = new SurveillanceSession(msg.sender, _cid);
-        sessions[sessionCount] = address(newSession);
-        isSession[address(newSession)] = true;
+    function create(string memory _title, string memory _description, uint start_timestamp, uint end_timestamp, SessionStatus status) external onlyAdmin returns (string memory id, address addr) {
+        id = string(abi.encodePacked(_title, block.timestamp));
+        SurveillanceSession newSession = new SurveillanceSession(msg.sender, _title, _description, start_timestamp, end_timestamp, status);
+        addr = address(newSession);
+        sessions[id] = addr;
+        sessionIds.push(id);
 
-        emit SessionCreated(sessionCount, address(newSession));
-        return (sessionCount, address(newSession));
+        if (status == SessionStatus.ACTIVE) {
+            activeSessionId = id;
+        }
+
+        emit SessionCreated(id, addr);
+        return (id, addr);
     }
 
-    function getSession(uint _sessionId) external view returns (address) {
-        if (_sessionId == 0 || _sessionId > sessionCount) revert InvalidId();
-        return sessions[_sessionId];
+    function findById(string memory _id) external view returns (address) {
+        return sessions[_id];
+    }
+
+    function findActiveSession() external view returns (address) {
+        return sessions[activeSessionId];
+    }
+
+    function list() external view returns (address[] memory) {
+        address[] memory sessionAddresses = new address[](sessionIds.length);
+        for (uint i = 0; i < sessionIds.length; i++) {
+            sessionAddresses[i] = sessions[sessionIds[i]];
+        }
+        return sessionAddresses;
     }
 }

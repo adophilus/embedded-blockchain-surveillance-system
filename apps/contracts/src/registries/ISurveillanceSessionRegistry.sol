@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {SurveillanceSession} from "../core/SurveillanceSession.sol";
-
 interface ISurveillanceSessionRegistry {
     event SessionCreated(string id, address addr);
     event SessionStatusUpdated(string id, SessionStatus status);

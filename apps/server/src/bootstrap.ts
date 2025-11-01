@@ -51,6 +51,7 @@ import {
 	CriminalProfileServiceImplementation,
 } from "@/features/criminal/service";
 import {
+	BlockchainCriminalProfileRepository,
 	CriminalProfileRepository,
 	KyselyCriminalProfileRepository,
 } from "@/features/criminal/repository";
@@ -118,7 +119,11 @@ import {
 import {
 	createPinataClient,
 	ThirdwebIpfsClient,
+	BlockchainSurveillanceSystem,
+	BlockchainSurveillanceSystemDeployer,
+	createWallet,
 } from "@embedded-blockchain-surveillance-system/core";
+import { foundry, polygonMumbai } from "viem/chains";
 
 export const bootstrap = async () => {
 	const logger = new Logger();
@@ -163,10 +168,22 @@ export const bootstrap = async () => {
 		logger,
 	);
 
+	// Blockchain DI
+	const chain = config.environment.DEVELOPMENT ? foundry : polygonMumbai;
+	const wallet = await createWallet(config.blockchain.privateKey, chain);
+	const deployer = new BlockchainSurveillanceSystemDeployer(wallet);
+	const surveillanceSystemAddress = await deployer.deploySystem();
+	if (surveillanceSystemAddress.isErr) {
+		throw new Error("Failed to deploy surveillance system");
+	}
+	const surveillanceSystem = new BlockchainSurveillanceSystem(
+		wallet,
+		surveillanceSystemAddress.value,
+	);
+
 	// Criminal DI
-	const criminalProfileRepository = new KyselyCriminalProfileRepository(
-		kyselyClient,
-		logger,
+	const criminalProfileRepository = new BlockchainCriminalProfileRepository(
+		surveillanceSystem,
 	);
 	const criminalProfileService =
 		await CriminalProfileServiceImplementation.init(

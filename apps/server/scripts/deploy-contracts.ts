@@ -3,10 +3,10 @@ import {
 	BlockchainSurveillanceSystemDeployer,
 	createWallet,
 } from "@embedded-blockchain-surveillance-system/core";
-import { foundry, polygon } from "viem/chains";
+import { foundry, polygonMumbai } from "viem/chains";
 
 const deploy = async () => {
-	const chain = config.environment.DEVELOPMENT ? foundry : polygon;
+	const chain = config.environment.DEVELOPMENT ? foundry : polygonMumbai;
 
 	const wallet = await createWallet(config.blockchain.privateKey, chain);
 	const deployer = new BlockchainSurveillanceSystemDeployer(wallet);

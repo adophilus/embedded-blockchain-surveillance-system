@@ -13,6 +13,13 @@ import SurveillanceSystem from "@embedded-blockchain-surveillance-system/contrac
 	type: "json",
 };
 
+import SurveillanceSession from "@embedded-blockchain-surveillance-system/contracts/SurveillanceSession.sol/SurveillanceSession.json" with {
+	type: "json",
+};
+import IoTDevice from "@embedded-blockchain-surveillance-system/contracts/IoTDevice.sol/IoTDevice.json" with {
+	type: "json",
+};
+
 export default defineConfig({
 	out: "./build/types.ts",
 	contracts: [
@@ -20,6 +27,8 @@ export default defineConfig({
 		{ name: "IoTDeviceRegistry", abi: IoTDeviceRegistry.abi as Abi },
 		{ name: "SurveillanceSessionRegistry", abi: SurveillanceSessionRegistry.abi as Abi },
 		{ name: "SurveillanceSystem", abi: SurveillanceSystem.abi as Abi },
+		{ name: "SurveillanceSession", abi: SurveillanceSession.abi as Abi },
+		{ name: "IoTDevice", abi: IoTDevice.abi as Abi },
 	],
 	plugins: [],
 });

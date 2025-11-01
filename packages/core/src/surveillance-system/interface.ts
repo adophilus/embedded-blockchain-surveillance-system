@@ -73,12 +73,8 @@ export type RegisterCriminalProfileError =
 	| TransactionFailedError
 	| ContractCallFailedError
 	| UnknownError;
-	export type GetCriminalProfileError =
+export type GetCriminalProfileError =
 	| CriminalProfileNotFoundError
-	| ContractCallFailedError
-	| UnknownError;
-
-export type ListCriminalProfilesError =
 	| ContractCallFailedError
 	| UnknownError;
 
@@ -104,9 +100,7 @@ export type GetSurveillanceSessionError =
 	| ContractCallFailedError
 	| UnknownError;
 
-export type ListCriminalProfilesError =
-	| ContractCallFailedError
-	| UnknownError;
+export type ListCriminalProfilesError = ContractCallFailedError | UnknownError;
 
 export interface SurveillanceSystem {
 	// Criminal Profile Management
@@ -119,7 +113,9 @@ export interface SurveillanceSystem {
 	getCriminalProfile(
 		criminalId: string,
 	): Promise<Result<CriminalProfileDetails, GetCriminalProfileError>>;
-	listCriminalProfiles(): Promise<Result<CriminalProfileDetails[], ListCriminalProfilesError>>;
+	listCriminalProfiles(): Promise<
+		Result<CriminalProfileDetails[], ListCriminalProfilesError>
+	>;
 
 	// IoT Device Management
 	registerIoTDevice(

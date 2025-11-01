@@ -24,7 +24,7 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 		);
 	});
 
-	it("should register a criminal profile successfully", async () => {
+	it.only("should register a criminal profile successfully", async () => {
 		const result = await surveillanceSystem.registerCriminalProfile(
 			"Test Criminal",
 			["alias1", "alias2"],

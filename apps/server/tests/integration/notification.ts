@@ -1,20 +1,18 @@
+import { NotificationService } from "@/features/notification/service";
 import "../utils";
-import { NotificationTokenService } from "@/features/notification/token/service";
 import { Container } from "@n8n/di";
 import { describe, it, assert } from "vitest";
 
 describe("Notification", () => {
-	describe("Token", () => {
-		const notificationTokenService = Container.get(NotificationTokenService);
+	const notificationService = Container.get(NotificationService);
 
-		it("should send a notification to all users", async () => {
-			const res = await notificationTokenService.broadcast({
-				title: "Test",
-				body: "This is a test",
-				tag: "test",
-			});
-
-			assert(res.isOk, "Failed to broadcast push notification");
+	it("should send a notification to all users", async () => {
+		const res = await notificationService.broadcast({
+			title: "Test",
+			body: "This is a test",
+			tag: "test",
 		});
+
+		assert(res.isOk, "Failed to broadcast push notification");
 	});
 });

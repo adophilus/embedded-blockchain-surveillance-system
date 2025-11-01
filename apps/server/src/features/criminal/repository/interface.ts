@@ -1,4 +1,4 @@
-import type { Result, Unit } from "true-myth";
+import type { Result } from "true-myth";
 import type { CriminalProfile } from "@/types";
 
 export type CreateCriminalError = "ERR_UNEXPECTED";
@@ -31,28 +31,6 @@ export abstract class CriminalProfileRepository {
 	public abstract findById(
 		id: string,
 	): Promise<Result<CriminalProfile.Selectable | null, FindCriminalByIdError>>;
-
-	/**
-	 * Update an existing criminal record.
-	 *
-	 * @param id - The ID of the criminal to update
-	 * @param changes - Partial update payload (Criminal.Updateable)
-	 * @returns Result containing the updated Criminal.Selectable on success, or an error code
-	 */
-	public abstract updateById(
-		id: string,
-		changes: CriminalProfile.Updateable,
-	): Promise<Result<CriminalProfile.Selectable, UpdateCriminalByIdError>>;
-
-	/**
-	 * Delete a criminal record by ID.
-	 *
-	 * @param id - The ID of the criminal to delete
-	 * @returns Result indicating success (Unit) or an error code
-	 */
-	public abstract deleteById(
-		id: string,
-	): Promise<Result<Unit, DeleteCriminalByIdError>>;
 
 	/**
 	 * List criminals. Implementations may support filtering/pagination in the future;

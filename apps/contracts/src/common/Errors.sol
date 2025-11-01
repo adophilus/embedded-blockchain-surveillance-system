@@ -2,7 +2,6 @@
 pragma solidity ^0.8.24;
 
 error NotAdmin();
-error EmptyName();
 error InvalidId();
 error NotInSession();
 error NotRegistered();
@@ -14,3 +13,4 @@ error SessionNotStarted();
 error SessionAlreadyEnded();
 error InvalidAddress();
 error AlreadyRegistered();
+error EmptyName();

@@ -108,6 +108,10 @@ import {
 	GetVapidPublicKeyUseCase,
 	GetVapidPublicKeyUseCaseImplementation,
 } from "@/features/notification/vapid/use-case";
+import {
+	NotificationService,
+	NotificationServiceImpl,
+} from "@/features/notification/service";
 
 export const bootstrap = async () => {
 	const logger = new Logger();
@@ -173,6 +177,10 @@ export const bootstrap = async () => {
 		notificationTokenRepository,
 		logger,
 	);
+	const notificationService = new NotificationServiceImpl(
+		notificationTokenService,
+		logger,
+	);
 	const registerNotificationTokenUseCase =
 		new RegisterNotificationTokenUseCaseImplementation(
 			notificationTokenService,
@@ -234,6 +242,7 @@ export const bootstrap = async () => {
 		criminalProfileService,
 		surveillanceSessionService,
 		surveillanceEventService,
+		notificationService,
 		logger,
 	);
 	const iotDeviceHeartbeatUseCase = new IotDeviceHeartbeatUseCaseImplementation(

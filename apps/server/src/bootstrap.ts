@@ -258,6 +258,7 @@ export const bootstrap = async () => {
 		criminalProfileService,
 		surveillanceSessionService,
 		surveillanceEventService,
+		notificationService,
 		logger,
 	);
 	const iotDeviceHeartbeatUseCase = new IotDeviceHeartbeatUseCaseImplementation(

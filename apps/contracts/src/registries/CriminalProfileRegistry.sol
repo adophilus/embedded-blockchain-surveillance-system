@@ -7,8 +7,8 @@ import "./ICriminalProfileRegistry.sol";
 
 contract CriminalProfileRegistry is ICriminalProfileRegistry {
     address public admin;
-    uint public nextCriminalId;
-            mapping(uint => CriminalProfile) public criminalProfiles;
+    uint256 public nextCriminalId;
+    mapping(string => CriminalProfile) public idToCriminalProfile;
 
     modifier onlyAdmin() {
         if (msg.sender != admin) revert NotAdmin();
@@ -20,43 +20,37 @@ contract CriminalProfileRegistry is ICriminalProfileRegistry {
         nextCriminalId = 1;
     }
 
-    function registerCriminalProfile(
-        string memory _name,
-        string[] memory _aliases,
-        string[] memory _offenses,
-        string memory _cid
-    ) external onlyAdmin returns (uint) {
+    function register(string memory _name, string[] memory _aliases, string[] memory _offenses, string memory _cid)
+        external
+        onlyAdmin
+        returns (string memory)
+    {
         if (bytes(_name).length == 0) revert EmptyName();
 
-        uint currentId = nextCriminalId;
-        criminalProfiles[currentId] = CriminalProfile(currentId, _name, _aliases, _offenses, _cid);
+        string currentId = string(nextCriminalId);
+        uint256 _created_at = block.timestamp;
+        uint256 _updated_at = block.timestamp;
+        idToCriminalProfile[currentId] =
+            CriminalProfile(currentId, _name, _aliases, _offenses, _cid, _created_at, _updated_at);
         nextCriminalId++;
         emit CriminalProfileRegistered(currentId, _name);
         return currentId;
     }
 
-    function updateCriminalProfile(
-        uint _criminalId,
-        string memory _name,
-        string[] memory _aliases,
-        string[] memory _offenses,
-        string memory _cid
-    ) external onlyAdmin {
-        if (_criminalId == 0 || _criminalId >= nextCriminalId) revert InvalidId();
-        if (bytes(_name).length == 0) revert EmptyName();
-
-        criminalProfiles[_criminalId].name = _name;
-        criminalProfiles[_criminalId].aliases = _aliases;
-        criminalProfiles[_criminalId].offenses = _offenses;
-        criminalProfiles[_criminalId].cid = _cid;
-        emit CriminalProfileUpdated(_criminalId, _name);
-    }
-
-    function getCriminalProfile(
-        uint _criminalId
-    ) external view returns (uint id, string memory name, string[] memory aliases, string[] memory offenses, string memory cid) {
-        if (_criminalId == 0 || _criminalId >= nextCriminalId) revert InvalidId();
-        CriminalProfile memory c = criminalProfiles[_criminalId];
-        return (c.id, c.name, c.aliases, c.offenses, c.cid);
+    function findById(string memory _id)
+        external
+        view
+        returns (
+            uint256 id,
+            string memory name,
+            string[] memory aliases,
+            string[] memory offenses,
+            string memory cid,
+            uint256 created_at,
+            uint256 updated_at
+        )
+    {
+        CriminalProfile memory c = idToCriminalProfile[_id];
+        return (c.id, c.name, c.aliases, c.offenses, c.cid, c.created_at, c.updated_at);
     }
 }

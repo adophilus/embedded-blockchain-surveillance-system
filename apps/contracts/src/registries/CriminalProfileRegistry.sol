@@ -53,4 +53,39 @@ contract CriminalProfileRegistry is ICriminalProfileRegistry {
         CriminalProfile memory c = idToCriminalProfile[_id];
         return (c.id, c.name, c.aliases, c.offenses, c.cid, c.created_at, c.updated_at);
     }
+
+    function list()
+        external
+        view
+        returns (
+            string[] memory ids,
+            string[] memory names,
+            string[][] memory aliases,
+            string[][] memory offenses,
+            string[] memory cids,
+            uint256[] memory created_ats,
+            uint256[] memory updated_ats
+        )
+    {
+        uint256 count = nextCriminalId - 1;
+        ids = new string[](count);
+        names = new string[](count);
+        aliases = new string[][](count);
+        offenses = new string[][](count);
+        cids = new string[](count);
+        created_ats = new uint256[](count);
+        updated_ats = new uint256[](count);
+
+        for (uint256 i = 0; i < count; i++) {
+            string memory id = Strings.toString(i + 1);
+            CriminalProfile memory c = idToCriminalProfile[id];
+            ids[i] = c.id;
+            names[i] = c.name;
+            aliases[i] = c.aliases;
+            offenses[i] = c.offenses;
+            cids[i] = c.cid;
+            created_ats[i] = c.created_at;
+            updated_ats[i] = c.updated_at;
+        }
+    }
 }

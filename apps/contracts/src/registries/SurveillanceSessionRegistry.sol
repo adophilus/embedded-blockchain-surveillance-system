@@ -23,7 +23,7 @@ contract SurveillanceSessionRegistry is ISurveillanceSessionRegistry {
 
     function create(string memory _title, string memory _description, uint start_timestamp, uint end_timestamp, SessionStatus status) external onlyAdmin returns (string memory id, address addr) {
         id = Strings.toString(block.timestamp);
-        SurveillanceSession newSession = new SurveillanceSession(msg.sender, _title, _description, start_timestamp, end_timestamp, status);
+        SurveillanceSession newSession = new SurveillanceSession(admin, id, _title, _description, start_timestamp, end_timestamp, status);
         addr = address(newSession);
         sessions[id] = addr;
         sessionIds.push(id);

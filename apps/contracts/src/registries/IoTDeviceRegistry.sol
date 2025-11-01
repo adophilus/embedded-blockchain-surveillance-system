@@ -26,7 +26,8 @@ contract IoTDeviceRegistry is IIoTDeviceRegistry {
         string memory _cid
     ) external onlyAdmin returns (uint deviceId, address deviceAddress) {
         deviceCount++;
-        IoTDevice newDevice = new IoTDevice(_deviceId, _location, _cid);
+        string memory id = string(abi.encodePacked(_deviceId, block.timestamp));
+        IoTDevice newDevice = new IoTDevice(id, _deviceId, _location, _cid, msg.sender);
         devices[deviceCount] = address(newDevice);
         isDevice[address(newDevice)] = true;
 

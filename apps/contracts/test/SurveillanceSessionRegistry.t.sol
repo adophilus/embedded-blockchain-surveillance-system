@@ -16,10 +16,9 @@ contract SurveillanceSessionRegistryTest is Test {
     function test_CreateSession() public {
         vm.startPrank(Config.ADMIN);
 
-        (uint sessionId, address sessionAddress) = registry.createSession("QmCID1");
-        assertEq(sessionId, 1);
-        assertNotEq(sessionAddress, address(0));
+        (string memory sessionId, address sessionAddress) = registry.create("Test Session", "Test Description", block.timestamp, block.timestamp + 1 hours, ISurveillanceSessionRegistry.SessionStatus.UPCOMING);
         assertEq(registry.sessionCount(), 1);
+        assertNotEq(sessionAddress, address(0));
         assertEq(registry.getSession(1), sessionAddress);
         assertTrue(registry.isSession(sessionAddress));
     }

@@ -1,10 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+struct Detection {
+    string criminalProfileId;
+}
+
 struct SurveillanceEvent {
     string id;
-    string[] criminal_profile_ids;
+    string sessionId;
+    string deviceId;
+    uint timestamp;
+    Detection[] detections;
     string cid;
-    string device_id;
-    uint created_at;
+    uint createdAt;
 }

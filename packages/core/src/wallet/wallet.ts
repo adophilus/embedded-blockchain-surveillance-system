@@ -1,7 +1,7 @@
 import type { PublicClient, WalletClient, Address } from "viem";
 import { assert } from "../lib/assert";
 
-class Wallet {
+export class Wallet {
 	constructor(
 		private readonly privateKey: string,
 		private readonly publicClient: PublicClient,
@@ -27,5 +27,3 @@ class Wallet {
 		return account.address;
 	}
 }
-
-export { Wallet };

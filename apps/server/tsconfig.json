@@ -20,16 +20,10 @@
 		"noImplicitAny": true,
 		"types": ["node"],
 		"jsx": "react-jsx",
-		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./src/*"]
 		}
 	},
 	"exclude": ["scripts/scratchpad.ts"],
-	"include": [
-		"scripts",
-		"src",
-		"tests",
-		"migrations",
-	]
+	"include": ["scripts", "src", "tests", "migrations"]
 }

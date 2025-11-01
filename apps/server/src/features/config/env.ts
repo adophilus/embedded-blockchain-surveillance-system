@@ -1,5 +1,6 @@
 import { createEnv } from "@t3-oss/env-core";
 import { z } from "zod";
+import { isAddress, isHex } from "viem";
 
 export const env = createEnv({
 	clientPrefix: "",
@@ -19,6 +20,8 @@ export const env = createEnv({
 		PINATA_API_SECRET: z.string().min(1),
 		PINATA_API_SECRET_JWT: z.string().min(1),
 		PINATA_API_GATEWAY: z.string().min(1),
+		PRIVATE_KEY: z.string().refine(isHex),
+		SYSTEM_CONTRACT_ADDRESS: z.string().refine(isAddress),
 	},
 	runtimeEnv: process.env,
 });

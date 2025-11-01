@@ -12,18 +12,25 @@ import SurveillanceSessionRegistryMetadata from "@embedded-blockchain-surveillan
 import type { Wallet } from "../wallet";
 
 const SurveillanceSystemABI = SurveillanceSystemMetadata.abi as Abi;
-const SurveillanceSystemBytecode = SurveillanceSystemMetadata.bytecode.object as Hex;
+const SurveillanceSystemBytecode = SurveillanceSystemMetadata.bytecode
+	.object as Hex;
 
 const CriminalProfileRegistryABI = CriminalProfileRegistryMetadata.abi as Abi;
-const CriminalProfileRegistryBytecode = CriminalProfileRegistryMetadata.bytecode.object as Hex;
+const CriminalProfileRegistryBytecode = CriminalProfileRegistryMetadata.bytecode
+	.object as Hex;
 
 const IoTDeviceRegistryABI = IoTDeviceRegistryMetadata.abi as Abi;
-const IoTDeviceRegistryBytecode = IoTDeviceRegistryMetadata.bytecode.object as Hex;
+const IoTDeviceRegistryBytecode = IoTDeviceRegistryMetadata.bytecode
+	.object as Hex;
 
-const SurveillanceSessionRegistryABI = SurveillanceSessionRegistryMetadata.abi as Abi;
-const SurveillanceSessionRegistryBytecode = SurveillanceSessionRegistryMetadata.bytecode.object as Hex;
+const SurveillanceSessionRegistryABI =
+	SurveillanceSessionRegistryMetadata.abi as Abi;
+const SurveillanceSessionRegistryBytecode = SurveillanceSessionRegistryMetadata
+	.bytecode.object as Hex;
 
-class BlockchainSurveillanceSystemDeployer implements SurveillanceSystemDeployer {
+class BlockchainSurveillanceSystemDeployer
+	implements SurveillanceSystemDeployer
+{
 	constructor(private readonly wallet: Wallet) {}
 
 	private async deployContract<A extends Abi>(
@@ -68,25 +75,31 @@ class BlockchainSurveillanceSystemDeployer implements SurveillanceSystemDeployer
 	private async deployCriminalProfileRegistry(): Promise<
 		Result<Address, DeployContractError>
 	> {
-		return this.deployContract(CriminalProfileRegistryABI, CriminalProfileRegistryBytecode, [
-			this.wallet.getAddress(),
-		]);
+		return this.deployContract(
+			CriminalProfileRegistryABI,
+			CriminalProfileRegistryBytecode,
+			[this.wallet.getAddress()],
+		);
 	}
 
 	private async deployIoTDeviceRegistry(): Promise<
 		Result<Address, DeployContractError>
 	> {
-		return this.deployContract(IoTDeviceRegistryABI, IoTDeviceRegistryBytecode, [
-			this.wallet.getAddress(),
-		]);
+		return this.deployContract(
+			IoTDeviceRegistryABI,
+			IoTDeviceRegistryBytecode,
+			[this.wallet.getAddress()],
+		);
 	}
 
 	private async deploySurveillanceSessionRegistry(): Promise<
 		Result<Address, DeployContractError>
 	> {
-		return this.deployContract(SurveillanceSessionRegistryABI, SurveillanceSessionRegistryBytecode, [
-			this.wallet.getAddress(),
-		]);
+		return this.deployContract(
+			SurveillanceSessionRegistryABI,
+			SurveillanceSessionRegistryBytecode,
+			[this.wallet.getAddress()],
+		);
 	}
 
 	private async deploySurveillanceSystem(
@@ -94,15 +107,20 @@ class BlockchainSurveillanceSystemDeployer implements SurveillanceSystemDeployer
 		iotDeviceRegistryAddress: Address,
 		surveillanceSessionRegistryAddress: Address,
 	): Promise<Result<Address, DeployContractError>> {
-		return this.deployContract(SurveillanceSystemABI, SurveillanceSystemBytecode, [
-			criminalProfileRegistryAddress,
-			iotDeviceRegistryAddress,
-			surveillanceSessionRegistryAddress,
-		]);
+		return this.deployContract(
+			SurveillanceSystemABI,
+			SurveillanceSystemBytecode,
+			[
+				criminalProfileRegistryAddress,
+				iotDeviceRegistryAddress,
+				surveillanceSessionRegistryAddress,
+			],
+		);
 	}
 
 	public async deploySystem(): Promise<Result<Address, DeploySystemError>> {
-		const criminalProfileRegistryResult = await this.deployCriminalProfileRegistry();
+		const criminalProfileRegistryResult =
+			await this.deployCriminalProfileRegistry();
 		if (criminalProfileRegistryResult.isErr) {
 			return Result.err(criminalProfileRegistryResult.error);
 		}
@@ -114,11 +132,13 @@ class BlockchainSurveillanceSystemDeployer implements SurveillanceSystemDeployer
 		}
 		const iotDeviceRegistryAddress = iotDeviceRegistryResult.value;
 
-		const surveillanceSessionRegistryResult = await this.deploySurveillanceSessionRegistry();
+		const surveillanceSessionRegistryResult =
+			await this.deploySurveillanceSessionRegistry();
 		if (surveillanceSessionRegistryResult.isErr) {
 			return Result.err(surveillanceSessionRegistryResult.error);
 		}
-		const surveillanceSessionRegistryAddress = surveillanceSessionRegistryResult.value;
+		const surveillanceSessionRegistryAddress =
+			surveillanceSessionRegistryResult.value;
 
 		const surveillanceSystemResult = await this.deploySurveillanceSystem(
 			criminalProfileRegistryAddress,

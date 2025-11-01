@@ -9,6 +9,7 @@
 		"script:create-first-surveillance-session": "tsx ./scripts/create-first-surveillance-session.ts",
 		"script:create-first-iot-device": "tsx ./scripts/create-first-iot-device.ts",
 		"script:generate-vapid-keys": "tsx ./scripts/generate-vapid-keys.ts",
+		"script:deploy-contracts": "tsx ./scripts/deploy-contracts.ts",
 		"script:all": "./scripts/all.sh",
 		"build": "tsc",
 		"lint": "biome lint .",
@@ -62,7 +63,8 @@
 		"tslog": "^4.9.3",
 		"tsyringe": "^4.10.0",
 		"type-fest": "^5.1.0",
-		"ulidx": "^2.4.1"
+		"ulidx": "^2.4.1",
+		"viem": "^2.38.5"
 	},
 	"devDependencies": {
 		"@effect/cli": "^0.61.8",

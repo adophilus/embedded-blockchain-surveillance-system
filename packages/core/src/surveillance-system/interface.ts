@@ -9,6 +9,18 @@ export type ContractAddresses = {
 	surveillanceSessionRegistry: Address;
 };
 
+export enum IoTDeviceStatus {
+	ACTIVE = 0,
+	INACTIVE = 1,
+	MAINTENANCE = 2,
+}
+
+export enum SessionStatus {
+	UPCOMING = 0,
+	ACTIVE = 1,
+	COMPLETED = 2,
+}
+
 // Placeholder types for data structures
 export type CriminalProfileDetails = {
 	id: string;
@@ -21,20 +33,31 @@ export type CriminalProfileDetails = {
 };
 
 export type IoTDeviceDetails = {
-	id: number;
-	deviceId: string;
+	id: string;
+	device_code: string;
 	location: string;
+	status: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
+	ip_address: string;
+	last_heartbeat: bigint;
+};
+
+export type SurveillanceEventDetails = {
+	id: string;
+	criminal_profile_ids: readonly string[];
 	cid: string;
+	device_code: string;
+	created_at: bigint;
 };
 
 export type SurveillanceSessionDetails = {
-	id: number;
-	cid: string;
-	admin: Address;
-	startTime: number;
-	endTime: number;
-	sessionStarted: boolean;
-	sessionEnded: boolean;
+	id: string;
+	title: string;
+	description: string;
+	start_timestamp: bigint;
+	end_timestamp: bigint;
+	status: "UPCOMING" | "ACTIVE" | "COMPLETED";
+	created_at: bigint;
+	updated_at: bigint;
 };
 
 // --- Individual Error Types ---
@@ -99,6 +122,16 @@ export type GetSurveillanceSessionError =
 	| SurveillanceSessionNotFoundError
 	| ContractCallFailedError
 	| UnknownError;
+export type ListSurveillanceEventsError =
+	| SurveillanceSessionNotFoundError
+	| ContractCallFailedError
+	| UnknownError;
+export type RecordSurveillanceEventError =
+	| SurveillanceSessionNotFoundError
+	| UnauthorizedError
+	| TransactionFailedError
+	| ContractCallFailedError
+	| UnknownError;
 
 export type ListCriminalProfilesError = ContractCallFailedError | UnknownError;
 
@@ -119,19 +152,36 @@ export interface SurveillanceSystem {
 
 	// IoT Device Management
 	registerIoTDevice(
-		deviceId: string,
+		device_code: string,
 		location: string,
-		cid: string,
-	): Promise<Result<number, RegisterIoTDeviceError>>;
+		status: "ACTIVE" | "INACTIVE" | "MAINTENANCE",
+		ip_address: string,
+		last_heartbeat: bigint,
+	): Promise<Result<string, RegisterIoTDeviceError>>;
 	getIoTDevice(
-		deviceId: number,
+		deviceId: string,
 	): Promise<Result<IoTDeviceDetails, GetIoTDeviceError>>;
 
 	// Surveillance Session Management
 	createSurveillanceSession(
-		cid: string,
-	): Promise<Result<number, CreateSurveillanceSessionError>>;
+		id: string,
+		title: string,
+		description: string,
+		start_timestamp: bigint,
+		end_timestamp: bigint,
+		status: "UPCOMING" | "ACTIVE" | "COMPLETED",
+	): Promise<Result<string, CreateSurveillanceSessionError>>;
 	getSurveillanceSession(
-		sessionId: number,
+		sessionId: string,
 	): Promise<Result<SurveillanceSessionDetails, GetSurveillanceSessionError>>;
+	listSurveillanceEvents(
+		sessionId: string,
+	): Promise<Result<SurveillanceEventDetails[], ListSurveillanceEventsError>>;
+	recordSurveillanceEvent(
+		sessionId: string,
+		id: string,
+		criminal_profile_ids: string[],
+		cid: string,
+		device_code: string,
+	): Promise<Result<string, RecordSurveillanceEventError>>;
 }

@@ -3,6 +3,7 @@ pragma solidity ^0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
 import {SurveillanceSessionRegistry} from "../src/registries/SurveillanceSessionRegistry.sol";
+import {ISurveillanceSessionRegistry} from "../src/registries/ISurveillanceSessionRegistry.sol";
 import {Config} from "./Config.sol";
 import "../src/common/Errors.sol";
 

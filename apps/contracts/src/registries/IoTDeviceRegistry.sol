@@ -21,13 +21,13 @@ contract IoTDeviceRegistry is IIoTDeviceRegistry {
     }
 
     function registerDevice(
-        string memory _deviceId,
+        string memory _device_code,
         string memory _location,
         string memory _cid
-    ) external onlyAdmin returns (uint deviceId, address deviceAddress) {
+    ) external onlyAdmin returns (uint device_code, address deviceAddress) {
         deviceCount++;
-        string memory id = string(abi.encodePacked(_deviceId, block.timestamp));
-        IoTDevice newDevice = new IoTDevice(id, _deviceId, _location, _cid, msg.sender);
+        string memory id = string(abi.encodePacked(_device_code, block.timestamp));
+        IoTDevice newDevice = new IoTDevice(id, _device_code, _location, _cid, msg.sender);
         devices[deviceCount] = address(newDevice);
         isDevice[address(newDevice)] = true;
 
@@ -35,8 +35,8 @@ contract IoTDeviceRegistry is IIoTDeviceRegistry {
         return (deviceCount, address(newDevice));
     }
 
-    function getDevice(uint _deviceId) external view returns (address) {
-        if (_deviceId == 0 || _deviceId > deviceCount) revert InvalidId();
-        return devices[_deviceId];
+    function getDevice(uint _device_code) external view returns (address) {
+        if (_device_code == 0 || _device_code > deviceCount) revert InvalidId();
+        return devices[_device_code];
     }
 }

@@ -15,4 +15,5 @@ interface ISurveillanceSessionRegistry {
     function findById(string memory _id) external view returns (address);
     function findActiveSession() external view returns (address);
     function list() external view returns (address[] memory);
+    function sessionCount() external view returns (uint);
 }

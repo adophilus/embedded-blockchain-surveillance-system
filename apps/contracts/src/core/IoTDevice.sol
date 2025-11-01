@@ -6,12 +6,12 @@ import "../common/Errors.sol";
 
 contract IoTDevice is IIoTDevice {
     string public id;
-    string public deviceId;
+    string public device_code;
     string public location;
     string public cid;
     address public admin;
     uint public eventCount;
-    mapping(uint => SurveillanceEvent) public events;
+    mapping(uint => SurveillanceEvent) private events;
     bool public active;
 
     modifier onlyAdmin() {
@@ -19,35 +19,37 @@ contract IoTDevice is IIoTDevice {
         _;
     }
 
-    constructor(string memory _id, string memory _deviceId, string memory _location, string memory _cid, address _admin) {
+    constructor(string memory _id, string memory _device_code, string memory _location, string memory _cid, address _admin) {
         id = _id;
-        deviceId = _deviceId;
+        device_code = _device_code;
         location = _location;
         cid = _cid;
         admin = _admin;
         active = true;
     }
 
-    function recordEvent(uint _timestamp, bool _detected) external onlyAdmin returns (uint) {
+    function recordEvent(SurveillanceEvent memory _event) external onlyAdmin returns (uint) {
         eventCount++;
-        // events[eventCount] = SurveillanceEvent(_timestamp, _detected);
-        emit EventRecorded(eventCount, _timestamp, _detected);
+        events[eventCount] = _event;
+        emit EventRecorded(eventCount, _event.timestamp, true);
         return eventCount;
     }
 
-    function getEvent(uint _eventId) external view returns (uint timestamp, bool detected) {
+    function getEvent(uint _eventId) external view returns (SurveillanceEvent memory) {
         if (_eventId == 0 || _eventId > eventCount) revert InvalidId();
-        SurveillanceEvent memory e = events[_eventId];
-        // return (e.timestamp, e.detected);
+        return events[_eventId];
     }
 
-    function getAllEvents() external view returns (uint[] memory timestamps, bool[] memory detections) {
-        timestamps = new uint[](eventCount);
-        detections = new bool[](eventCount);
+    function getAllEvents() external view returns (SurveillanceEvent[] memory) {
+        SurveillanceEvent[] memory allEvents = new SurveillanceEvent[](eventCount);
         for (uint i = 0; i < eventCount; i++) {
-            SurveillanceEvent memory e = events[i + 1];
-            // timestamps[i] = e.timestamp;
-            // detections[i] = e.detected;
+            allEvents[i] = events[i + 1];
         }
+        return allEvents;
+    }
+
+    function events(uint _eventId) external view returns (SurveillanceEvent memory) {
+        if (_eventId == 0 || _eventId > eventCount) revert InvalidId();
+        return events[_eventId];
     }
 }

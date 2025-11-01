@@ -16,8 +16,8 @@ contract IoTDeviceRegistryTest is Test {
     function test_RegisterDevice() public {
         vm.startPrank(Config.ADMIN);
 
-        (uint deviceId, address deviceAddress) = registry.registerDevice("device-001", "Location A", "QmCID1");
-        assertEq(deviceId, 1);
+        (uint device_code, address deviceAddress) = registry.registerDevice("device-001", "Location A", "QmCID1");
+        assertEq(device_code, 1);
         assertNotEq(deviceAddress, address(0));
         assertEq(registry.deviceCount(), 1);
         assertEq(registry.getDevice(1), deviceAddress);

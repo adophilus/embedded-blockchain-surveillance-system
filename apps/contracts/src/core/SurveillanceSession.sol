@@ -40,7 +40,7 @@ contract SurveillanceSession is ISurveillanceSession {
         return (id, title, description, start_timestamp, end_timestamp, status, created_at, updated_at);
     }
 
-    function recordEvent(string memory _id, string[] memory _criminal_profile_ids, string memory _cid, string memory _device_id) external returns (string memory) {
+    function recordEvent(string memory _id, string[] memory _criminal_profile_ids, string memory _cid, string memory _device_code) external returns (string memory) {
         if (status != ISurveillanceSessionRegistry.SessionStatus.ACTIVE) revert SessionNotActive();
         
         Detection[] memory detections = new Detection[](_criminal_profile_ids.length);
@@ -51,7 +51,7 @@ contract SurveillanceSession is ISurveillanceSession {
         SurveillanceEvent memory newEvent = SurveillanceEvent({
             id: _id,
             sessionId: id,
-            deviceId: _device_id,
+            device_code: _device_code,
             timestamp: block.timestamp,
             detections: detections,
             cid: _cid,

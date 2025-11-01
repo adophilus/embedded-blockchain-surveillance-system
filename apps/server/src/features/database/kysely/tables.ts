@@ -64,7 +64,7 @@ type IoTDevicesTable = TimestampModel & {
 	location: string;
 	status: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
 	ip_address: string | null;
-	last_heartbeat: string | null;
+	last_heartbeat: number | null;
 };
 
 type FilesTable = TimestampModel & {

@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 import "../core/SurveillanceSession.sol";
 import "../common/Errors.sol";
 import "./ISurveillanceSessionRegistry.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract SurveillanceSessionRegistry is ISurveillanceSessionRegistry {
     address public admin;
@@ -21,7 +22,7 @@ contract SurveillanceSessionRegistry is ISurveillanceSessionRegistry {
     }
 
     function create(string memory _title, string memory _description, uint start_timestamp, uint end_timestamp, SessionStatus status) external onlyAdmin returns (string memory id, address addr) {
-        id = string(abi.encodePacked(_title, block.timestamp));
+        id = Strings.toString(block.timestamp);
         SurveillanceSession newSession = new SurveillanceSession(msg.sender, _title, _description, start_timestamp, end_timestamp, status);
         addr = address(newSession);
         sessions[id] = addr;

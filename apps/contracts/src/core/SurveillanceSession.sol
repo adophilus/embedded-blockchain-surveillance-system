@@ -42,7 +42,6 @@ contract SurveillanceSession is ISurveillanceSession {
         if (_device == address(0)) revert InvalidAddress();
 
         associatedDevices[_device] = true;
-        emit DeviceAdded(_device);
     }
 
     function recordEvent(uint _timestamp, bool _detected) external onlyAssociatedDevice returns (uint) {

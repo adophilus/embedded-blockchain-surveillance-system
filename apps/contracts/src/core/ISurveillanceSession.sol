@@ -4,16 +4,8 @@ pragma solidity ^0.8.24;
 import {ISurveillanceSessionRegistry} from "../registries/ISurveillanceSessionRegistry.sol";
 
 interface ISurveillanceSession {
-    event DeviceAdded(address indexed device);
-    event EventRecorded(uint indexed eventId, address indexed device, uint timestamp);
+    event EventRecorded(string id);
 
-    function admin() external view returns (address);
-    function title() external view returns (string memory);
-    function description() external view returns (string memory);
-    function start_timestamp() external view returns (uint);
-    function end_timestamp() external view returns (uint);
-    function status() external view returns (ISurveillanceSessionRegistry.SessionStatus);
-
-    function addDevice(address _device) external;
-    function recordEvent(uint _deviceId, uint _timestamp, bool _detected) external returns (uint);
+    function get() external view returns (string memory id,string memory title, string memory description, uint start_timestamp, uint end_timestamp, ISurveillanceSessionRegistry.SessionStatus status, uint created_at, uint updated_at);
+    function recordEvent(string memory _id, string[] memory _criminal_profile_ids, string memory _cid, string memory _device_id) external returns (string memory id);
 }

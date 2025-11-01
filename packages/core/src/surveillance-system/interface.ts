@@ -11,11 +11,13 @@ export type ContractAddresses = {
 
 // Placeholder types for data structures
 export type CriminalProfileDetails = {
-	id: number;
+	id: string;
 	name: string;
 	aliases: readonly string[];
 	offenses: readonly string[];
 	cid: string;
+	created_at: bigint;
+	updated_at: bigint;
 };
 
 export type IoTDeviceDetails = {
@@ -71,14 +73,12 @@ export type RegisterCriminalProfileError =
 	| TransactionFailedError
 	| ContractCallFailedError
 	| UnknownError;
-export type UpdateCriminalProfileError =
-	| UnauthorizedError
+	export type GetCriminalProfileError =
 	| CriminalProfileNotFoundError
-	| TransactionFailedError
 	| ContractCallFailedError
 	| UnknownError;
-export type GetCriminalProfileError =
-	| CriminalProfileNotFoundError
+
+export type ListCriminalProfilesError =
 	| ContractCallFailedError
 	| UnknownError;
 
@@ -104,6 +104,10 @@ export type GetSurveillanceSessionError =
 	| ContractCallFailedError
 	| UnknownError;
 
+export type ListCriminalProfilesError =
+	| ContractCallFailedError
+	| UnknownError;
+
 export interface SurveillanceSystem {
 	// Criminal Profile Management
 	registerCriminalProfile(
@@ -111,17 +115,11 @@ export interface SurveillanceSystem {
 		aliases: string[],
 		offenses: string[],
 		cid: string,
-	): Promise<Result<number, RegisterCriminalProfileError>>;
-	updateCriminalProfile(
-		criminalId: number,
-		name: string,
-		aliases: string[],
-		offenses: string[],
-		cid: string,
-	): Promise<Result<void, UpdateCriminalProfileError>>;
+	): Promise<Result<string, RegisterCriminalProfileError>>;
 	getCriminalProfile(
-		criminalId: number,
+		criminalId: string,
 	): Promise<Result<CriminalProfileDetails, GetCriminalProfileError>>;
+	listCriminalProfiles(): Promise<Result<CriminalProfileDetails[], ListCriminalProfilesError>>;
 
 	// IoT Device Management
 	registerIoTDevice(

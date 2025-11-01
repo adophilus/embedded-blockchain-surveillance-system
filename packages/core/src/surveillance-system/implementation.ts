@@ -7,7 +7,6 @@ import type { Wallet } from "../wallet";
 import type {
 	SurveillanceSystem,
 	RegisterCriminalProfileError,
-	UpdateCriminalProfileError,
 	GetCriminalProfileError,
 	RegisterIoTDeviceError,
 	GetIoTDeviceError,
@@ -16,6 +15,7 @@ import type {
 	CriminalProfileDetails,
 	IoTDeviceDetails,
 	SurveillanceSessionDetails,
+	ListCriminalProfilesError,
 } from "./interface";
 
 import {
@@ -41,7 +41,7 @@ class BlockchainSurveillanceSystem implements SurveillanceSystem {
 		aliases: string[],
 		offenses: string[],
 		cid: string,
-	): Promise<Result<number, RegisterCriminalProfileError>> {
+	): Promise<Result<string, RegisterCriminalProfileError>> {
 		try {
 			const walletClient = this.wallet.getWalletClient();
 			const publicClient = this.wallet.getPublicClient();
@@ -56,7 +56,7 @@ class BlockchainSurveillanceSystem implements SurveillanceSystem {
 			const { request } = await publicClient.simulateContract({
 				address: criminalProfileRegistryAddress,
 				abi: criminalProfileRegistryAbi,
-				functionName: "registerCriminalProfile",
+				functionName: "register",
 				args: [name, aliases, offenses, cid],
 				account,
 			});
@@ -74,14 +74,14 @@ class BlockchainSurveillanceSystem implements SurveillanceSystem {
 				(log) => log.eventName === "CriminalProfileRegistered",
 			);
 
-			if (!event || event.args.criminalId === undefined) {
+			if (!event || event.args.id === undefined) {
 				return Result.err({
 					type: "TransactionFailedError",
 					message: "Could not find 'CriminalProfileRegistered' event or criminal ID argument in receipt.",
 				});
 			}
 
-			return Result.ok(Number(event.args.criminalId));
+			return Result.ok(event.args.id);
 		} catch (e: any) {
 			console.error(`Write contract call failed for registerCriminalProfile:`, e);
 			return Result.err({
@@ -91,47 +91,10 @@ class BlockchainSurveillanceSystem implements SurveillanceSystem {
 		}
 	}
 
-	public async updateCriminalProfile(
-		criminalId: number,
-		name: string,
-		aliases: string[],
-		offenses: string[],
-		cid: string,
-	): Promise<Result<void, UpdateCriminalProfileError>> {
-		try {
-			const walletClient = this.wallet.getWalletClient();
-			const publicClient = this.wallet.getPublicClient();
-			const account = this.getAccountAddress();
-
-			const criminalProfileRegistryAddress = await publicClient.readContract({
-				address: this.surveillanceSystemAddress,
-				abi: surveillanceSystemAbi,
-				functionName: "criminalProfileRegistry",
-			});
-
-			const { request } = await publicClient.simulateContract({
-				address: criminalProfileRegistryAddress,
-				abi: criminalProfileRegistryAbi,
-				functionName: "updateCriminalProfile",
-				args: [BigInt(criminalId), name, aliases, offenses, cid],
-				account,
-			});
-
-			const hash = await walletClient.writeContract(request);
-			await publicClient.waitForTransactionReceipt({ hash });
-
-			return Result.ok(undefined);
-		} catch (e: any) {
-			console.error(`Write contract call failed for updateCriminalProfile:`, e);
-			return Result.err({
-				type: "TransactionFailedError",
-				message: "Contract call/execution failed",
-			});
-		}
-	}
+	
 
 	public async getCriminalProfile(
-		criminalId: number,
+		criminalId: string,
 	): Promise<Result<CriminalProfileDetails, GetCriminalProfileError>> {
 		try {
 			const publicClient = this.wallet.getPublicClient();
@@ -145,14 +108,54 @@ class BlockchainSurveillanceSystem implements SurveillanceSystem {
 			const data = await publicClient.readContract({
 				address: criminalProfileRegistryAddress,
 				abi: criminalProfileRegistryAbi,
-				functionName: "getCriminalProfile",
-				args: [BigInt(criminalId)],
+				functionName: "findById",
+				args: [criminalId],
 			});
 
-			const [id, name, aliases, offenses, cid] = data;
-			return Result.ok({ id: Number(id), name, aliases, offenses, cid });
+			const [id, name, aliases, offenses, cid, created_at, updated_at] = data;
+			return Result.ok({ id, name, aliases, offenses, cid, created_at, updated_at });
 		} catch (e: any) {
 			console.error(`Read contract call failed for getCriminalProfile:`, e);
+			return Result.err({
+				type: "ContractCallFailedError",
+				message: "Contract call/execution failed",
+			});
+		}
+	}
+
+	public async listCriminalProfiles(): Promise<Result<CriminalProfileDetails[], ListCriminalProfilesError>> {
+		try {
+			const publicClient = this.wallet.getPublicClient();
+
+			const criminalProfileRegistryAddress = await publicClient.readContract({
+				address: this.surveillanceSystemAddress,
+				abi: surveillanceSystemAbi,
+				functionName: "criminalProfileRegistry",
+			});
+
+			const data = await publicClient.readContract({
+				address: criminalProfileRegistryAddress,
+				abi: criminalProfileRegistryAbi,
+				functionName: "list",
+			});
+
+			const [ids, names, aliases, offenses, cids, created_ats, updated_ats] = data;
+			const profiles: CriminalProfileDetails[] = [];
+			for (let i = 0; i < ids.length; i++) {
+				profiles.push({
+					id: ids[i],
+					name: names[i],
+					aliases: aliases[i],
+					offenses: offenses[i],
+					cid: cids[i],
+					created_at: created_ats[i],
+					updated_at: updated_ats[i],
+				});
+			}
+
+			return Result.ok(profiles);
+		} catch (e: any) {
+			console.error(`Read contract call failed for listCriminalProfiles:`, e);
 			return Result.err({
 				type: "ContractCallFailedError",
 				message: "Contract call/execution failed",

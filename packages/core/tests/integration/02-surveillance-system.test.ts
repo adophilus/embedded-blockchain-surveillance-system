@@ -32,9 +32,9 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 			"QmTestCID",
 		);
 		assert(result.isOk, "ERR_OPERATION_FAILED");
-		expect(result.value).toBe(1);
+		expect(result.value).toBe("1");
 
-		const profile = await surveillanceSystem.getCriminalProfile(1);
+		const profile = await surveillanceSystem.getCriminalProfile("1");
 		assert(profile.isOk, "ERR_OPERATION_FAILED");
 		expect(profile.value.name).toBe("Test Criminal");
 	});

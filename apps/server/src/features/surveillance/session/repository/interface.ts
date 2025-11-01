@@ -4,7 +4,7 @@ import type { Result, Unit } from "true-myth";
 export type CreateSurveillanceSessionError = "ERR_UNEXPECTED";
 export type FindSurveillanceSessionByIdError = "ERR_UNEXPECTED";
 export type ListSurveillanceSessionsError = "ERR_UNEXPECTED";
-export type UpdateSurveillanceSessionByIdError =
+export type UpdateSurveillanceSessionStatusByIdError =
 	| "ERR_NOT_FOUND"
 	| "ERR_UNEXPECTED";
 export type DeleteSurveillanceSessionByIdError =
@@ -58,22 +58,13 @@ export abstract class SurveillanceSessionRepository {
 	>;
 
 	/**
-	 * Update a surveillance session
+	 * Update a surveillance session status by id
 	 * @param id - The ID of the surveillance session to update
-	 * @param updates - The updates to apply
+	 * @param status - The status to update to
 	 * @returns Result indicating success or failure
 	 */
-	public abstract updateById(
+	public abstract updateStatusById(
 		id: string,
-		updates: SurveillanceSession.Updateable,
-	): Promise<Result<Unit, UpdateSurveillanceSessionByIdError>>;
-
-	/**
-	 * Delete a surveillance session
-	 * @param id - The ID of the surveillance session to delete
-	 * @returns Result indicating success or failure
-	 */
-	public abstract deleteById(
-		id: string,
-	): Promise<Result<Unit, DeleteSurveillanceSessionByIdError>>;
+		status: SurveillanceSession.Insertable["status"],
+	): Promise<Result<Unit, UpdateSurveillanceSessionStatusByIdError>>;
 }

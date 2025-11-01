@@ -4,13 +4,12 @@ import type {
 	CreateSurveillanceSessionError,
 	FindSurveillanceSessionByIdError,
 	ListSurveillanceSessionsError,
-	UpdateSurveillanceSessionByIdError,
+	UpdateSurveillanceSessionStatusByIdError,
 	DeleteSurveillanceSessionByIdError,
 } from "./interface";
 import type { KyselyClient } from "@/features/database/kysely";
 import type { Logger } from "@/features/logger";
 import type { SurveillanceSession } from "@/types";
-import { ulid } from "ulidx";
 
 export class KyselySurveillanceSessionRepository
 	implements SurveillanceSessionRepository
@@ -97,14 +96,14 @@ export class KyselySurveillanceSessionRepository
 		}
 	}
 
-	public async updateById(
+	public async updateStatusById(
 		id: string,
-		payload: SurveillanceSession.Updateable,
-	): Promise<Result<Unit, UpdateSurveillanceSessionByIdError>> {
+		status: SurveillanceSession.Insertable["status"],
+	): Promise<Result<Unit, UpdateSurveillanceSessionStatusByIdError>> {
 		try {
 			const update = await this.db
 				.updateTable("surveillance_sessions")
-				.set(payload)
+				.set({ status })
 				.where("id", "=", id)
 				.returningAll()
 				.executeTakeFirst();
@@ -116,27 +115,6 @@ export class KyselySurveillanceSessionRepository
 			return Result.ok(Unit);
 		} catch (error) {
 			this.logger.error("Failed to update surveillance session", error);
-			return Result.err("ERR_UNEXPECTED");
-		}
-	}
-
-	public async deleteById(
-		id: string,
-	): Promise<Result<Unit, DeleteSurveillanceSessionByIdError>> {
-		try {
-			const deleted = await this.db
-				.deleteFrom("surveillance_sessions")
-				.where("id", "=", id)
-				.returningAll()
-				.executeTakeFirst();
-
-			if (!deleted) {
-				return Result.err("ERR_NOT_FOUND");
-			}
-
-			return Result.ok(Unit);
-		} catch (error) {
-			this.logger.error("Failed to delete surveillance session", error);
 			return Result.err("ERR_UNEXPECTED");
 		}
 	}

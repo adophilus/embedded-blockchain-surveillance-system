@@ -2,10 +2,12 @@
 pragma solidity ^0.8.24;
 
 interface ISurveillanceSessionRegistry {
-    event SessionCreated(uint indexed sessionId, address sessionAddress);
+    event SessionCreated(string id, address addr);
+    enum SessionStatus {
+        UPCOMING,
+        ACTIVE,
+        COMPLETED
+    }
 
-    function sessionCount() external view returns (uint);
-    function isSession(address) external view returns (bool);
-
-    function createSession(string memory _cid) external returns (uint sessionId, address sessionAddress);
+    function create(string memory _title, string memory _description, uint start_timestamp, uint end_timestamp,SessionStatus status) external returns (string memory id, address addr);
 }

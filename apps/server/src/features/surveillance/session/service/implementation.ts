@@ -4,8 +4,6 @@ import type {
 	CreateSessionError,
 	GetSessionError,
 	ListSessionsError,
-	UpdateSessionError,
-	DeleteSessionError,
 	GetActiveSessionError,
 	RotateActiveSessionError,
 } from "./interface";
@@ -65,9 +63,9 @@ export class SurveillanceSessionServiceImpl
 			return Result.err("ERR_NO_ACTIVE_SESSION");
 		}
 
-		const deactivateResult = await this.repository.updateById(
+		const deactivateResult = await this.repository.updateStatusById(
 			findActiveSessionResult.value.id,
-			{ status: "COMPLETED" },
+			"COMPLETED",
 		);
 
 		if (deactivateResult.isErr) {
@@ -150,46 +148,5 @@ export class SurveillanceSessionServiceImpl
 		}
 
 		return Result.ok(result.value);
-	}
-
-	public async update(
-		id: string,
-		updates: SurveillanceSession.Updateable,
-	): Promise<Result<Unit, UpdateSessionError>> {
-		const result = await this.repository.updateById(id, updates);
-
-		if (result.isErr) {
-			switch (result.error) {
-				case "ERR_NOT_FOUND":
-					return Result.err("ERR_SESSION_NOT_FOUND");
-				default:
-					this.logger.error(
-						"Unexpected error updating surveillance session",
-						result.error,
-					);
-					return Result.err("ERR_UNEXPECTED");
-			}
-		}
-
-		return Result.ok(Unit);
-	}
-
-	public async delete(id: string): Promise<Result<Unit, DeleteSessionError>> {
-		const result = await this.repository.deleteById(id);
-
-		if (result.isErr) {
-			switch (result.error) {
-				case "ERR_NOT_FOUND":
-					return Result.err("ERR_SESSION_NOT_FOUND");
-				default:
-					this.logger.error(
-						"Unexpected error deleting surveillance session",
-						result.error,
-					);
-					return Result.err("ERR_UNEXPECTED");
-			}
-		}
-
-		return Result.ok(Unit);
 	}
 }

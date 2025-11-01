@@ -1,11 +1,9 @@
-import { Result, Unit } from "true-myth";
+import { Result } from "true-myth";
 import type {
 	SurveillanceEventRepository,
 	CreateSurveillanceEventError,
 	FindSurveillanceEventByIdError,
 	ListSurveillanceEventsError,
-	UpdateSurveillanceEventByIdError,
-	DeleteSurveillanceEventByIdError,
 } from "./interface";
 import type { KyselyClient } from "@/features/database/kysely";
 import type { Logger } from "@/features/logger";
@@ -81,82 +79,6 @@ export class KyselySurveillanceEventRepository
 			return Result.ok(events);
 		} catch (error) {
 			this.logger.error("Failed to list surveillance events", error);
-			return Result.err("ERR_UNEXPECTED");
-		}
-	}
-
-	// public async updateById(
-	// 	id: string,
-	// 	updates: SurveillanceEvent.Updateable,
-	// ): Promise<Result<Unit, UpdateSurveillanceEventByIdError>> {
-	// 	try {
-	// 		const eventExists = await this.db
-	// 			.selectFrom("surveillance_events")
-	// 			.select("id")
-	// 			.where("id", "=", id)
-	// 			.executeTakeFirst();
-	//
-	// 		if (!eventExists) {
-	// 			return Result.err("ERR_UNEXPECTED");
-	// 		}
-	//
-	// 		const updateData: Record<string, any> = {};
-	//
-	// 		if (updates.timestamp !== undefined) {
-	// 			updateData.timestamp = updates.timestamp;
-	// 		}
-	//
-	// 		if (updates.detected !== undefined) {
-	// 			updateData.detected = updates.detected ? 1 : 0;
-	// 		}
-	//
-	// 		if (updates.media_source !== undefined) {
-	// 			updateData.media_source = updates.media_source;
-	// 		}
-	//
-	// 		if (updates.media_id !== undefined) {
-	// 			updateData.media_id = updates.media_id;
-	// 		}
-	//
-	// 		if (updates.media_url !== undefined) {
-	// 			updateData.media_url = updates.media_url;
-	// 		}
-	//
-	// 		await this.db
-	// 			.updateTable("surveillance_events")
-	// 			.set(updateData)
-	// 			.where("id", "=", id)
-	// 			.execute();
-	//
-	// 		return Result.ok(Unit);
-	// 	} catch (error) {
-	// 		this.logger.error("Failed to update surveillance event", error);
-	// 		return Result.err("ERR_UNEXPECTED");
-	// 	}
-	// }
-
-	public async deleteById(
-		id: string,
-	): Promise<Result<Unit, DeleteSurveillanceEventByIdError>> {
-		try {
-			const eventExists = await this.db
-				.selectFrom("surveillance_events")
-				.select("id")
-				.where("id", "=", id)
-				.executeTakeFirst();
-
-			if (!eventExists) {
-				return Result.err("ERR_UNEXPECTED");
-			}
-
-			await this.db
-				.deleteFrom("surveillance_events")
-				.where("id", "=", id)
-				.execute();
-
-			return Result.ok(Unit);
-		} catch (error) {
-			this.logger.error("Failed to delete surveillance event", error);
 			return Result.err("ERR_UNEXPECTED");
 		}
 	}

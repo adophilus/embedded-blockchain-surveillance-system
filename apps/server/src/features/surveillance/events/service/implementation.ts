@@ -4,8 +4,6 @@ import type {
 	CreateEventError,
 	GetEventError,
 	ListEventsError,
-	UpdateEventError,
-	DeleteEventError,
 } from "./interface";
 import type { SurveillanceEventRepository } from "../repository";
 import type { Logger } from "@/features/logger";
@@ -43,16 +41,5 @@ export class SurveillanceEventServiceImpl implements SurveillanceEventService {
 		Result<SurveillanceEvent.Selectable[], ListEventsError>
 	> {
 		return this.repository.list();
-	}
-
-	// public async update(
-	// 	id: string,
-	// 	updates: SurveillanceEvent.Updateable,
-	// ): Promise<Result<Unit, UpdateEventError>> {
-	// 	return this.repository.updateById(id, updates);
-	// }
-
-	public async delete(id: string): Promise<Result<Unit, DeleteEventError>> {
-		return this.repository.deleteById(id);
 	}
 }

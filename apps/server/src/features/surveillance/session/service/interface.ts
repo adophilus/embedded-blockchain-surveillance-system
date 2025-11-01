@@ -4,8 +4,9 @@ import type { SurveillanceSession } from "@/types";
 export type CreateSessionError = "ERR_UNEXPECTED";
 export type GetSessionError = "ERR_SESSION_NOT_FOUND" | "ERR_UNEXPECTED";
 export type ListSessionsError = "ERR_UNEXPECTED";
-export type UpdateSessionError = "ERR_SESSION_NOT_FOUND" | "ERR_UNEXPECTED";
-export type DeleteSessionError = "ERR_SESSION_NOT_FOUND" | "ERR_UNEXPECTED";
+export type UpdateSessionStatusByIdError =
+	| "ERR_SESSION_NOT_FOUND"
+	| "ERR_UNEXPECTED";
 export type GetActiveSessionError = "ERR_NO_ACTIVE_SESSION" | "ERR_UNEXPECTED";
 export type RotateActiveSessionError =
 	| "ERR_NO_ACTIVE_SESSION"
@@ -45,24 +46,6 @@ export abstract class SurveillanceSessionService {
 	public abstract list(): Promise<
 		Result<SurveillanceSession.Selectable[], ListSessionsError>
 	>;
-
-	/**
-	 * Update a surveillance session
-	 * @param id - The ID of the surveillance session to update
-	 * @param updates - The updates to apply
-	 * @returns Result indicating success or failure
-	 */
-	public abstract update(
-		id: string,
-		updates: SurveillanceSession.Updateable,
-	): Promise<Result<Unit, UpdateSessionError>>;
-
-	/**
-	 * Delete a surveillance session
-	 * @param id - The ID of the surveillance session to delete
-	 * @returns Result indicating success or failure
-	 */
-	public abstract delete(id: string): Promise<Result<Unit, DeleteSessionError>>;
 
 	/**
 	 * Rotate the active surveillance session

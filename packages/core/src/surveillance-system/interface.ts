@@ -174,6 +174,7 @@ export interface SurveillanceSystem {
 	getSurveillanceSession(
 		sessionId: string,
 	): Promise<Result<SurveillanceSessionDetails, GetSurveillanceSessionError>>;
+	getActiveSurveillanceSession(): Promise<Result<SurveillanceSessionDetails, GetSurveillanceSessionError>>;
 	listSurveillanceEvents(
 		sessionId: string,
 	): Promise<Result<SurveillanceEventDetails[], ListSurveillanceEventsError>>;

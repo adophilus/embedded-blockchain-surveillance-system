@@ -4,6 +4,7 @@ import { BlockchainSurveillanceSystem } from "../../src/surveillance-system/impl
 import { deployerWallet } from "../setup";
 import { assert } from "../../src/lib/assert";
 import type { Address } from "viem";
+import { getUnixTime } from "date-fns";
 
 describe("BlockchainSurveillanceSystem Integration Tests", () => {
 	let deployer: BlockchainSurveillanceSystemDeployer;
@@ -24,7 +25,7 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 		);
 	});
 
-	it("should register a criminal profile successfully", async () => {
+	it("should register a criminal profile", async () => {
 		const result = await surveillanceSystem.registerCriminalProfile(
 			"Test Criminal",
 			["alias1", "alias2"],
@@ -39,13 +40,29 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 		expect(profile.value.name).toBe("Test Criminal");
 	});
 
-	it("should create a surveillance session successfully", async () => {
-		const result = await surveillanceSystem.createSurveillanceSession("QmCID1");
+	it("should create a surveillance session", async () => {
+		const startTimestamp = getUnixTime(new Date());
+		const endTimestamp = startTimestamp + 3600;
+
+		const result = await surveillanceSystem.createSurveillanceSession(
+			"1",
+			"Test Title",
+			"Test description",
+			BigInt(startTimestamp),
+			BigInt(endTimestamp),
+			"ACTIVE",
+		);
 		assert(result.isOk, "ERR_OPERATION_FAILED");
 		expect(result.value).toBe(1);
 	});
 
-	it.skip("should register an IoT device successfully", async () => {
+	it("should get the active surveillance session", async () => {
+		const result = await surveillanceSystem.getActiveSurveillanceSession();
+		assert(result.isOk, "ERR_OPERATION_FAILED");
+		expect(result.value.id).toBe("1");
+	});
+
+	it.skip("should register an IoT device", async () => {
 		const result = await surveillanceSystem.registerIoTDevice(
 			"device-001",
 			"Location A",

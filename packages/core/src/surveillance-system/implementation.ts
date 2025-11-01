@@ -397,6 +397,148 @@ class BlockchainSurveillanceSystem implements SurveillanceSystem {
 		}
 	}
 
+	public async getActiveSurveillanceSession(): Promise<Result<SurveillanceSessionDetails, GetSurveillanceSessionError>> {
+		try {
+			const publicClient = this.wallet.getPublicClient();
+
+			const surveillanceSessionRegistryAddress = await publicClient.readContract({
+				address: this.surveillanceSystemAddress,
+				abi: surveillanceSystemAbi,
+				functionName: "surveillanceSessionRegistry",
+			});
+
+			const sessionAddress = await publicClient.readContract({
+				address: surveillanceSessionRegistryAddress,
+				abi: surveillanceSessionRegistryAbi,
+				functionName: "findActiveSession",
+			});
+
+			const [id, title, description, start_timestamp, end_timestamp, status, created_at, updated_at] = await publicClient.readContract({
+				address: sessionAddress,
+				abi: surveillanceSessionAbi,
+				functionName: "get",
+			});
+
+			const statusString = Object.keys(SessionStatus).find(key => SessionStatus[key] === status) as "UPCOMING" | "ACTIVE" | "COMPLETED";
+
+			return Result.ok({
+				id,
+				title,
+				description,
+				start_timestamp,
+				end_timestamp,
+				status: statusString,
+				created_at,
+				updated_at,
+			});
+		} catch (e: any) {
+			console.error(
+				`Read contract call failed for getActiveSurveillanceSession:`,
+				e,
+			);
+			return Result.err({
+				type: "ContractCallFailedError",
+				message: "Contract call/execution failed",
+			});
+		}
+	}
+
+	public async listSurveillanceEvents(
+		sessionId: string,
+	): Promise<Result<SurveillanceEventDetails[], ListSurveillanceEventsError>> {
+		try {
+			const publicClient = this.wallet.getPublicClient();
+
+			const surveillanceSessionRegistryAddress = await publicClient.readContract({
+				address: this.surveillanceSystemAddress,
+				abi: surveillanceSystemAbi,
+				functionName: "surveillanceSessionRegistry",
+			});
+
+			const sessionAddress = await publicClient.readContract({
+				address: surveillanceSessionRegistryAddress,
+				abi: surveillanceSessionRegistryAbi,
+				functionName: "findById",
+				args: [sessionId],
+			});
+
+			const [ids, criminal_profile_ids, cids, device_codes, created_ats] = await publicClient.readContract({
+				address: sessionAddress,
+				abi: surveillanceSessionAbi,
+				functionName: "listEvents",
+			});
+
+			const events: SurveillanceEventDetails[] = [];
+			for (let i = 0; i < ids.length; i++) {
+				const event: SurveillanceEventDetails = {
+					id: ids[i]!,
+					criminal_profile_ids: criminal_profile_ids[i]!,
+					cid: cids[i]!,
+					device_code: device_codes[i]!,
+					created_at: created_ats[i]!,
+				};
+				events.push(event);
+			}
+
+			return Result.ok(events);
+		} catch (e: any) {
+			console.error(`Read contract call failed for listSurveillanceEvents:`, e);
+			return Result.err({
+				type: "ContractCallFailedError",
+				message: "Contract call/execution failed",
+			});
+		}
+	}
+
+	public async recordSurveillanceEvent(
+		sessionId: string,
+		id: string,
+		criminal_profile_ids: string[],
+		cid: string,
+		device_code: string,
+	): Promise<Result<string, RecordSurveillanceEventError>> {
+		try {
+			const walletClient = this.wallet.getWalletClient();
+			const publicClient = this.wallet.getPublicClient();
+			const account = this.getAccountAddress();
+
+			const surveillanceSessionRegistryAddress = await publicClient.readContract({
+				address: this.surveillanceSystemAddress,
+				abi: surveillanceSystemAbi,
+				functionName: "surveillanceSessionRegistry",
+			});
+
+			const sessionAddress = await publicClient.readContract({
+				address: surveillanceSessionRegistryAddress,
+				abi: surveillanceSessionRegistryAbi,
+				functionName: "findById",
+				args: [sessionId],
+			});
+
+			const { request } = await publicClient.simulateContract({
+				address: sessionAddress,
+				abi: surveillanceSessionAbi,
+				functionName: "recordEvent",
+				args: [id, criminal_profile_ids, cid, device_code],
+				account,
+			});
+
+			const hash = await walletClient.writeContract(request);
+			await publicClient.waitForTransactionReceipt({ hash });
+
+			return Result.ok(id);
+		} catch (e: any) {
+			console.error(`Write contract call failed for recordSurveillanceEvent:`, e);
+			return Result.err({
+				type: "ContractCallFailedError",
+				message: "Contract call/execution failed",
+			});
+		}
+	}
+}
+
+export { BlockchainSurveillanceSystem };
+
 	public async listSurveillanceEvents(
 		sessionId: string,
 	): Promise<Result<SurveillanceEventDetails[], ListSurveillanceEventsError>> {

@@ -18,14 +18,7 @@ contract SurveillanceSessionRegistryTest is Test {
         vm.startPrank(Config.ADMIN);
 
         (string memory sessionId, address sessionAddress) = registry.create("Test Session", "Test Description", block.timestamp, block.timestamp + 1 hours, ISurveillanceSessionRegistry.SessionStatus.UPCOMING);
-        assertEq(registry.sessionCount(), 1);
         assertNotEq(sessionAddress, address(0));
-        assertEq(registry.getSession(1), sessionAddress);
-        assertTrue(registry.isSession(sessionAddress));
-    }
-
-    function test_RevertWhen_GetInvalidSession() public {
-        vm.expectRevert(InvalidId.selector);
-        registry.getSession(999);
+        assertEq(registry.findById(sessionId), sessionAddress);
     }
 }

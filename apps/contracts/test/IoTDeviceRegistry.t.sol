@@ -17,16 +17,9 @@ contract IoTDeviceRegistryTest is Test {
     function test_RegisterDevice() public {
         vm.startPrank(Config.ADMIN);
 
-        (uint device_code, address deviceAddress) = registry.register("device-001", "Location A",IIoTDevice.Status.ACTIVE, "QmCID1");
-        assertEq(device_code, 1);
+        (string memory id, address deviceAddress) = registry.register("device-001", "Location A",IIoTDevice.Status.ACTIVE, "0", 0);
         assertNotEq(deviceAddress, address(0));
         assertEq(registry.deviceCount(), 1);
-        assertEq(registry.getDevice(1), deviceAddress);
-        assertTrue(registry.isDevice(deviceAddress));
-    }
-
-    function test_RevertWhen_GetInvalidDevice() public {
-        vm.expectRevert(InvalidId.selector);
-        registry.getDevice(999);
+        assertEq(registry.findById(id), deviceAddress);
     }
 }

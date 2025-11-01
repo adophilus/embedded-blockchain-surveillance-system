@@ -55,23 +55,28 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 		);
 		assert(result.isOk, "ERR_OPERATION_FAILED");
 		expect(result.value).toBe(id);
-		// TODO: add in more expect checks here
 	});
 
 	it("should get the active surveillance session", async () => {
 		const result = await surveillanceSystem.getActiveSurveillanceSession();
 		assert(result.isOk, "ERR_OPERATION_FAILED");
 		expect(result.value.id).toBe("1");
-		// TODO: add in more expect checks here
+		expect(result.value.title).toBe("Test Title");
+		expect(result.value.description).toBe("Test description");
+		expect(result.value.status).toBe("ACTIVE");
 	});
 
+	// test case deliberately being skipped for now
 	it.skip("should register an IoT device", async () => {
+		const id = "device-001";
 		const result = await surveillanceSystem.registerIoTDevice(
-			"device-001",
+			id,
 			"Location A",
-			"QmCID1",
+			"ACTIVE",
+			"192.168.1.1",
+			BigInt(getUnixTime(new Date())),
 		);
 		assert(result.isOk, "ERR_OPERATION_FAILED");
-		expect(result.value).toBe(1);
+		expect(result.value).toBe(id);
 	});
 });

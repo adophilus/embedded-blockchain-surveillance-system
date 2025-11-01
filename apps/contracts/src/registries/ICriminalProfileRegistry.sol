@@ -12,7 +12,7 @@ interface ICriminalProfileRegistry {
         external
         returns (string memory name);
 
-    function findById(uint256 _id)
+    function findById(string memory _id)
         external
         returns (
             string memory id,

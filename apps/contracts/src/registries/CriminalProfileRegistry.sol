@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 import "../core/CriminalProfile.sol";
 import "../common/Errors.sol";
 import "./ICriminalProfileRegistry.sol";
+import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 
 contract CriminalProfileRegistry is ICriminalProfileRegistry {
     address public admin;
@@ -27,21 +28,20 @@ contract CriminalProfileRegistry is ICriminalProfileRegistry {
     {
         if (bytes(_name).length == 0) revert EmptyName();
 
-        string currentId = string(nextCriminalId);
+        string memory id = Strings.toString(nextCriminalId);
         uint256 _created_at = block.timestamp;
         uint256 _updated_at = block.timestamp;
-        idToCriminalProfile[currentId] =
-            CriminalProfile(currentId, _name, _aliases, _offenses, _cid, _created_at, _updated_at);
+        idToCriminalProfile[id] = CriminalProfile(id, _name, _aliases, _offenses, _cid, _created_at, _updated_at);
         nextCriminalId++;
-        emit CriminalProfileRegistered(currentId, _name);
-        return currentId;
+        emit CriminalProfileRegistered(id, _name);
+        return id;
     }
 
     function findById(string memory _id)
         external
         view
         returns (
-            uint256 id,
+            string memory id,
             string memory name,
             string[] memory aliases,
             string[] memory offenses,

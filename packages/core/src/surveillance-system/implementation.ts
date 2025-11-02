@@ -475,6 +475,99 @@ class BlockchainSurveillanceSystem implements SurveillanceSystem {
 			});
 		}
 	}
+
+	public async listSurveillanceSessions(): Promise<Result<SurveillanceSessionDetails[], ListSurveillanceSessionsError>> {
+		try {
+			const publicClient = this.wallet.getPublicClient();
+
+			const surveillanceSessionRegistryAddress = await publicClient.readContract({
+				address: this.surveillanceSystemAddress,
+				abi: surveillanceSystemAbi,
+				functionName: "surveillanceSessionRegistry",
+			});
+
+			const sessionAddresses = await publicClient.readContract({
+				address: surveillanceSessionRegistryAddress,
+				abi: surveillanceSessionRegistryAbi,
+				functionName: "list",
+			});
+
+			const sessions: SurveillanceSessionDetails[] = [];
+			for (const sessionAddress of sessionAddresses) {
+				const [id, title, description, start_timestamp, end_timestamp, status, created_at, updated_at] = await publicClient.readContract({
+					address: sessionAddress,
+					abi: surveillanceSessionAbi,
+					functionName: "get",
+				});
+
+				const statusString = Object.keys(SessionStatus).find(key => SessionStatus[key] === status) as "UPCOMING" | "ACTIVE" | "COMPLETED";
+
+				sessions.push({
+					id,
+					title,
+					description,
+					start_timestamp,
+					end_timestamp,
+					status: statusString,
+					created_at,
+					updated_at,
+				});
+			}
+
+			return Result.ok(sessions);
+		} catch (e: any) {
+			console.error(`Read contract call failed for listSurveillanceSessions:`, e);
+			return Result.err({
+				type: "ContractCallFailedError",
+				message: "Contract call/execution failed",
+			});
+		}
+	}
+
+	public async updateSurveillanceSessionStatus(
+		sessionId: string,
+		status: "UPCOMING" | "ACTIVE" | "COMPLETED",
+	): Promise<Result<void, UpdateSurveillanceSessionStatusError>> {
+		try {
+			const walletClient = this.wallet.getWalletClient();
+			const publicClient = this.wallet.getPublicClient();
+			const account = this.getAccountAddress();
+
+			const surveillanceSessionRegistryAddress = await publicClient.readContract({
+				address: this.surveillanceSystemAddress,
+				abi: surveillanceSystemAbi,
+				functionName: "surveillanceSessionRegistry",
+			});
+
+			const statusEnum = {
+				UPCOMING: SessionStatus.UPCOMING,
+				ACTIVE: SessionStatus.ACTIVE,
+				COMPLETED: SessionStatus.COMPLETED,
+			}[status];
+
+			const { request } = await publicClient.simulateContract({
+				address: surveillanceSessionRegistryAddress,
+				abi: surveillanceSessionRegistryAbi,
+				functionName: "updateSessionStatus",
+				args: [sessionId, statusEnum],
+				account,
+			});
+
+			const hash = await walletClient.writeContract(request);
+			await publicClient.waitForTransactionReceipt({ hash });
+
+			return Result.ok(undefined);
+		} catch (e: any) {
+			console.error(
+				`Write contract call failed for updateSurveillanceSessionStatus:`,
+				e,
+			);
+			return Result.err({
+				type: "TransactionFailedError",
+				message: "Contract call/execution failed",
+			});
+		}
+	}
 }
 
 export { BlockchainSurveillanceSystem };

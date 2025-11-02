@@ -133,6 +133,22 @@ export type RecordSurveillanceEventError =
 	| ContractCallFailedError
 	| UnknownError;
 
+export type ListSurveillanceSessionsError = ContractCallFailedError | UnknownError;
+
+export type UpdateSurveillanceSessionStatusError =
+	| SurveillanceSessionNotFoundError
+	| UnauthorizedError
+	| TransactionFailedError
+	| ContractCallFailedError
+	| UnknownError;
+
+export type UpdateSurveillanceSessionStatusError =
+	| SurveillanceSessionNotFoundError
+	| UnauthorizedError
+	| TransactionFailedError
+	| ContractCallFailedError
+	| UnknownError;
+
 export type ListCriminalProfilesError = ContractCallFailedError | UnknownError;
 
 export interface SurveillanceSystem {
@@ -185,4 +201,9 @@ export interface SurveillanceSystem {
 		cid: string,
 		device_code: string,
 	): Promise<Result<string, RecordSurveillanceEventError>>;
+	listSurveillanceSessions(): Promise<Result<SurveillanceSessionDetails[], ListSurveillanceSessionsError>>;
+	updateSurveillanceSessionStatus(
+		sessionId: string,
+		status: "UPCOMING" | "ACTIVE" | "COMPLETED",
+	): Promise<Result<void, UpdateSurveillanceSessionStatusError>>;
 }

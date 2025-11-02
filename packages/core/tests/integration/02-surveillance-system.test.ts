@@ -66,6 +66,25 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 		expect(result.value.status).toBe("ACTIVE");
 	});
 
+	it("should list surveillance sessions", async () => {
+		const result = await surveillanceSystem.listSurveillanceSessions();
+		assert(result.isOk, "ERR_OPERATION_FAILED");
+		expect(result.value.length).toBe(1);
+		expect(result.value[0]?.id).toBe(surveillanceSessionId);
+	});
+
+	it("should update a surveillance session status", async () => {
+		const result = await surveillanceSystem.updateSurveillanceSessionStatus(
+			surveillanceSessionId,
+			"COMPLETED",
+		);
+		assert(result.isOk, "ERR_OPERATION_FAILED");
+
+		const session = await surveillanceSystem.getSurveillanceSession(surveillanceSessionId);
+		assert(session.isOk, "ERR_OPERATION_FAILED");
+		expect(session.value.status).toBe("COMPLETED");
+	});
+
 	// test case deliberately being skipped for now
 	it.skip("should register an IoT device", async () => {
 		const id = "device-001";

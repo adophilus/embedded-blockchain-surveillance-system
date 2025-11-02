@@ -76,4 +76,9 @@ contract SurveillanceSession is ISurveillanceSession {
         emit EventRecorded(_id);
         return _id;
     }
+
+    function updateStatus(ISurveillanceSessionRegistry.SessionStatus _status) external onlyAdmin {
+        status = _status;
+        updated_at = block.timestamp;
+    }
 }

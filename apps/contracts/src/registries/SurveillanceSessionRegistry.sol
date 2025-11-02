@@ -51,4 +51,11 @@ contract SurveillanceSessionRegistry is ISurveillanceSessionRegistry {
         }
         return sessionAddresses;
     }
+
+    function updateSessionStatus(string memory _id, SessionStatus status) external onlyAdmin {
+        address sessionAddress = sessions[_id];
+        if (sessionAddress == address(0)) revert InvalidId();
+        SurveillanceSession(sessionAddress).updateStatus(status);
+        emit SessionStatusUpdated(_id, status);
+    }
 }

@@ -41,6 +41,7 @@ import {
 import {
 	SurveillanceSessionRepository,
 	KyselySurveillanceSessionRepository,
+	BlockchainSurveillanceSessionRepository,
 } from "@/features/surveillance/session/repository";
 import {
 	SurveillanceEventRepository,
@@ -147,9 +148,8 @@ export const bootstrap = async () => {
 	const authUserRepository = new KyselyAuthUserRepository(kyselyClient, logger);
 
 	// Surveillance DI
-	const surveillanceSessionRepository = new KyselySurveillanceSessionRepository(
-		kyselyClient,
-		logger,
+	const surveillanceSessionRepository = new BlockchainSurveillanceSessionRepository(
+		surveillanceSystem,
 	);
 	const surveillanceEventRepository = new KyselySurveillanceEventRepository(
 		kyselyClient,

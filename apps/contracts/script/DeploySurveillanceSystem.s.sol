@@ -1,6 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
+import {Script, console} from "forge-std/Script.sol";
+import {SurveillanceSystem} from "../src/SurveillanceSystem.sol";
+import {CriminalProfileRegistry} from "../src/registries/CriminalProfileRegistry.sol";
+import {IoTDeviceRegistry} from "../src/registries/IoTDeviceRegistry.sol";
+import {SurveillanceSessionRegistry} from "../src/registries/SurveillanceSessionRegistry.sol";
 import {SurveillanceEventRegistry} from "../src/registries/SurveillanceEventRegistry.sol";
 
 contract DeploySurveillanceSystemScript is Script {

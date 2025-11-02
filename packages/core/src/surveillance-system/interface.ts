@@ -190,12 +190,16 @@ export interface SurveillanceSystem {
 	): Promise<Result<void, UpdateSurveillanceSessionStatusError>>;
 
 	// Surveillance Event Management
-	recordSurveillanceEvent(
+		recordSurveillanceEvent(
+		sessionId: string,
 		id: string,
 		criminal_profile_ids: string[],
 		cid: string,
 		device_code: string,
 	): Promise<Result<string, RecordSurveillanceEventError>>;
+	listSurveillanceEvents(
+		sessionId: string,
+	): Promise<Result<SurveillanceEventDetails[], ListSurveillanceEventsError>>;
 	getSurveillanceEvent(
 		eventId: string,
 	): Promise<Result<SurveillanceEventDetails, GetSurveillanceEventError>>;

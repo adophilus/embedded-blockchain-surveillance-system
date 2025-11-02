@@ -19,7 +19,7 @@ contract SurveillanceEventRegistry is ISurveillanceEventRegistry {
         admin = _admin;
     }
 
-    function recordEvent(string memory _id, string[] memory _criminal_profile_ids, string memory _cid, string memory _device_code) external onlyAdmin returns (string memory id) {
+    function recordEvent(string memory _id, string memory _sessionId, string[] memory _criminal_profile_ids, string memory _cid, string memory _device_code) external onlyAdmin returns (string memory id) {
         SurveillanceEvent memory newEvent = SurveillanceEvent({
             id: _id,
             criminal_profile_ids: _criminal_profile_ids,
@@ -29,9 +29,7 @@ contract SurveillanceEventRegistry is ISurveillanceEventRegistry {
         });
 
         events[_id] = newEvent;
-        // This is a placeholder for how you might associate events with a session.
-        // You would need to pass in the session ID to this function.
-        // sessionEvents[sessionId].push(_id);
+        sessionEvents[_sessionId].push(_id);
 
         emit EventRecorded(_id);
         return _id;

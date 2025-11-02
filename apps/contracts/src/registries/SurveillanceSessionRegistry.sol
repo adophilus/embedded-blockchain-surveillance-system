@@ -9,9 +9,8 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 contract SurveillanceSessionRegistry is ISurveillanceSessionRegistry {
     address public admin;
     string[] public sessionIds;
-    mapping(string => address) public sessions;
+    mapping(string => SurveillanceSession) public sessions;
     string public activeSessionId;
-    uint nextSessionId;
 
     modifier onlyAdmin() {
         if (msg.sender != admin) revert NotAdmin();
@@ -22,33 +21,37 @@ contract SurveillanceSessionRegistry is ISurveillanceSessionRegistry {
         admin = _admin;
     }
 
-    function create(string memory _id, string memory _title, string memory _description, uint start_timestamp, uint end_timestamp, SessionStatus status) external onlyAdmin returns (address addr) {
-        SurveillanceSession newSession = new SurveillanceSession(admin, _id, _title, _description, start_timestamp, end_timestamp, status);
-        addr = address(newSession);
-        sessions[_id] = addr;
+    function create(string memory _id, string memory _title, string memory _description, uint start_timestamp, uint end_timestamp, SessionStatus status) external onlyAdmin returns (string memory id) {
+        sessions[_id] = SurveillanceSession(admin, _id, _title, _description, start_timestamp, end_timestamp, status, block.timestamp, block.timestamp);
         sessionIds.push(_id);
 
         if (status == SessionStatus.ACTIVE) {
             activeSessionId = _id;
         }
 
-        emit SessionCreated(_id, addr);
-        return addr;
+        emit SessionCreated(_id);
+        return _id;
     }
 
-    function findById(string memory _id) external view returns (address) {
+    function findById(string memory _id) external view returns (SurveillanceSession memory) {
         return sessions[_id];
     }
 
-    function findActiveSession() external view returns (address) {
+    function findActiveSession() external view returns (SurveillanceSession memory) {
         return sessions[activeSessionId];
     }
 
-    function list() external view returns (address[] memory) {
-        address[] memory sessionAddresses = new address[](sessionIds.length);
+    function list() external view returns (SurveillanceSession[] memory) {
+        SurveillanceSession[] memory allSessions = new SurveillanceSession[](sessionIds.length);
         for (uint i = 0; i < sessionIds.length; i++) {
-            sessionAddresses[i] = sessions[sessionIds[i]];
+            allSessions[i] = sessions[sessionIds[i]];
         }
-        return sessionAddresses;
+        return allSessions;
+    }
+
+    function updateStatus(string memory _id, SessionStatus _status) external onlyAdmin {
+        sessions[_id].status = _status;
+        sessions[_id].updated_at = block.timestamp;
+        emit SessionStatusUpdated(_id, _status);
     }
 }

@@ -12,6 +12,7 @@ contract SurveillanceSystem is ISurveillanceSystem {
     address public criminalProfileRegistry;
     address public iotDeviceRegistry;
     address public surveillanceSessionRegistry;
+    address public surveillanceEventRegistry;
 
     modifier onlyAdmin() {
         if (msg.sender != admin) revert NotAdmin();
@@ -21,11 +22,13 @@ contract SurveillanceSystem is ISurveillanceSystem {
     constructor(
         address _criminalProfileRegistry,
         address _iotDeviceRegistry,
-        address _surveillanceSessionRegistry
+        address _surveillanceSessionRegistry,
+        address _surveillanceEventRegistry
     ) {
         admin = msg.sender;
         criminalProfileRegistry = _criminalProfileRegistry;
         iotDeviceRegistry = _iotDeviceRegistry;
         surveillanceSessionRegistry = _surveillanceSessionRegistry;
+        surveillanceEventRegistry = _surveillanceEventRegistry;
     }
 }

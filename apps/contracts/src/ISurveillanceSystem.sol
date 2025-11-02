@@ -6,4 +6,5 @@ interface ISurveillanceSystem {
     function criminalProfileRegistry() external view returns (address);
     function iotDeviceRegistry() external view returns (address);
     function surveillanceSessionRegistry() external view returns (address);
+    function surveillanceEventRegistry() external view returns (address);
 }

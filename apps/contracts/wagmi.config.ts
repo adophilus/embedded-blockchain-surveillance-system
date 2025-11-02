@@ -12,8 +12,7 @@ import SurveillanceSessionRegistry from "@embedded-blockchain-surveillance-syste
 import SurveillanceSystem from "@embedded-blockchain-surveillance-system/contracts/SurveillanceSystem.sol/SurveillanceSystem.json" with {
 	type: "json",
 };
-
-import SurveillanceSession from "@embedded-blockchain-surveillance-system/contracts/SurveillanceSession.sol/SurveillanceSession.json" with {
+import SurveillanceEventRegistry from "@embedded-blockchain-surveillance-system/contracts/SurveillanceEventRegistry.sol/SurveillanceEventRegistry.json" with {
 	type: "json",
 };
 import IoTDevice from "@embedded-blockchain-surveillance-system/contracts/IoTDevice.sol/IoTDevice.json" with {
@@ -27,7 +26,7 @@ export default defineConfig({
 		{ name: "IoTDeviceRegistry", abi: IoTDeviceRegistry.abi as Abi },
 		{ name: "SurveillanceSessionRegistry", abi: SurveillanceSessionRegistry.abi as Abi },
 		{ name: "SurveillanceSystem", abi: SurveillanceSystem.abi as Abi },
-		{ name: "SurveillanceSession", abi: SurveillanceSession.abi as Abi },
+		{ name: "SurveillanceEventRegistry", abi: SurveillanceEventRegistry.abi as Abi },
 		{ name: "IoTDevice", abi: IoTDevice.abi as Abi },
 	],
 	plugins: [],

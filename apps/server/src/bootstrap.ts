@@ -119,7 +119,7 @@ import {
 } from "@/features/notification/vapid/use-case";
 import {
 	createPinataClient,
-	ThirdwebIpfsClient,
+	PinataIpfsClient,
 	BlockchainSurveillanceSystem,
 	BlockchainSurveillanceSystemDeployer,
 	createWallet,
@@ -133,24 +133,35 @@ export const bootstrap = async () => {
 	const kyselyClient = await createKyselySqliteClient();
 
 	// IPFS DI
-	const thirdwebClient = await createPinataClient(
+	const pinataIpfsClient = createPinataClient(
 		config.ipfs.pinata.apiSecretJwt,
 		config.ipfs.pinata.apiGateway,
 	);
-	const ipfsClient = new ThirdwebIpfsClient(thirdwebClient);
+	const ipfsClient = new PinataIpfsClient(pinataIpfsClient);
+
+	// Blockchain DI
+	const chain = config.environment.DEVELOPMENT ? foundry : polygonMumbai;
+	const wallet = await createWallet(config.blockchain.privateKey, chain);
+	const deployer = new BlockchainSurveillanceSystemDeployer(wallet);
+	const surveillanceSystemAddress = await deployer.deploySystem();
+	if (surveillanceSystemAddress.isErr) {
+		throw new Error("Failed to deploy surveillance system");
+	}
+	const surveillanceSystem = new BlockchainSurveillanceSystem(
+		wallet,
+		surveillanceSystemAddress.value,
+	);
 
 	// Storage DI
 	const storageRepository = new KyselyStorageRepository(kyselyClient, logger);
 	const storageService = new IpfsStorageService(ipfsClient);
-	// const storageService = new SqliteStorageService(storageRepository);
 
 	// Auth DI
 	const authUserRepository = new KyselyAuthUserRepository(kyselyClient, logger);
 
 	// Surveillance DI
-	const surveillanceSessionRepository = new BlockchainSurveillanceSessionRepository(
-		surveillanceSystem,
-	);
+	const surveillanceSessionRepository =
+		new BlockchainSurveillanceSessionRepository(surveillanceSystem);
 	const surveillanceEventRepository = new KyselySurveillanceEventRepository(
 		kyselyClient,
 		logger,
@@ -166,19 +177,6 @@ export const bootstrap = async () => {
 	const surveillanceSessionCronJob = new SurveillanceSessionCronJob(
 		surveillanceSessionService,
 		logger,
-	);
-
-	// Blockchain DI
-	const chain = config.environment.DEVELOPMENT ? foundry : polygonMumbai;
-	const wallet = await createWallet(config.blockchain.privateKey, chain);
-	const deployer = new BlockchainSurveillanceSystemDeployer(wallet);
-	const surveillanceSystemAddress = await deployer.deploySystem();
-	if (surveillanceSystemAddress.isErr) {
-		throw new Error("Failed to deploy surveillance system");
-	}
-	const surveillanceSystem = new BlockchainSurveillanceSystem(
-		wallet,
-		surveillanceSystemAddress.value,
 	);
 
 	// Criminal DI

@@ -14,7 +14,7 @@ export const createPinataClient = (jwt: string, gateway: string): PinataSDK => {
 	});
 };
 
-class PinataIpfsClient implements IpfsClient {
+export class PinataIpfsClient implements IpfsClient {
 	constructor(private readonly client: PinataSDK) {}
 
 	public async uploadFile(
@@ -45,4 +45,3 @@ class PinataIpfsClient implements IpfsClient {
 	}
 }
 
-export { PinataIpfsClient as ThirdwebIpfsClient };

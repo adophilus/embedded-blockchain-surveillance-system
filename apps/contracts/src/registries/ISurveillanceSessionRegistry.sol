@@ -3,7 +3,6 @@ pragma solidity ^0.8.24;
 
 interface ISurveillanceSessionRegistry {
     event SessionCreated(string id, address addr);
-    event SessionStatusUpdated(string id, SessionStatus status);
 
     enum SessionStatus {
         UPCOMING,

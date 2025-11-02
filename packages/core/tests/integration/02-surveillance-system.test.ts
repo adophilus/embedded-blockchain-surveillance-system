@@ -10,7 +10,7 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 	let deployer: BlockchainSurveillanceSystemDeployer;
 	let surveillanceSystem: BlockchainSurveillanceSystem;
 	let surveillanceSystemContractAddress: Address;
-	let surveillanceSessionId = "1"
+	let surveillanceSessionId = "1";
 
 	beforeAll(async () => {
 		// Deploy all contracts
@@ -69,8 +69,9 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 	it("should list surveillance sessions", async () => {
 		const result = await surveillanceSystem.listSurveillanceSessions();
 		assert(result.isOk, "ERR_OPERATION_FAILED");
-		expect(result.value.length).toBe(1);
-		expect(result.value[0]?.id).toBe(surveillanceSessionId);
+		assert(result.value.length === 1);
+		const firstSession = result.value[0]!;
+		expect(firstSession.id).toBe(surveillanceSessionId);
 	});
 
 	it("should update a surveillance session status", async () => {
@@ -80,9 +81,17 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 		);
 		assert(result.isOk, "ERR_OPERATION_FAILED");
 
-		const session = await surveillanceSystem.getSurveillanceSession(surveillanceSessionId);
+		const session = await surveillanceSystem.getSurveillanceSession(
+			surveillanceSessionId,
+		);
 		assert(session.isOk, "ERR_OPERATION_FAILED");
 		expect(session.value.status).toBe("COMPLETED");
+	});
+
+	it("should get a surveillance session by id", async () => {
+		const result = await surveillanceSystem.getSurveillanceSession(surveillanceSessionId);
+		assert(result.isOk, "ERR_OPERATION_FAILED");
+		expect(result.value.id).toBe(surveillanceSessionId);
 	});
 
 	// test case deliberately being skipped for now

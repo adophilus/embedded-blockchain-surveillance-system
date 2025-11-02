@@ -16,6 +16,7 @@ import type {
 	ListSurveillanceEventsError,
 	RecordSurveillanceEventError,
 	SurveillanceEventDetails,
+    UpdateSurveillanceSessionStatusError,
 } from "./interface";
 
 import { IoTDeviceStatus, SessionStatus } from "./interface";
@@ -539,6 +540,13 @@ class BlockchainSurveillanceSystem implements SurveillanceSystem {
 				functionName: "surveillanceSessionRegistry",
 			});
 
+			const sessionAddress = await publicClient.readContract({
+				address: surveillanceSessionRegistryAddress,
+				abi: surveillanceSessionRegistryAbi,
+				functionName: "findById",
+				args: [sessionId],
+			});
+
 			const statusEnum = {
 				UPCOMING: SessionStatus.UPCOMING,
 				ACTIVE: SessionStatus.ACTIVE,
@@ -546,10 +554,10 @@ class BlockchainSurveillanceSystem implements SurveillanceSystem {
 			}[status];
 
 			const { request } = await publicClient.simulateContract({
-				address: surveillanceSessionRegistryAddress,
-				abi: surveillanceSessionRegistryAbi,
-				functionName: "updateSessionStatus",
-				args: [sessionId, statusEnum],
+				address: sessionAddress,
+				abi: surveillanceSessionAbi,
+				functionName: "updateStatus",
+				args: [statusEnum],
 				account,
 			});
 

@@ -46,6 +46,7 @@ import {
 import {
 	SurveillanceEventRepository,
 	KyselySurveillanceEventRepository,
+	BlockchainSurveillanceEventRepository,
 } from "@/features/surveillance/events/repository";
 import {
 	CriminalProfileService,

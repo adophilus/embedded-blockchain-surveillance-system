@@ -10,6 +10,7 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 	let deployer: BlockchainSurveillanceSystemDeployer;
 	let surveillanceSystem: BlockchainSurveillanceSystem;
 	let surveillanceSystemContractAddress: Address;
+	let surveillanceSessionId = "1"
 
 	beforeAll(async () => {
 		// Deploy all contracts
@@ -44,9 +45,8 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 		const startTimestamp = getUnixTime(new Date());
 		const endTimestamp = startTimestamp + 3600;
 
-		const id = "1";
 		const result = await surveillanceSystem.createSurveillanceSession(
-			id,
+			surveillanceSessionId,
 			"Test Title",
 			"Test description",
 			BigInt(startTimestamp),
@@ -54,13 +54,13 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 			"ACTIVE",
 		);
 		assert(result.isOk, "ERR_OPERATION_FAILED");
-		expect(result.value).toBe(id);
+		expect(result.value).toBe(surveillanceSessionId);
 	});
 
 	it("should get the active surveillance session", async () => {
 		const result = await surveillanceSystem.getActiveSurveillanceSession();
 		assert(result.isOk, "ERR_OPERATION_FAILED");
-		expect(result.value.id).toBe("1");
+		expect(result.value.id).toBe(surveillanceSessionId);
 		expect(result.value.title).toBe("Test Title");
 		expect(result.value.description).toBe("Test description");
 		expect(result.value.status).toBe("ACTIVE");

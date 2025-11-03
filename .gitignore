@@ -157,3 +157,4 @@ dist
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 prompt.md
+tasks.md

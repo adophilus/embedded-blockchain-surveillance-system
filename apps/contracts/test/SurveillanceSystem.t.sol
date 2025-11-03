@@ -17,7 +17,9 @@ contract SurveillanceSystemTest is Test {
     function setUp() public {
         criminalProfileRegistry = new CriminalProfileRegistry(Config.ADMIN);
         iotDeviceRegistry = new IoTDeviceRegistry(Config.ADMIN);
-        surveillanceSessionRegistry = new SurveillanceSessionRegistry(Config.ADMIN);
+        surveillanceSessionRegistry = new SurveillanceSessionRegistry(
+            Config.ADMIN
+        );
 
         surveillanceSystem = new SurveillanceSystem(
             address(criminalProfileRegistry),
@@ -27,8 +29,17 @@ contract SurveillanceSystemTest is Test {
     }
 
     function test_SystemCreation() public view {
-        assertEq(surveillanceSystem.criminalProfileRegistry(), address(criminalProfileRegistry));
-        assertEq(surveillanceSystem.iotDeviceRegistry(), address(iotDeviceRegistry));
-        assertEq(surveillanceSystem.surveillanceSessionRegistry(), address(surveillanceSessionRegistry));
+        assertEq(
+            surveillanceSystem.criminalProfileRegistry(),
+            address(criminalProfileRegistry)
+        );
+        assertEq(
+            surveillanceSystem.iotDeviceRegistry(),
+            address(iotDeviceRegistry)
+        );
+        assertEq(
+            surveillanceSystem.surveillanceSessionRegistry(),
+            address(surveillanceSessionRegistry)
+        );
     }
 }

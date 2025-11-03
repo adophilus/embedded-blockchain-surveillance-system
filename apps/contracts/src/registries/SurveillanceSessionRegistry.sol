@@ -21,11 +21,11 @@ contract SurveillanceSessionRegistry is ISurveillanceSessionRegistry {
         admin = _admin;
     }
 
-    function create(string memory _id, string memory _title, string memory _description, uint start_timestamp, uint end_timestamp, SessionStatus status) external onlyAdmin returns (string memory id) {
-        sessions[_id] = SurveillanceSession(admin, _id, _title, _description, start_timestamp, end_timestamp, status, block.timestamp, block.timestamp);
+    function create(string memory _id, string memory _title, string memory _description, uint start_timestamp, uint end_timestamp, Status status) external onlyAdmin returns (string memory id) {
+        sessions[_id] = SurveillanceSession(_id, _title, _description, start_timestamp, end_timestamp, status, block.timestamp, block.timestamp);
         sessionIds.push(_id);
 
-        if (status == SessionStatus.ACTIVE) {
+        if (status == Status.ACTIVE) {
             activeSessionId = _id;
         }
 
@@ -49,7 +49,7 @@ contract SurveillanceSessionRegistry is ISurveillanceSessionRegistry {
         return allSessions;
     }
 
-    function updateStatus(string memory _id, SessionStatus _status) external onlyAdmin {
+    function updateStatus(string memory _id, Status _status) external onlyAdmin {
         sessions[_id].status = _status;
         sessions[_id].updated_at = block.timestamp;
         emit SessionStatusUpdated(_id, _status);

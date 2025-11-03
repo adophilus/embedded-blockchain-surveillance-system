@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {Test, console} from "forge-std/Test.sol";
+import {Status} from "../src/core/SurveillanceSession.sol";
 import {SurveillanceSessionRegistry} from "../src/registries/SurveillanceSessionRegistry.sol";
 import {ISurveillanceSessionRegistry} from "../src/registries/ISurveillanceSessionRegistry.sol";
 import {Config} from "./Config.sol";
@@ -18,8 +19,14 @@ contract SurveillanceSessionRegistryTest is Test {
         vm.startPrank(Config.ADMIN);
 
         string memory id = "1";
-        address sessionAddress = registry.create(id, "Test Session", "Test Description", block.timestamp, block.timestamp + 1 hours, ISurveillanceSessionRegistry.SessionStatus.UPCOMING);
-        assertNotEq(sessionAddress, address(0));
-        assertEq(registry.findById(id), sessionAddress);
+        string memory sessionId = registry.create(
+            id,
+            "Test Session",
+            "Test Description",
+            block.timestamp,
+            block.timestamp + 1 hours,
+            Status.UPCOMING
+        );
+        assertEq(registry.findById(id).id, sessionId);
     }
 }

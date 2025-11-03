@@ -56,7 +56,7 @@ import {
 } from "@/features/iot/service";
 import {
 	IotDeviceRepository,
-	KyselyIotDeviceRepository,
+	BlockchainIotDeviceRepository,
 } from "@/features/iot/repository";
 import {
 	ListSurveillanceSessionsUseCase,
@@ -115,7 +115,6 @@ import {
 	createPinataClient,
 	PinataIpfsClient,
 	BlockchainSurveillanceSystem,
-	BlockchainSurveillanceSystemDeployer,
 	createWallet,
 } from "@embedded-blockchain-surveillance-system/core";
 import { foundry, polygonMumbai } from "viem/chains";
@@ -136,14 +135,9 @@ export const bootstrap = async () => {
 	// Blockchain DI
 	const chain = config.environment.DEVELOPMENT ? foundry : polygonMumbai;
 	const wallet = await createWallet(config.blockchain.privateKey, chain);
-	const deployer = new BlockchainSurveillanceSystemDeployer(wallet);
-	const surveillanceSystemAddress = await deployer.deploySystem();
-	if (surveillanceSystemAddress.isErr) {
-		throw new Error("Failed to deploy surveillance system");
-	}
 	const surveillanceSystem = new BlockchainSurveillanceSystem(
 		wallet,
-		surveillanceSystemAddress.value,
+		config.blockchain.systemContractAddress,
 	);
 
 	// Storage DI
@@ -212,8 +206,8 @@ export const bootstrap = async () => {
 	const getVapidPublicKeyUseCase = new GetVapidPublicKeyUseCaseImplementation();
 
 	// IoT DI
-	const iotDeviceRepository = new KyselyIotDeviceRepository(
-		kyselyClient,
+	const iotDeviceRepository = new BlockchainIotDeviceRepository(
+		surveillanceSystem,
 		logger,
 	);
 	const iotDeviceService = new IotDeviceServiceImplementation(

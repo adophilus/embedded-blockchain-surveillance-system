@@ -3,7 +3,6 @@
 
 forge script \
   ./script/DeploySurveillanceSystem.s.sol \
-
   --broadcast \
   --private-key $PRIVATE_KEY \
   --optimize \

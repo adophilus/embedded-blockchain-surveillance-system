@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {Script, console} from "forge-std/Script.sol";
+import {console} from "forge-std/console.sol";
 import {SurveillanceSystem} from "../src/SurveillanceSystem.sol";
 import {CriminalProfileRegistry} from "../src/registries/CriminalProfileRegistry.sol";
 import {IoTDeviceRegistry} from "../src/registries/IoTDeviceRegistry.sol";
@@ -27,6 +28,8 @@ contract DeploySurveillanceSystemScript is Script {
             address(surveillanceSessionRegistry),
             address(surveillanceEventRegistry)
         );
+
+        console.log(address(surveillanceSystem));
 
         vm.stopBroadcast();
     }

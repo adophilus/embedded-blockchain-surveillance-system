@@ -371,26 +371,11 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 					functionName: "surveillanceSessionRegistry",
 				});
 
-			const sessionAddress = await publicClient.readContract({
+			const [id, title, description, start_timestamp, end_timestamp, status, created_at, updated_at] = await publicClient.readContract({
 				address: surveillanceSessionRegistryAddress,
 				abi: surveillanceSessionRegistryAbi,
 				functionName: "findById",
 				args: [sessionId],
-			});
-
-			const [
-				id,
-				title,
-				description,
-				start_timestamp,
-				end_timestamp,
-				status,
-				created_at,
-				updated_at,
-			] = await publicClient.readContract({
-				address: sessionAddress,
-				abi: surveillanceSessionAbi,
-				functionName: "get",
 			});
 
 			const statusString = Object.keys(SessionStatus).find(
@@ -429,25 +414,10 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 					functionName: "surveillanceSessionRegistry",
 				});
 
-			const sessionAddress = await publicClient.readContract({
+			const session = await publicClient.readContract({
 				address: surveillanceSessionRegistryAddress,
 				abi: surveillanceSessionRegistryAbi,
 				functionName: "findActiveSession",
-			});
-
-			const [
-				id,
-				title,
-				description,
-				start_timestamp,
-				end_timestamp,
-				status,
-				created_at,
-				updated_at,
-			] = await publicClient.readContract({
-				address: sessionAddress,
-				abi: surveillanceSessionAbi,
-				functionName: "get",
 			});
 
 			const statusString = Object.keys(SessionStatus).find(
@@ -455,14 +425,8 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 			) as "UPCOMING" | "ACTIVE" | "COMPLETED";
 
 			return Result.ok({
-				id,
-				title,
-				description,
-				start_timestamp,
-				end_timestamp,
+				...session,
 				status: statusString,
-				created_at,
-				updated_at,
 			});
 		} catch (e: any) {
 			console.error(

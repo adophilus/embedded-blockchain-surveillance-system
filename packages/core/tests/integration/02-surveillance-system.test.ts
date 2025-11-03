@@ -134,7 +134,6 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 			"192.168.1.1",
 			BigInt(getUnixTime(new Date())),
 		);
-		console.log(result)
 		assert(result.isOk, "ERR_OPERATION_FAILED");
 		expect(result.value).toBe(id);
 	});

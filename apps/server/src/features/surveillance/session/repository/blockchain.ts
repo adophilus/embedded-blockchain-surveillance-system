@@ -14,9 +14,8 @@ import type {
 import type { Writable } from "type-fest";
 
 export class BlockchainSurveillanceSessionRepository
-	implements SurveillanceSessionRepository
-{
-	constructor(private readonly system: BlockchainSurveillanceSystem) {}
+	implements SurveillanceSessionRepository {
+	constructor(private readonly system: BlockchainSurveillanceSystem) { }
 
 	public async create(
 		payload: SurveillanceSession.Insertable,
@@ -51,11 +50,13 @@ export class BlockchainSurveillanceSessionRepository
 	private normalizeSurveillanceSessionDetails(
 		surveillanceSessionDetails: SurveillanceSessionDetails,
 	): SurveillanceSession.Selectable {
-		const { created_at, updated_at, ..._rest } = surveillanceSessionDetails;
-		const rest = _rest as Writable<SurveillanceSession.Selectable>;
+		const { start_timestamp, end_timestamp, created_at, updated_at, ..._rest } =
+			surveillanceSessionDetails;
 
 		const surveillanceSession: SurveillanceSession.Selectable = {
-			...rest,
+			..._rest,
+			start_timestamp: Number(start_timestamp),
+			end_timestamp: Number(end_timestamp),
 			created_at: Number(created_at),
 			updated_at: Number(updated_at),
 		};
@@ -66,7 +67,10 @@ export class BlockchainSurveillanceSessionRepository
 	public async findById(
 		id: string,
 	): Promise<
-		Result<SurveillanceSession.Selectable | null, FindSurveillanceSessionByIdError>
+		Result<
+			SurveillanceSession.Selectable | null,
+			FindSurveillanceSessionByIdError
+		>
 	> {
 		const result = await this.system.getSurveillanceSession(id);
 		if (result.isErr) {
@@ -81,7 +85,10 @@ export class BlockchainSurveillanceSessionRepository
 	}
 
 	public async findActiveSession(): Promise<
-		Result<SurveillanceSession.Selectable | null, FindSurveillanceSessionByIdError>
+		Result<
+			SurveillanceSession.Selectable | null,
+			FindSurveillanceSessionByIdError
+		>
 	> {
 		const result = await this.system.getActiveSurveillanceSession();
 		if (result.isErr) {
@@ -114,7 +121,10 @@ export class BlockchainSurveillanceSessionRepository
 		id: string,
 		status: SurveillanceSession.Insertable["status"],
 	): Promise<Result<Unit, UpdateSurveillanceSessionStatusByIdError>> {
-		const result = await this.system.updateSurveillanceSessionStatus(id, status);
+		const result = await this.system.updateSurveillanceSessionStatus(
+			id,
+			status,
+		);
 		if (result.isErr) {
 			return Result.err("ERR_UNEXPECTED");
 		}

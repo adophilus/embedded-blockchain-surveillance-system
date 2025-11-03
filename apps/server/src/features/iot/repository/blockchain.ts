@@ -9,12 +9,13 @@ import type {
 import type { Logger } from "@/features/logger";
 import type { IotDevice } from "@/types";
 import { BlockchainSurveillanceSystem } from "@embedded-blockchain-surveillance-system/core/surveillance-system/implementation";
+import { fromUnixTime, getUnixTime } from "date-fns";
 
 export class BlockchainIotDeviceRepository implements IotDeviceRepository {
 	constructor(
 		private readonly blockchainSurveillanceSystem: BlockchainSurveillanceSystem,
 		private readonly logger: Logger,
-	) {}
+	) { }
 
 	public async create(
 		payload: IotDevice.Insertable,
@@ -25,12 +26,15 @@ export class BlockchainIotDeviceRepository implements IotDeviceRepository {
 				payload.device_code,
 				payload.location,
 				payload.status,
-				payload.ip_address,
-				BigInt(payload.last_heartbeat.getTime() / 1000), // Convert Date to Unix timestamp
+				payload.ip_address ?? "",
+				BigInt(payload.last_heartbeat ?? 0),
 			);
 
 			if (result.isErr) {
-				this.logger.error("Failed to create IoT device on blockchain", result.error);
+				this.logger.error(
+					"Failed to create IoT device on blockchain",
+					result.error,
+				);
 				return Result.err("ERR_UNEXPECTED");
 			}
 
@@ -46,7 +50,10 @@ export class BlockchainIotDeviceRepository implements IotDeviceRepository {
 			const result = await this.blockchainSurveillanceSystem.listIoTDevices();
 
 			if (result.isErr) {
-				this.logger.error("Failed to list IoT devices from blockchain", result.error);
+				this.logger.error(
+					"Failed to list IoT devices from blockchain",
+					result.error,
+				);
 				return Result.err("ERR_UNEXPECTED");
 			}
 
@@ -56,9 +63,9 @@ export class BlockchainIotDeviceRepository implements IotDeviceRepository {
 				location: device.location,
 				status: device.status,
 				ip_address: device.ip_address,
-				last_heartbeat: new Date(Number(device.last_heartbeat) * 1000), // Convert Unix timestamp to Date
-				created_at: new Date(Number(device.created_at) * 1000),
-				updated_at: new Date(Number(device.updated_at) * 1000),
+				last_heartbeat: Number(device.last_heartbeat),
+				created_at: Number(device.created_at),
+				updated_at: Number(device.updated_at),
 			}));
 
 			return Result.ok(devices);
@@ -73,13 +80,17 @@ export class BlockchainIotDeviceRepository implements IotDeviceRepository {
 		timestamp: Date,
 	): Promise<Result<Unit, UpdateHeartbeatError>> {
 		try {
-			const result = await this.blockchainSurveillanceSystem.updateIoTDeviceHeartbeat(
-				deviceId,
-				BigInt(timestamp.getTime() / 1000), // Convert Date to Unix timestamp
-			);
+			const result =
+				await this.blockchainSurveillanceSystem.updateIoTDeviceHeartbeat(
+					deviceId,
+					BigInt(getUnixTime(timestamp)),
+				);
 
 			if (result.isErr) {
-				this.logger.error("Failed to update device heartbeat on blockchain", result.error);
+				this.logger.error(
+					"Failed to update device heartbeat on blockchain",
+					result.error,
+				);
 				if (result.error.type === "IoTDeviceNotFoundError") {
 					return Result.err("ERR_DEVICE_NOT_FOUND");
 				}
@@ -97,10 +108,14 @@ export class BlockchainIotDeviceRepository implements IotDeviceRepository {
 		deviceId: string,
 	): Promise<Result<IotDevice.Selectable | null, FindByIdError>> {
 		try {
-			const result = await this.blockchainSurveillanceSystem.getIoTDevice(deviceId);
+			const result =
+				await this.blockchainSurveillanceSystem.getIoTDevice(deviceId);
 
 			if (result.isErr) {
-				this.logger.error("Failed to find IoT device by id on blockchain", result.error);
+				this.logger.error(
+					"Failed to find IoT device by id on blockchain",
+					result.error,
+				);
 				if (result.error.type === "IoTDeviceNotFoundError") {
 					return Result.ok(null);
 				}
@@ -114,9 +129,9 @@ export class BlockchainIotDeviceRepository implements IotDeviceRepository {
 				location: device.location,
 				status: device.status,
 				ip_address: device.ip_address,
-				last_heartbeat: new Date(Number(device.last_heartbeat) * 1000), // Convert Unix timestamp to Date
-				created_at: new Date(Number(device.created_at) * 1000),
-				updated_at: new Date(Number(device.updated_at) * 1000),
+				last_heartbeat: Number(device.last_heartbeat),
+				created_at: Number(device.created_at),
+				updated_at: Number(device.updated_at),
 			});
 		} catch (error) {
 			this.logger.error("Failed to find device by id", error);

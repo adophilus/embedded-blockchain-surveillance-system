@@ -5,10 +5,10 @@ import type {
 	SurveillanceSystem,
 	RegisterCriminalProfileError,
 	GetCriminalProfileError,
-	CreateIoTDeviceError, // Changed
+	CreateIoTDeviceError,
 	GetIoTDeviceError,
-	UpdateIoTDeviceHeartbeatError, // Added
-	ListIoTDevicesError, // Added
+	UpdateIoTDeviceHeartbeatError,
+	ListIoTDevicesError,
 	CreateSurveillanceSessionError,
 	GetSurveillanceSessionError,
 	CriminalProfileDetails,
@@ -22,9 +22,8 @@ import type {
 	SurveillanceSessionStatus,
 	ListSurveillanceSessionsError,
 	GetSurveillanceEventError,
+	IoTDeviceStatus,
 } from "./interface";
-
-import type { IoTDeviceStatus, SurveillanceSessionStatus } from "./interface";
 
 import {
 	criminalProfileRegistryAbi,
@@ -402,6 +401,8 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 				status: this.iotDeviceStatusEnumToLiteral(device.status),
 				ip_address: device.ip_address,
 				last_heartbeat: device.last_heartbeat,
+				created_at: device.created_at,
+				updated_at: device.updated_at
 			});
 		} catch (e: any) {
 			console.error(`Read contract call failed for getIoTDevice:`, e);

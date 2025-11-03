@@ -9,12 +9,13 @@ import type {
 import type { KyselyClient } from "@/features/database/kysely";
 import type { Logger } from "@/features/logger";
 import type { IotDevice } from "@/types";
+import { getUnixTime } from "date-fns";
 
 export class KyselyIotDeviceRepository implements IotDeviceRepository {
 	constructor(
 		private readonly db: KyselyClient,
 		private readonly logger: Logger,
-	) {}
+	) { }
 
 	public async create(
 		payload: IotDevice.Insertable,
@@ -50,7 +51,7 @@ export class KyselyIotDeviceRepository implements IotDeviceRepository {
 		try {
 			const device = await this.db
 				.updateTable("iot_devices")
-				.set("iot_devices.last_heartbeat", timestamp.toISOString())
+				.set("iot_devices.last_heartbeat", getUnixTime(timestamp))
 				.where("iot_devices.id", "=", deviceId)
 				.returningAll()
 				.executeTakeFirst();

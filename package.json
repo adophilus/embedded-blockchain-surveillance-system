@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "nx run-many -t dev --parallel 9",
 		"build": "nx run-many -t build",
+		"typecheck": "nx run-many -t typecheck",
 		"build:core": "nx run-many -t build -p @embedded-blockchain-surveillance-system/core",
 		"build:server": "./scripts/build-server.sh"
 	},

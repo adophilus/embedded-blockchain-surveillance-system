@@ -13,6 +13,7 @@
 		"script:all": "./scripts/all.sh",
 		"build": "tsc",
 		"lint": "biome lint .",
+		"typecheck": "tsc",
 		"test": "./scripts/test.sh",
 		"db": "kysely"
 	},

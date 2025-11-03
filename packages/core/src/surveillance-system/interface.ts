@@ -10,6 +10,8 @@ export type ContractAddresses = {
 	surveillanceEventRegistry: Address;
 };
 
+export type SurveillanceSessionStatus = 'UPCOMING' | 'ACTIVE' | 'COMPLETED'
+
 export enum IoTDeviceStatus {
 	ACTIVE = 0,
 	INACTIVE = 1,

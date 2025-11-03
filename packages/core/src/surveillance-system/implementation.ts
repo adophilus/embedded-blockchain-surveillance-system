@@ -17,6 +17,7 @@ import type {
 	RecordSurveillanceEventError,
 	SurveillanceEventDetails,
 	UpdateSurveillanceSessionStatusError,
+	SurveillanceSessionStatus,
 } from "./interface";
 
 import { IoTDeviceStatus, SessionStatus } from "./interface";
@@ -34,6 +35,34 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 		private readonly wallet: Wallet,
 		private readonly surveillanceSystemAddress: Address,
 	) { }
+
+	private sessionStatusEnumToLiteral(_enum: number): SurveillanceSessionStatus {
+		switch (_enum) {
+			case 0:
+				return "UPCOMING";
+			case 1:
+				return "ACTIVE";
+			case 2:
+				return "COMPLETED";
+			default:
+				throw new Error("Invalid enum value");
+		}
+	}
+
+	private sessionStatusLiteralToEnum(
+		literal: SurveillanceSessionStatus,
+	): number {
+		switch (literal) {
+			case "UPCOMING":
+				return 0;
+			case "ACTIVE":
+				return 1;
+			case "COMPLETED":
+				return 2;
+			default:
+				throw new Error("Invalid literal value");
+		}
+	}
 
 	private getAccountAddress(): Address {
 		return this.wallet.getWalletClient().account!.address;
@@ -371,7 +400,16 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 					functionName: "surveillanceSessionRegistry",
 				});
 
-			const [id, title, description, start_timestamp, end_timestamp, status, created_at, updated_at] = await publicClient.readContract({
+			const [
+				id,
+				title,
+				description,
+				start_timestamp,
+				end_timestamp,
+				status,
+				created_at,
+				updated_at,
+			] = await publicClient.readContract({
 				address: surveillanceSessionRegistryAddress,
 				abi: surveillanceSessionRegistryAbi,
 				functionName: "findById",
@@ -420,13 +458,9 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 				functionName: "findActiveSession",
 			});
 
-			const statusString = Object.keys(SessionStatus).find(
-				(key) => SessionStatus[key] === status,
-			) as "UPCOMING" | "ACTIVE" | "COMPLETED";
-
 			return Result.ok({
 				...session,
-				status: statusString,
+				status: this.sessionStatusEnumToLiteral(session.status),
 			});
 		} catch (e: any) {
 			console.error(

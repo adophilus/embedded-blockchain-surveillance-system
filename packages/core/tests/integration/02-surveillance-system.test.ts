@@ -89,7 +89,9 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 	});
 
 	it("should get a surveillance session by id", async () => {
-		const result = await surveillanceSystem.getSurveillanceSession(surveillanceSessionId);
+		const result = await surveillanceSystem.getSurveillanceSession(
+			surveillanceSessionId,
+		);
 		assert(result.isOk, "ERR_OPERATION_FAILED");
 		expect(result.value.id).toBe(surveillanceSessionId);
 	});
@@ -115,7 +117,7 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 	});
 
 	it("should list surveillance events by session", async () => {
-		const result = await surveillanceSystem.listSurveillanceEventsBySession(surveillanceSessionId);
+		const result = await surveillanceSystem.listSurveillanceEvents();
 		assert(result.isOk, "ERR_OPERATION_FAILED");
 		expect(result.value.length).toBe(1);
 		expect(result.value[0]?.id).toBe("event-1");

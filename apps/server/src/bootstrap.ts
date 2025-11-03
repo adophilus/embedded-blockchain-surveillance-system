@@ -19,11 +19,7 @@ import { config } from "@/features/config";
 import { KyselyClient } from "@/features/database/kysely";
 import { createKyselySqliteClient } from "@/features/database/kysely/sqlite";
 import { Logger } from "@/features/logger";
-import {
-	StorageService,
-	IpfsStorageService,
-	SqliteStorageService,
-} from "@/features/storage/service";
+import { StorageService, IpfsStorageService } from "@/features/storage/service";
 import {
 	CronService,
 	CronServiceImplementation,
@@ -40,12 +36,10 @@ import {
 } from "@/features/surveillance/events/service";
 import {
 	SurveillanceSessionRepository,
-	KyselySurveillanceSessionRepository,
 	BlockchainSurveillanceSessionRepository,
 } from "@/features/surveillance/session/repository";
 import {
 	SurveillanceEventRepository,
-	KyselySurveillanceEventRepository,
 	BlockchainSurveillanceEventRepository,
 } from "@/features/surveillance/events/repository";
 import {
@@ -55,7 +49,6 @@ import {
 import {
 	BlockchainCriminalProfileRepository,
 	CriminalProfileRepository,
-	KyselyCriminalProfileRepository,
 } from "@/features/criminal/repository";
 import {
 	IotDeviceService,

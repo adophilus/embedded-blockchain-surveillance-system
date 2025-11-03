@@ -35,7 +35,9 @@ contract IoTDeviceRegistry is IIoTDeviceRegistry {
             location: _location,
             status: _status,
             ip_address: _ip_address,
-            last_heartbeat: _last_heartbeat
+            last_heartbeat: _last_heartbeat,
+            created_at: block.timestamp,
+            updated_at: block.timestamp
         });
 
         devices[_id] = newDevice;

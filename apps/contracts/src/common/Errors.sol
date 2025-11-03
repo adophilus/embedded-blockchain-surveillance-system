@@ -15,3 +15,5 @@ error SessionNotActive();
 error InvalidAddress();
 error AlreadyRegistered();
 error EmptyName();
+error DeviceAlreadyExists(string id);
+error DeviceNotFound(string id);

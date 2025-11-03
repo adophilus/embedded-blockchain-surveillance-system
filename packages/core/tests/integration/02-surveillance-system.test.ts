@@ -123,10 +123,9 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 		expect(result.value[0]?.id).toBe("event-1");
 	});
 
-	// test case deliberately being skipped for now
-	it("should register an IoT device", async () => {
+	it("should create an IoT device", async () => {
 		const id = "device-001";
-		const result = await surveillanceSystem.registerIoTDevice(
+		const result = await surveillanceSystem.createIoTDevice(
 			id,
 			"Location A",
 			"ACTIVE",
@@ -135,5 +134,36 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 		);
 		assert(result.isOk, "ERR_OPERATION_FAILED");
 		expect(result.value).toBe(id);
+	});
+
+	it("should update an IoT device heartbeat", async () => {
+		const id = "device-001";
+		const newTimestamp = BigInt(getUnixTime(new Date()) + 1000);
+		const result = await surveillanceSystem.updateIoTDeviceHeartbeat(
+			id,
+			newTimestamp,
+		);
+		assert(result.isOk, "ERR_OPERATION_FAILED");
+
+		const device = await surveillanceSystem.getIoTDevice(id);
+		assert(device.isOk, "ERR_OPERATION_FAILED");
+		expect(device.value.last_heartbeat).toBe(newTimestamp);
+	});
+
+	it("should list IoT devices", async () => {
+		const id1 = "device-002";
+		await surveillanceSystem.createIoTDevice(
+			id1,
+			"Location B",
+			"INACTIVE",
+			"192.168.1.2",
+			BigInt(getUnixTime(new Date())),
+		);
+
+		const result = await surveillanceSystem.listIoTDevices();
+		assert(result.isOk, "ERR_OPERATION_FAILED");
+		expect(result.value.length).toBe(2);
+		expect(result.value.some((d) => d.id === "device-001")).toBe(true);
+		expect(result.value.some((d) => d.id === "device-002")).toBe(true);
 	});
 });

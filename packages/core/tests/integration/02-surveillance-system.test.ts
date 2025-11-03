@@ -94,6 +94,33 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 		expect(result.value.id).toBe(surveillanceSessionId);
 	});
 
+	it("should record a surveillance event", async () => {
+		const eventId = "event-1";
+		const result = await surveillanceSystem.recordSurveillanceEvent(
+			surveillanceSessionId,
+			eventId,
+			["1"],
+			"QmEventCID",
+			"device-001",
+		);
+		assert(result.isOk, "ERR_OPERATION_FAILED");
+		expect(result.value).toBe(eventId);
+	});
+
+	it("should get a surveillance event by id", async () => {
+		const eventId = "event-1";
+		const result = await surveillanceSystem.getSurveillanceEvent(eventId);
+		assert(result.isOk, "ERR_OPERATION_FAILED");
+		expect(result.value.id).toBe(eventId);
+	});
+
+	it("should list surveillance events by session", async () => {
+		const result = await surveillanceSystem.listSurveillanceEventsBySession(surveillanceSessionId);
+		assert(result.isOk, "ERR_OPERATION_FAILED");
+		expect(result.value.length).toBe(1);
+		expect(result.value[0]?.id).toBe("event-1");
+	});
+
 	// test case deliberately being skipped for now
 	it.skip("should register an IoT device", async () => {
 		const id = "device-001";

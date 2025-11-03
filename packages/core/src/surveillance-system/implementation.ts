@@ -68,6 +68,32 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 		}
 	}
 
+	private iotDeviceStatusEnumToLiteral(_enum: number): IoTDeviceStatus {
+		switch (_enum) {
+			case 0:
+				return "ACTIVE";
+			case 1:
+				return "INACTIVE";
+			case 2:
+				return "MAINTENANCE";
+			default:
+				throw new Error("Invalid enum value");
+		}
+	}
+
+	private iotDeviceStatusLiteralToEnum(literal: IoTDeviceStatus): number {
+		switch (literal) {
+			case "ACTIVE":
+				return 0;
+			case "INACTIVE":
+				return 1;
+			case "MAINTENANCE":
+				return 2;
+			default:
+				throw new Error("Invalid literal value");
+		}
+	}
+
 	private getAccountAddress(): Address {
 		return this.wallet.getWalletClient().account!.address;
 	}
@@ -238,7 +264,14 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 				address: iotDeviceRegistryAddress,
 				abi: ioTDeviceRegistryAbi,
 				functionName: "create",
-				args: [id, device_code, location, status, ip_address, last_heartbeat],
+				args: [
+					id,
+					device_code,
+					location,
+					this.iotDeviceStatusLiteralToEnum(status),
+					ip_address,
+					last_heartbeat,
+				],
 				account,
 			});
 
@@ -254,7 +287,8 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 			const event = logs.find((log) => log.eventName === "DeviceRegistered");
 
 			if (!event || event.args.device === undefined) {
-				return Result.err({n					type: "TransactionFailedError",
+				return Result.err({
+					type: "TransactionFailedError",
 					message:
 						"Could not find 'DeviceRegistered' event or device argument in receipt.",
 				});
@@ -298,7 +332,10 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 
 			return Result.ok(undefined);
 		} catch (e: any) {
-			console.error(`Write contract call failed for updateIoTDeviceHeartbeat:`, e);
+			console.error(
+				`Write contract call failed for updateIoTDeviceHeartbeat:`,
+				e,
+			);
 			return Result.err({
 				type: "TransactionFailedError",
 				message: "Contract call/execution failed",

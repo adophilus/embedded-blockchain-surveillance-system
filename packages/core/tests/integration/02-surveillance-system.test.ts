@@ -125,13 +125,16 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 
 	it("should create an IoT device", async () => {
 		const id = "device-001";
+		const deviceCode = id;
 		const result = await surveillanceSystem.createIoTDevice(
 			id,
+			deviceCode,
 			"Location A",
 			"ACTIVE",
 			"192.168.1.1",
 			BigInt(getUnixTime(new Date())),
 		);
+		console.log(result)
 		assert(result.isOk, "ERR_OPERATION_FAILED");
 		expect(result.value).toBe(id);
 	});
@@ -151,9 +154,11 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 	});
 
 	it("should list IoT devices", async () => {
-		const id1 = "device-002";
+		const id = "device-002";
+		const deviceCode = id;
 		await surveillanceSystem.createIoTDevice(
-			id1,
+			id,
+			deviceCode,
 			"Location B",
 			"INACTIVE",
 			"192.168.1.2",
@@ -164,6 +169,6 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 		assert(result.isOk, "ERR_OPERATION_FAILED");
 		expect(result.value.length).toBe(2);
 		expect(result.value.some((d) => d.id === "device-001")).toBe(true);
-		expect(result.value.some((d) => d.id === "device-002")).toBe(true);
+		expect(result.value.some((d) => d.id === id)).toBe(true);
 	});
 });

@@ -141,6 +141,7 @@ export type GetSurveillanceEventError =
 	| ContractCallFailedError
 	| UnknownError;
 export type ListSurveillanceEventsBySessionError = ContractCallFailedError | UnknownError;
+export type ListSurveillanceEventsError = ContractCallFailedError | UnknownError;
 
 export type ListCriminalProfilesError = ContractCallFailedError | UnknownError;
 

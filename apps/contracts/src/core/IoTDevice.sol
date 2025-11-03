@@ -14,7 +14,7 @@ struct IoTDevice {
     IoTDeviceStatus status;
     string ip_address;
     uint last_heartbeat;
-    // uint created_at;
-    // uint updated_at;
+    uint created_at;
+    uint updated_at;
 }
 

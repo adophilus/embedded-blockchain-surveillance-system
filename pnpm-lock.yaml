@@ -444,6 +444,9 @@ importers:
       '@t3-oss/env-core':
         specifier: ^0.12.0
         version: 0.12.0(typescript@5.9.3)(zod@3.25.76)
+      abitype:
+        specifier: ^1.1.1
+        version: 1.1.1(typescript@5.9.3)(zod@3.25.76)
       assertate:
         specifier: ^2.4.0
         version: 2.4.0

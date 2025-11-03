@@ -24,7 +24,7 @@ import type {
 	GetSurveillanceEventError,
 } from "./interface";
 
-import { IoTDeviceStatus, SessionStatus } from "./interface";
+import type { IoTDeviceStatus, SurveillanceSessionStatus } from "./interface";
 
 import {
 	criminalProfileRegistryAbi,
@@ -362,14 +362,8 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 			});
 
 			const devices: IoTDeviceDetails[] = devicesData.map((device) => ({
-				id: device.id,
-				device_code: device.device_code,
-				location: device.location,
-				status: Object.keys(IoTDeviceStatus).find(
-					(key) => IoTDeviceStatus[key] === device.status,
-				) as "ACTIVE" | "INACTIVE" | "MAINTENANCE",
-				ip_address: device.ip_address,
-				last_heartbeat: device.last_heartbeat,
+				...device,
+				status: this.iotDeviceStatusEnumToLiteral(device.status),
 			}));
 
 			return Result.ok(devices);
@@ -401,15 +395,11 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 				args: [deviceId],
 			});
 
-			const statusString = Object.keys(IoTDeviceStatus).find(
-				(key) => IoTDeviceStatus[key] === device.status,
-			) as "ACTIVE" | "INACTIVE" | "MAINTENANCE";
-
 			return Result.ok({
 				id: device.id,
 				device_code: device.device_code,
 				location: device.location,
-				status: statusString,
+				status: this.iotDeviceStatusEnumToLiteral(device.status),
 				ip_address: device.ip_address,
 				last_heartbeat: device.last_heartbeat,
 			});
@@ -443,12 +433,6 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 					functionName: "surveillanceSessionRegistry",
 				});
 
-			const statusEnum = {
-				UPCOMING: SessionStatus.UPCOMING,
-				ACTIVE: SessionStatus.ACTIVE,
-				COMPLETED: SessionStatus.COMPLETED,
-			}[status];
-
 			const { request } = await publicClient.simulateContract({
 				address: surveillanceSessionRegistryAddress,
 				abi: surveillanceSessionRegistryAbi,
@@ -459,7 +443,7 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 					description,
 					start_timestamp,
 					end_timestamp,
-					statusEnum,
+					this.sessionStatusLiteralToEnum(status),
 				],
 				account,
 			});

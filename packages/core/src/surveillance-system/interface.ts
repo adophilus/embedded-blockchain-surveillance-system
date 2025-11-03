@@ -10,19 +10,9 @@ export type ContractAddresses = {
 	surveillanceEventRegistry: Address;
 };
 
-export type SurveillanceSessionStatus = 'UPCOMING' | 'ACTIVE' | 'COMPLETED'
+export type SurveillanceSessionStatus = "UPCOMING" | "ACTIVE" | "COMPLETED";
 
-export enum IoTDeviceStatus {
-	ACTIVE = 0,
-	INACTIVE = 1,
-	MAINTENANCE = 2,
-}
-
-export enum SessionStatus {
-	UPCOMING = 0,
-	ACTIVE = 1,
-	COMPLETED = 2,
-}
+export type IoTDeviceStatus = "ACTIVE" | "INACTIVE" | "MAINTENANCE";
 
 // Placeholder types for data structures
 export type CriminalProfileDetails = {
@@ -42,6 +32,8 @@ export type IoTDeviceDetails = {
 	status: "ACTIVE" | "INACTIVE" | "MAINTENANCE";
 	ip_address: string;
 	last_heartbeat: bigint;
+	created_at: bigint;
+	updated_at: bigint;
 };
 
 export type SurveillanceEventDetails = {
@@ -106,7 +98,8 @@ export type GetCriminalProfileError =
 	| UnknownError;
 
 // IoT Device Management
-export type RegisterIoTDeviceError =
+export type CreateIoTDeviceError =
+	// Renamed
 	| UnauthorizedError
 	| TransactionFailedError
 	| ContractCallFailedError
@@ -115,6 +108,14 @@ export type GetIoTDeviceError =
 	| IoTDeviceNotFoundError
 	| ContractCallFailedError
 	| UnknownError;
+export type UpdateIoTDeviceHeartbeatError =
+	// Added
+	| IoTDeviceNotFoundError
+	| UnauthorizedError
+	| TransactionFailedError
+	| ContractCallFailedError
+	| UnknownError;
+export type ListIoTDevicesError = ContractCallFailedError | UnknownError; // Added
 
 // Surveillance Session Management
 export type CreateSurveillanceSessionError =
@@ -126,7 +127,9 @@ export type GetSurveillanceSessionError =
 	| SurveillanceSessionNotFoundError
 	| ContractCallFailedError
 	| UnknownError;
-export type ListSurveillanceSessionsError = ContractCallFailedError | UnknownError;
+export type ListSurveillanceSessionsError =
+	| ContractCallFailedError
+	| UnknownError;
 export type UpdateSurveillanceSessionStatusError =
 	| SurveillanceSessionNotFoundError
 	| UnauthorizedError
@@ -140,11 +143,13 @@ export type RecordSurveillanceEventError =
 	| TransactionFailedError
 	| ContractCallFailedError
 	| UnknownError;
-export type GetSurveillanceEventError =
+export type GetSurveillanceEventError = ContractCallFailedError | UnknownError;
+export type ListSurveillanceEventsBySessionError =
 	| ContractCallFailedError
 	| UnknownError;
-export type ListSurveillanceEventsBySessionError = ContractCallFailedError | UnknownError;
-export type ListSurveillanceEventsError = ContractCallFailedError | UnknownError;
+export type ListSurveillanceEventsError =
+	| ContractCallFailedError
+	| UnknownError;
 
 export type ListCriminalProfilesError = ContractCallFailedError | UnknownError;
 
@@ -164,16 +169,24 @@ export interface SurveillanceSystem {
 	>;
 
 	// IoT Device Management
-	registerIoTDevice(
+	createIoTDevice(
+		// Renamed
+		id: string,
 		device_code: string,
 		location: string,
 		status: "ACTIVE" | "INACTIVE" | "MAINTENANCE",
 		ip_address: string,
 		last_heartbeat: bigint,
-	): Promise<Result<string, RegisterIoTDeviceError>>;
+	): Promise<Result<string, CreateIoTDeviceError>>;
 	getIoTDevice(
 		deviceId: string,
 	): Promise<Result<IoTDeviceDetails, GetIoTDeviceError>>;
+	updateIoTDeviceHeartbeat(
+		// Added
+		deviceId: string,
+		timestamp: bigint,
+	): Promise<Result<void, UpdateIoTDeviceHeartbeatError>>;
+	listIoTDevices(): Promise<Result<IoTDeviceDetails[], ListIoTDevicesError>>;
 
 	// Surveillance Session Management
 	createSurveillanceSession(
@@ -187,14 +200,16 @@ export interface SurveillanceSystem {
 	getSurveillanceSession(
 		sessionId: string,
 	): Promise<Result<SurveillanceSessionDetails, GetSurveillanceSessionError>>;
-	listSurveillanceSessions(): Promise<Result<SurveillanceSessionDetails[], ListSurveillanceSessionsError>>;
+	listSurveillanceSessions(): Promise<
+		Result<SurveillanceSessionDetails[], ListSurveillanceSessionsError>
+	>;
 	updateSurveillanceSessionStatus(
 		sessionId: string,
 		status: "UPCOMING" | "ACTIVE" | "COMPLETED",
 	): Promise<Result<void, UpdateSurveillanceSessionStatusError>>;
 
 	// Surveillance Event Management
-		recordSurveillanceEvent(
+	recordSurveillanceEvent(
 		sessionId: string,
 		id: string,
 		criminal_profile_ids: string[],
@@ -207,7 +222,5 @@ export interface SurveillanceSystem {
 	getSurveillanceEvent(
 		eventId: string,
 	): Promise<Result<SurveillanceEventDetails, GetSurveillanceEventError>>;
-	listSurveillanceEventsBySession(
-		sessionId: string,
-	): Promise<Result<SurveillanceEventDetails[], ListSurveillanceEventsBySessionError>>;
+	// Removed listSurveillanceEventsBySession
 }

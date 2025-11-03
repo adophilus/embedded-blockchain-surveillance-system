@@ -18,6 +18,8 @@ import type {
 	SurveillanceEventDetails,
 	UpdateSurveillanceSessionStatusError,
 	SurveillanceSessionStatus,
+	ListSurveillanceSessionsError,
+	GetSurveillanceEventError,
 } from "./interface";
 
 import { IoTDeviceStatus, SessionStatus } from "./interface";
@@ -25,9 +27,9 @@ import { IoTDeviceStatus, SessionStatus } from "./interface";
 import {
 	criminalProfileRegistryAbi,
 	ioTDeviceRegistryAbi,
+	surveillanceEventRegistryAbi,
 	surveillanceSessionRegistryAbi,
 	surveillanceSystemAbi,
-	ioTDeviceAbi,
 } from "@embedded-blockchain-surveillance-system/contracts/types";
 
 export class BlockchainSurveillanceSystem implements SurveillanceSystem {
@@ -400,35 +402,16 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 					functionName: "surveillanceSessionRegistry",
 				});
 
-			const [
-				id,
-				title,
-				description,
-				start_timestamp,
-				end_timestamp,
-				status,
-				created_at,
-				updated_at,
-			] = await publicClient.readContract({
+			const session = await publicClient.readContract({
 				address: surveillanceSessionRegistryAddress,
 				abi: surveillanceSessionRegistryAbi,
 				functionName: "findById",
 				args: [sessionId],
 			});
 
-			const statusString = Object.keys(SessionStatus).find(
-				(key) => SessionStatus[key] === status,
-			) as "UPCOMING" | "ACTIVE" | "COMPLETED";
-
 			return Result.ok({
-				id,
-				title,
-				description,
-				start_timestamp,
-				end_timestamp,
-				status: statusString,
-				created_at,
-				updated_at,
+				...session,
+				status: this.sessionStatusEnumToLiteral(session.status),
 			});
 		} catch (e: any) {
 			console.error(`Read contract call failed for getSurveillanceSession:`, e);
@@ -487,44 +470,18 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 					functionName: "surveillanceSessionRegistry",
 				});
 
-			const sessionAddresses = await publicClient.readContract({
+			const sessionsData = await publicClient.readContract({
 				address: surveillanceSessionRegistryAddress,
 				abi: surveillanceSessionRegistryAbi,
 				functionName: "list",
 			});
 
-			const sessions: SurveillanceSessionDetails[] = [];
-			for (const sessionAddress of sessionAddresses) {
-				const [
-					id,
-					title,
-					description,
-					start_timestamp,
-					end_timestamp,
-					status,
-					created_at,
-					updated_at,
-				] = await publicClient.readContract({
-					address: sessionAddress,
-					abi: surveillanceSessionAbi,
-					functionName: "get",
-				});
-
-				const statusString = Object.keys(SessionStatus).find(
-					(key) => SessionStatus[key] === status,
-				) as "UPCOMING" | "ACTIVE" | "COMPLETED";
-
-				sessions.push({
-					id,
-					title,
-					description,
-					start_timestamp,
-					end_timestamp,
-					status: statusString,
-					created_at,
-					updated_at,
-				});
-			}
+			const sessions: SurveillanceSessionDetails[] = sessionsData.map(
+				(session) => ({
+					...session,
+					status: this.sessionStatusEnumToLiteral(session.status),
+				}),
+			);
 
 			return Result.ok(sessions);
 		} catch (e: any) {
@@ -555,24 +512,13 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 					functionName: "surveillanceSessionRegistry",
 				});
 
-			const sessionAddress = await publicClient.readContract({
-				address: surveillanceSessionRegistryAddress,
-				abi: surveillanceSessionRegistryAbi,
-				functionName: "findById",
-				args: [sessionId],
-			});
-
-			const statusEnum = {
-				UPCOMING: SessionStatus.UPCOMING,
-				ACTIVE: SessionStatus.ACTIVE,
-				COMPLETED: SessionStatus.COMPLETED,
-			}[status];
+			const statusEnum = this.sessionStatusLiteralToEnum(status);
 
 			const { request } = await publicClient.simulateContract({
-				address: sessionAddress,
-				abi: surveillanceSessionAbi,
+				address: surveillanceSessionRegistryAddress,
+				abi: surveillanceSessionRegistryAbi,
 				functionName: "updateStatus",
-				args: [statusEnum],
+				args: [sessionId, statusEnum],
 				account,
 			});
 
@@ -592,9 +538,9 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 		}
 	}
 
-	public async listSurveillanceEvents(
-		sessionId: string,
-	): Promise<Result<SurveillanceEventDetails[], ListSurveillanceEventsError>> {
+	public async listSurveillanceEvents(): Promise<
+		Result<SurveillanceEventDetails[], ListSurveillanceEventsError>
+	> {
 		try {
 			const publicClient = this.wallet.getPublicClient();
 
@@ -607,8 +553,8 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 			const events = await publicClient.readContract({
 				address: surveillanceEventRegistryAddress,
 				abi: surveillanceEventRegistryAbi,
-				functionName: "listBySessionId",
-				args: [sessionId],
+				functionName: "list",
+				args: [],
 			});
 
 			return Result.ok(

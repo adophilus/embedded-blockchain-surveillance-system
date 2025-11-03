@@ -49,6 +49,7 @@ export type SurveillanceEventDetails = {
 	criminal_profile_ids: readonly string[];
 	cid: string;
 	device_code: string;
+	session_id: string;
 	created_at: bigint;
 };
 

@@ -13,13 +13,14 @@ import type {
 import type { Writable } from "type-fest";
 
 export class BlockchainSurveillanceEventRepository
-	implements SurveillanceEventRepository
-{
-	constructor(private readonly system: BlockchainSurveillanceSystem) {}
+	implements SurveillanceEventRepository {
+	constructor(private readonly system: BlockchainSurveillanceSystem) { }
 
 	public async create(
 		payload: SurveillanceEvent.Insertable,
-	): Promise<Result<SurveillanceEvent.Selectable, CreateSurveillanceEventError>> {
+	): Promise<
+		Result<SurveillanceEvent.Selectable, CreateSurveillanceEventError>
+	> {
 		const result = await this.system.recordSurveillanceEvent(
 			payload.session_id,
 			payload.id,
@@ -47,12 +48,22 @@ export class BlockchainSurveillanceEventRepository
 	private normalizeSurveillanceEventDetails(
 		surveillanceEventDetails: SurveillanceEventDetails,
 	): SurveillanceEvent.Selectable {
-		const { cid, created_at, criminal_profile_ids, ..._rest } = surveillanceEventDetails;
-		const rest = _rest as Writable<Omit<SurveillanceEvent.Selectable, "detections" | "media">>;
+		const {
+			id,
+			device_code,
+			cid,
+			session_id,
+			created_at,
+			criminal_profile_ids,
+		} = surveillanceEventDetails;
 
 		const surveillanceEvent: SurveillanceEvent.Selectable = {
-			...rest,
-			detections: criminal_profile_ids.map((id) => ({ criminal_profile_id: id })),
+			id,
+			device_id: device_code,
+			session_id,
+			detections: criminal_profile_ids.map((id) => ({
+				criminal_profile_id: id,
+			})),
 			media: {
 				id: cid,
 				source: "ipfs",
@@ -74,7 +85,9 @@ export class BlockchainSurveillanceEventRepository
 			return Result.err("ERR_UNEXPECTED");
 		}
 
-		const surveillanceEvent = this.normalizeSurveillanceEventDetails(result.value);
+		const surveillanceEvent = this.normalizeSurveillanceEventDetails(
+			result.value,
+		);
 
 		return Result.ok(surveillanceEvent);
 	}
@@ -82,16 +95,7 @@ export class BlockchainSurveillanceEventRepository
 	public async list(): Promise<
 		Result<SurveillanceEvent.Selectable[], ListSurveillanceEventsError>
 	> {
-		// This is a placeholder. The `list` method on the smart contract is not implemented yet.
-		return Result.ok([]);
-	}
-
-	public async listBySessionId(
-		sessionId: string,
-	): Promise<
-		Result<SurveillanceEvent.Selectable[], ListSurveillanceEventsError>
-	> {
-		const result = await this.system.listSurveillanceEventsBySession(sessionId);
+		const result = await this.system.listSurveillanceEvents();
 		if (result.isErr) {
 			return Result.err("ERR_UNEXPECTED");
 		}

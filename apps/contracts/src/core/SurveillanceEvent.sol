@@ -6,5 +6,6 @@ struct SurveillanceEvent {
     string[] criminal_profile_ids;
     string cid;
     string device_code;
+    string session_id;
     uint created_at;
 }

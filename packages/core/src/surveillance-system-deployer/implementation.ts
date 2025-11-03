@@ -9,6 +9,7 @@ import SurveillanceSystemMetadata from "@embedded-blockchain-surveillance-system
 import CriminalProfileRegistryMetadata from "@embedded-blockchain-surveillance-system/contracts/CriminalProfileRegistry.sol/CriminalProfileRegistry.json";
 import IoTDeviceRegistryMetadata from "@embedded-blockchain-surveillance-system/contracts/IoTDeviceRegistry.sol/IoTDeviceRegistry.json";
 import SurveillanceSessionRegistryMetadata from "@embedded-blockchain-surveillance-system/contracts/SurveillanceSessionRegistry.sol/SurveillanceSessionRegistry.json";
+import SurveillanceEventRegistryMetadata from "@embedded-blockchain-surveillance-system/contracts/SurveillanceEventRegistry.sol/SurveillanceEventRegistry.json";
 import type { Wallet } from "../wallet";
 
 const SurveillanceSystemABI = SurveillanceSystemMetadata.abi as Abi;
@@ -27,6 +28,9 @@ const SurveillanceSessionRegistryABI =
 	SurveillanceSessionRegistryMetadata.abi as Abi;
 const SurveillanceSessionRegistryBytecode = SurveillanceSessionRegistryMetadata
 	.bytecode.object as Hex;
+
+const SurveillanceEventRegistryABI = SurveillanceEventRegistryMetadata.abi as Abi;
+const SurveillanceEventRegistryBytecode = SurveillanceEventRegistryMetadata.bytecode.object as Hex;
 
 class BlockchainSurveillanceSystemDeployer
 	implements SurveillanceSystemDeployer
@@ -102,10 +106,21 @@ class BlockchainSurveillanceSystemDeployer
 		);
 	}
 
+	private async deploySurveillanceEventRegistry(): Promise<
+		Result<Address, DeployContractError>
+	> {
+		return this.deployContract(
+			SurveillanceEventRegistryABI,
+			SurveillanceEventRegistryBytecode,
+			[this.wallet.getAddress()],
+		);
+	}
+
 	private async deploySurveillanceSystem(
 		criminalProfileRegistryAddress: Address,
 		iotDeviceRegistryAddress: Address,
 		surveillanceSessionRegistryAddress: Address,
+		surveillanceEventRegistryAddress: Address,
 	): Promise<Result<Address, DeployContractError>> {
 		return this.deployContract(
 			SurveillanceSystemABI,
@@ -114,6 +129,7 @@ class BlockchainSurveillanceSystemDeployer
 				criminalProfileRegistryAddress,
 				iotDeviceRegistryAddress,
 				surveillanceSessionRegistryAddress,
+				surveillanceEventRegistryAddress,
 			],
 		);
 	}
@@ -140,10 +156,17 @@ class BlockchainSurveillanceSystemDeployer
 		const surveillanceSessionRegistryAddress =
 			surveillanceSessionRegistryResult.value;
 
+		const surveillanceEventRegistryResult = await this.deploySurveillanceEventRegistry();
+		if (surveillanceEventRegistryResult.isErr) {
+			return Result.err(surveillanceEventRegistryResult.error);
+		}
+		const surveillanceEventRegistryAddress = surveillanceEventRegistryResult.value;
+
 		const surveillanceSystemResult = await this.deploySurveillanceSystem(
 			criminalProfileRegistryAddress,
 			iotDeviceRegistryAddress,
 			surveillanceSessionRegistryAddress,
+			surveillanceEventRegistryAddress,
 		);
 		if (surveillanceSystemResult.isErr) {
 			return Result.err(surveillanceSystemResult.error);

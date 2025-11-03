@@ -5,8 +5,10 @@ import type {
 	SurveillanceSystem,
 	RegisterCriminalProfileError,
 	GetCriminalProfileError,
-	RegisterIoTDeviceError,
+	CreateIoTDeviceError, // Changed
 	GetIoTDeviceError,
+	UpdateIoTDeviceHeartbeatError, // Added
+	ListIoTDevicesError, // Added
 	CreateSurveillanceSessionError,
 	GetSurveillanceSessionError,
 	CriminalProfileDetails,
@@ -26,7 +28,6 @@ import { IoTDeviceStatus, SessionStatus } from "./interface";
 
 import {
 	criminalProfileRegistryAbi,
-	ioTDeviceAbi,
 	ioTDeviceRegistryAbi,
 	surveillanceEventRegistryAbi,
 	surveillanceSessionRegistryAbi,

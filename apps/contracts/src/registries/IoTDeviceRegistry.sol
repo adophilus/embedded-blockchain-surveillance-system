@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import {IoTDevice} from "../core/IoTDevice.sol";
+import {IoTDevice, IoTDeviceStatus} from "../core/IoTDevice.sol";
 import "../common/Errors.sol";
 import "./IIoTDeviceRegistry.sol";
 
 contract IoTDeviceRegistry is IIoTDeviceRegistry {
     address public admin;
     mapping(string => IoTDevice) public devices;
-    string[] private deviceIds; // To keep track of all device IDs
+    string[] private deviceIds;
 
     modifier onlyAdmin() {
         if (msg.sender != admin) revert NotAdmin();
@@ -23,7 +23,7 @@ contract IoTDeviceRegistry is IIoTDeviceRegistry {
         string memory _id,
         string memory _device_code,
         string memory _location,
-        IoTDevice.Status _status,
+        IoTDeviceStatus _status,
         string memory _ip_address,
         uint _last_heartbeat
     ) external onlyAdmin returns (IoTDevice memory) {
@@ -45,13 +45,18 @@ contract IoTDeviceRegistry is IIoTDeviceRegistry {
         return newDevice;
     }
 
-    function updateHeartbeat(string memory _id, uint _timestamp) external onlyAdmin {
+    function updateHeartbeat(
+        string memory _id,
+        uint _timestamp
+    ) external onlyAdmin {
         if (bytes(devices[_id].id).length == 0) revert DeviceNotFound(_id);
         devices[_id].last_heartbeat = _timestamp;
         emit DeviceHeartbeatUpdated(_id, _timestamp);
     }
 
-    function findById(string memory _id) external view returns (IoTDevice memory) {
+    function findById(
+        string memory _id
+    ) external view returns (IoTDevice memory) {
         if (bytes(devices[_id].id).length == 0) revert DeviceNotFound(_id);
         return devices[_id];
     }
@@ -64,3 +69,4 @@ contract IoTDeviceRegistry is IIoTDeviceRegistry {
         return allDevices;
     }
 }
+

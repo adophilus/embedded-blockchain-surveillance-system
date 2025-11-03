@@ -215,13 +215,14 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 	}
 
 	// IoT Device Management
-	public async registerIoTDevice(
+	public async createIoTDevice(
+		id: string,
 		device_code: string,
 		location: string,
 		status: "ACTIVE" | "INACTIVE" | "MAINTENANCE",
 		ip_address: string,
 		last_heartbeat: bigint,
-	): Promise<Result<string, RegisterIoTDeviceError>> {
+	): Promise<Result<string, CreateIoTDeviceError>> {
 		try {
 			const walletClient = this.wallet.getWalletClient();
 			const publicClient = this.wallet.getPublicClient();
@@ -236,8 +237,8 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 			const { request } = await publicClient.simulateContract({
 				address: iotDeviceRegistryAddress,
 				abi: ioTDeviceRegistryAbi,
-				functionName: "register",
-				args: [device_code, location, status, ip_address, last_heartbeat],
+				functionName: "create",
+				args: [id, device_code, location, status, ip_address, last_heartbeat],
 				account,
 			});
 
@@ -252,19 +253,93 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 
 			const event = logs.find((log) => log.eventName === "DeviceRegistered");
 
-			if (!event || event.args.id === undefined) {
-				return Result.err({
-					type: "TransactionFailedError",
+			if (!event || event.args.device === undefined) {
+				return Result.err({n					type: "TransactionFailedError",
 					message:
-						"Could not find 'DeviceRegistered' event or device ID argument in receipt.",
+						"Could not find 'DeviceRegistered' event or device argument in receipt.",
 				});
 			}
 
-			return Result.ok(event.args.id);
+			return Result.ok(event.args.device.id);
 		} catch (e: any) {
-			console.error(`Write contract call failed for registerIoTDevice:`, e);
+			console.error(`Write contract call failed for createIoTDevice:`, e);
 			return Result.err({
 				type: "TransactionFailedError",
+				message: "Contract call/execution failed",
+			});
+		}
+	}
+
+	public async updateIoTDeviceHeartbeat(
+		deviceId: string,
+		timestamp: bigint,
+	): Promise<Result<void, UpdateIoTDeviceHeartbeatError>> {
+		try {
+			const walletClient = this.wallet.getWalletClient();
+			const publicClient = this.wallet.getPublicClient();
+			const account = this.getAccountAddress();
+
+			const iotDeviceRegistryAddress = await publicClient.readContract({
+				address: this.surveillanceSystemAddress,
+				abi: surveillanceSystemAbi,
+				functionName: "iotDeviceRegistry",
+			});
+
+			const { request } = await publicClient.simulateContract({
+				address: iotDeviceRegistryAddress,
+				abi: ioTDeviceRegistryAbi,
+				functionName: "updateHeartbeat",
+				args: [deviceId, timestamp],
+				account,
+			});
+
+			const hash = await walletClient.writeContract(request);
+			await publicClient.waitForTransactionReceipt({ hash });
+
+			return Result.ok(undefined);
+		} catch (e: any) {
+			console.error(`Write contract call failed for updateIoTDeviceHeartbeat:`, e);
+			return Result.err({
+				type: "TransactionFailedError",
+				message: "Contract call/execution failed",
+			});
+		}
+	}
+
+	public async listIoTDevices(): Promise<
+		Result<IoTDeviceDetails[], ListIoTDevicesError>
+	> {
+		try {
+			const publicClient = this.wallet.getPublicClient();
+
+			const iotDeviceRegistryAddress = await publicClient.readContract({
+				address: this.surveillanceSystemAddress,
+				abi: surveillanceSystemAbi,
+				functionName: "iotDeviceRegistry",
+			});
+
+			const devicesData = await publicClient.readContract({
+				address: iotDeviceRegistryAddress,
+				abi: ioTDeviceRegistryAbi,
+				functionName: "list",
+			});
+
+			const devices: IoTDeviceDetails[] = devicesData.map((device) => ({
+				id: device.id,
+				device_code: device.device_code,
+				location: device.location,
+				status: Object.keys(IoTDeviceStatus).find(
+					(key) => IoTDeviceStatus[key] === device.status,
+				) as "ACTIVE" | "INACTIVE" | "MAINTENANCE",
+				ip_address: device.ip_address,
+				last_heartbeat: device.last_heartbeat,
+			}));
+
+			return Result.ok(devices);
+		} catch (e: any) {
+			console.error(`Read contract call failed for listIoTDevices:`, e);
+			return Result.err({
+				type: "ContractCallFailedError",
 				message: "Contract call/execution failed",
 			});
 		}
@@ -282,31 +357,24 @@ export class BlockchainSurveillanceSystem implements SurveillanceSystem {
 				functionName: "iotDeviceRegistry",
 			});
 
-			const deviceAddress = await publicClient.readContract({
+			const device = await publicClient.readContract({
 				address: iotDeviceRegistryAddress,
 				abi: ioTDeviceRegistryAbi,
 				functionName: "findById",
 				args: [deviceId],
 			});
 
-			const [id, device_code, location, status, ip_address, last_heartbeat] =
-				await publicClient.readContract({
-					address: deviceAddress,
-					abi: ioTDeviceAbi,
-					functionName: "get",
-				});
-
 			const statusString = Object.keys(IoTDeviceStatus).find(
-				(key) => IoTDeviceStatus[key] === status,
+				(key) => IoTDeviceStatus[key] === device.status,
 			) as "ACTIVE" | "INACTIVE" | "MAINTENANCE";
 
 			return Result.ok({
-				id,
-				device_code,
-				location,
+				id: device.id,
+				device_code: device.device_code,
+				location: device.location,
 				status: statusString,
-				ip_address,
-				last_heartbeat,
+				ip_address: device.ip_address,
+				last_heartbeat: device.last_heartbeat,
 			});
 		} catch (e: any) {
 			console.error(`Read contract call failed for getIoTDevice:`, e);

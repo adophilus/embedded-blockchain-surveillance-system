@@ -576,6 +576,74 @@ class BlockchainSurveillanceSystem implements SurveillanceSystem {
 			});
 		}
 	}
+
+	public async listSurveillanceEvents(
+		sessionId: string,
+	): Promise<Result<SurveillanceEventDetails[], ListSurveillanceEventsError>> {
+		try {
+			const publicClient = this.wallet.getPublicClient();
+
+			const surveillanceEventRegistryAddress = await publicClient.readContract({
+				address: this.surveillanceSystemAddress,
+				abi: surveillanceSystemAbi,
+				functionName: "surveillanceEventRegistry",
+			});
+
+			const events = await publicClient.readContract({
+				address: surveillanceEventRegistryAddress,
+				abi: surveillanceEventRegistryAbi,
+				functionName: "listBySessionId",
+				args: [sessionId],
+			});
+
+			return Result.ok(events.map(e => ({...e, criminal_profile_ids: e.criminal_profile_ids.map(id => String(id)) })));
+		} catch (e: any) {
+			console.error(`Read contract call failed for listSurveillanceEvents:`, e);
+			return Result.err({
+				type: "ContractCallFailedError",
+				message: "Contract call/execution failed",
+			});
+		}
+	}
+
+	public async recordSurveillanceEvent(
+		sessionId: string,
+		id: string,
+		criminal_profile_ids: string[],
+		cid: string,
+		device_code: string,
+	): Promise<Result<string, RecordSurveillanceEventError>> {
+		try {
+			const walletClient = this.wallet.getWalletClient();
+			const publicClient = this.wallet.getPublicClient();
+			const account = this.getAccountAddress();
+
+			const surveillanceEventRegistryAddress = await publicClient.readContract({
+				address: this.surveillanceSystemAddress,
+				abi: surveillanceSystemAbi,
+				functionName: "surveillanceEventRegistry",
+			});
+
+			const { request } = await publicClient.simulateContract({
+				address: surveillanceEventRegistryAddress,
+				abi: surveillanceEventRegistryAbi,
+				functionName: "recordEvent",
+				args: [id, sessionId, criminal_profile_ids, cid, device_code],
+				account,
+			});
+
+			const hash = await walletClient.writeContract(request);
+			await publicClient.waitForTransactionReceipt({ hash });
+
+			return Result.ok(id);
+		} catch (e: any) {
+			console.error(`Write contract call failed for recordSurveillanceEvent:`, e);
+			return Result.err({
+				type: "TransactionFailedError",
+				message: "Contract call/execution failed",
+			});
+		}
+	}
 }
 
 export { BlockchainSurveillanceSystem };

@@ -122,7 +122,7 @@ describe("BlockchainSurveillanceSystem Integration Tests", () => {
 	});
 
 	// test case deliberately being skipped for now
-	it.skip("should register an IoT device", async () => {
+	it("should register an IoT device", async () => {
 		const id = "device-001";
 		const result = await surveillanceSystem.registerIoTDevice(
 			id,

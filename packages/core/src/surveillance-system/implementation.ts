@@ -26,6 +26,7 @@ import { IoTDeviceStatus, SessionStatus } from "./interface";
 
 import {
 	criminalProfileRegistryAbi,
+	ioTDeviceAbi,
 	ioTDeviceRegistryAbi,
 	surveillanceEventRegistryAbi,
 	surveillanceSessionRegistryAbi,

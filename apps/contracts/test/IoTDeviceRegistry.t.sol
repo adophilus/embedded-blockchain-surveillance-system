@@ -18,7 +18,7 @@ contract IoTDeviceRegistryTest is Test {
         vm.startPrank(Config.ADMIN);
 
         string memory id = "1";
-        address deviceAddress = registry.register(id, "device-001", "Location A",IIoTDevice.Status.ACTIVE, "0", 0);
+        address deviceAddress = registry.create(id, "device-001", "Location A",IIoTDevice.Status.ACTIVE, "0", 0);
         assertNotEq(deviceAddress, address(0));
         assertEq(registry.findById(id), deviceAddress);
     }

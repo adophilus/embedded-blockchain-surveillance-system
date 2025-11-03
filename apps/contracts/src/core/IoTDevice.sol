@@ -24,4 +24,8 @@ contract IoTDevice is IIoTDevice {
     function get() external view returns (string memory, string memory, string memory, Status, string memory, uint) {
         return (id, device_code, location, status, ip_address, last_heartbeat);
     }
+
+    function updateHeartbeat(uint _new_heartbeat) external {
+        last_heartbeat = _new_heartbeat;
+    }
 }

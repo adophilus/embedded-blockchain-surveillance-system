@@ -163,9 +163,8 @@ export const bootstrap = async () => {
 	// Surveillance DI
 	const surveillanceSessionRepository =
 		new BlockchainSurveillanceSessionRepository(surveillanceSystem);
-	const surveillanceEventRepository = new KyselySurveillanceEventRepository(
-		kyselyClient,
-		logger,
+	const surveillanceEventRepository = new BlockchainSurveillanceEventRepository(
+		surveillanceSystem,
 	);
 	const surveillanceSessionService = new SurveillanceSessionServiceImpl(
 		surveillanceSessionRepository,

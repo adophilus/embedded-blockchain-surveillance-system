@@ -117,7 +117,7 @@ import {
 	BlockchainSurveillanceSystem,
 	createWallet,
 } from "@embedded-blockchain-surveillance-system/core";
-import { foundry, polygonMumbai } from "viem/chains";
+import { foundry, polygonAmoy } from "viem/chains";
 
 export const bootstrap = async () => {
 	const logger = new Logger();
@@ -133,7 +133,7 @@ export const bootstrap = async () => {
 	const ipfsClient = new PinataIpfsClient(pinataIpfsClient);
 
 	// Blockchain DI
-	const chain = config.environment.DEVELOPMENT ? foundry : polygonMumbai;
+	const chain = config.environment.DEVELOPMENT ? foundry : polygonAmoy;
 	const wallet = await createWallet(config.blockchain.privateKey, chain);
 	const surveillanceSystem = new BlockchainSurveillanceSystem(
 		wallet,

@@ -7,6 +7,7 @@ ARG VITE_SERVER_URL
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+
 # RUN apk add --no-cache python3 make g++ bash nodejs pkgconf cairo-dev pango-dev libpng libjpeg librsvg pixman-dev giflib-dev
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 \
@@ -22,8 +23,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpixman-1-dev \
     libgif-dev \
     curl \
-    ca-certificates \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    ca-certificates
+
+RUN curl -1sLf \
+    'https://artifacts-cli.infisical.com/setup.deb.sh' \
+    | sudo -E bash
+RUN apt-get install -y infisical
+
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # RUN bash bun add -g pnpm
 RUN npm add -g pnpm bun

@@ -45,4 +45,4 @@ COPY --from=build /app ./
 
 EXPOSE $PORT
 
-CMD ["./scripts/docker-entrypoint.sh"]
+ENTRYPOINT ["./scripts/docker-entrypoint.sh"]

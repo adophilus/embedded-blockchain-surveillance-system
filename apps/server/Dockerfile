@@ -45,4 +45,4 @@ COPY --from=build /app ./
 
 EXPOSE $PORT
 
-CMD ["pnpm", "--filter", "@embedded-blockchain-surveillance-system/server", "start"]
+CMD ["./scripts/docker-entrypoint.sh"]

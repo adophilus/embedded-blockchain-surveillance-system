@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN curl -1sLf \
     'https://artifacts-cli.infisical.com/setup.deb.sh' \
-    | sudo -E bash
+    | bash
 RUN apt-get install -y infisical
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

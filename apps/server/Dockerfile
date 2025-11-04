@@ -52,4 +52,4 @@ COPY --from=build /app ./
 
 EXPOSE $PORT
 
-ENTRYPOINT ["./scripts/docker-entrypoint.sh"]
+ENTRYPOINT ["./apps/server/scripts/docker-entrypoint.sh"]

@@ -16,6 +16,7 @@ export const env = createEnv({
 		VAPID_SUBJECT: z.string(),
 		AI_MODEL_PATH: z.string().min(1),
 		WEBAPP_URL: z.string().url(),
+		PROVIDER: z.union([z.literal("ONCHAIN"), z.literal("OFFCHAIN")]),
 		PINATA_API_KEY: z.string().min(1),
 		PINATA_API_SECRET: z.string().min(1),
 		PINATA_API_SECRET_JWT: z.string().min(1),

@@ -19,7 +19,11 @@ import { config } from "@/features/config";
 import { KyselyClient } from "@/features/database/kysely";
 import { createKyselySqliteClient } from "@/features/database/kysely/sqlite";
 import { Logger } from "@/features/logger";
-import { StorageService, IpfsStorageService } from "@/features/storage/service";
+import {
+	StorageService,
+	IpfsStorageService,
+	SqliteStorageService,
+} from "@/features/storage/service";
 import {
 	CronService,
 	CronServiceImplementation,
@@ -37,10 +41,12 @@ import {
 import {
 	SurveillanceSessionRepository,
 	BlockchainSurveillanceSessionRepository,
+	KyselySurveillanceSessionRepository,
 } from "@/features/surveillance/session/repository";
 import {
 	SurveillanceEventRepository,
 	BlockchainSurveillanceEventRepository,
+	KyselySurveillanceEventRepository,
 } from "@/features/surveillance/events/repository";
 import {
 	CriminalProfileService,
@@ -49,6 +55,7 @@ import {
 import {
 	BlockchainCriminalProfileRepository,
 	CriminalProfileRepository,
+	KyselyCriminalProfileRepository,
 } from "@/features/criminal/repository";
 import {
 	IotDeviceService,
@@ -57,6 +64,7 @@ import {
 import {
 	IotDeviceRepository,
 	BlockchainIotDeviceRepository,
+	KyselyIotDeviceRepository,
 } from "@/features/iot/repository";
 import {
 	ListSurveillanceSessionsUseCase,
@@ -142,17 +150,23 @@ export const bootstrap = async () => {
 
 	// Storage DI
 	const storageRepository = new KyselyStorageRepository(kyselyClient, logger);
-	const storageService = new IpfsStorageService(ipfsClient);
+	const storageService =
+		config.server.provider === "ONCHAIN"
+			? new IpfsStorageService(ipfsClient)
+			: new SqliteStorageService(storageRepository);
 
 	// Auth DI
 	const authUserRepository = new KyselyAuthUserRepository(kyselyClient, logger);
 
 	// Surveillance DI
 	const surveillanceSessionRepository =
-		new BlockchainSurveillanceSessionRepository(surveillanceSystem);
-	const surveillanceEventRepository = new BlockchainSurveillanceEventRepository(
-		surveillanceSystem,
-	);
+		config.server.provider === "ONCHAIN"
+			? new BlockchainSurveillanceSessionRepository(surveillanceSystem)
+			: new KyselySurveillanceSessionRepository(kyselyClient, logger);
+	const surveillanceEventRepository =
+		config.server.provider === "ONCHAIN"
+			? new BlockchainSurveillanceEventRepository(surveillanceSystem)
+			: new KyselySurveillanceEventRepository(kyselyClient, logger);
 	const surveillanceSessionService = new SurveillanceSessionServiceImpl(
 		surveillanceSessionRepository,
 		logger,
@@ -167,9 +181,10 @@ export const bootstrap = async () => {
 	);
 
 	// Criminal DI
-	const criminalProfileRepository = new BlockchainCriminalProfileRepository(
-		surveillanceSystem,
-	);
+	const criminalProfileRepository =
+		config.server.provider === "ONCHAIN"
+			? new BlockchainCriminalProfileRepository(surveillanceSystem)
+			: new KyselyCriminalProfileRepository(kyselyClient, logger);
 	const criminalProfileService =
 		await CriminalProfileServiceImplementation.init(
 			criminalProfileRepository,
@@ -206,10 +221,10 @@ export const bootstrap = async () => {
 	const getVapidPublicKeyUseCase = new GetVapidPublicKeyUseCaseImplementation();
 
 	// IoT DI
-	const iotDeviceRepository = new BlockchainIotDeviceRepository(
-		surveillanceSystem,
-		logger,
-	);
+	const iotDeviceRepository =
+		config.server.provider === "ONCHAIN"
+			? new BlockchainIotDeviceRepository(surveillanceSystem, logger)
+			: new KyselyIotDeviceRepository(kyselyClient, logger);
 	const iotDeviceService = new IotDeviceServiceImplementation(
 		iotDeviceRepository,
 		storageService,
